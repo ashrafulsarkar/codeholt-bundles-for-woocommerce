@@ -1,0 +1,372 @@
+/* Bundle Product for WooCommerce — admin styles. */
+
+/* ------------------------------------------------------------------ */
+/* Product data panel — bundle builder                                 */
+/* ------------------------------------------------------------------ */
+
+#bpfw_bundled_products_data .bpfw-items-table {
+	margin: 12px;
+	width: calc( 100% - 24px );
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	border-spacing: 0;
+	overflow: hidden;
+	box-shadow: none;
+}
+
+#bpfw_bundled_products_data .bpfw-items-table thead th {
+	background: #f6f7f7;
+	color: #646970;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid #dcdcde;
+}
+
+#bpfw_bundled_products_data .bpfw-items-table td,
+#bpfw_bundled_products_data .bpfw-items-table th {
+	vertical-align: middle;
+	padding: 10px 12px;
+}
+
+#bpfw_bundled_products_data .bpfw-item:hover td {
+	background: #f8f9fb;
+}
+
+#bpfw_bundled_products_data .bpfw-col-sort {
+	width: 28px;
+	cursor: move;
+	color: #a7aaad;
+	text-align: center;
+}
+
+#bpfw_bundled_products_data .bpfw-item:hover .bpfw-col-sort {
+	color: #2271b1;
+}
+
+#bpfw_bundled_products_data .bpfw-col-product img {
+	width: 36px;
+	height: 36px;
+	object-fit: cover;
+	border-radius: 6px;
+	border: 1px solid #dcdcde;
+	margin-right: 8px;
+	vertical-align: middle;
+	background: #f6f7f7;
+}
+
+#bpfw_bundled_products_data .bpfw-col-product a {
+	text-decoration: none;
+	font-weight: 500;
+}
+
+#bpfw_bundled_products_data .bpfw-col-price {
+	width: 120px;
+}
+
+#bpfw_bundled_products_data .bpfw-col-qty {
+	width: 90px;
+}
+
+#bpfw_bundled_products_data .bpfw-col-qty input {
+	width: 70px;
+	border-radius: 4px;
+}
+
+#bpfw_bundled_products_data .bpfw-col-hide {
+	width: 60px;
+	text-align: center;
+}
+
+#bpfw_bundled_products_data .bpfw-col-remove {
+	width: 40px;
+	text-align: center;
+}
+
+#bpfw_bundled_products_data .bpfw-remove-item {
+	color: #b32d2e;
+	font-size: 18px;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	border: 0;
+	background: none;
+	padding: 4px;
+	border-radius: 4px;
+}
+
+#bpfw_bundled_products_data .bpfw-remove-item:hover {
+	background: #fcf0f1;
+}
+
+#bpfw_bundled_products_data .bpfw-empty-row td {
+	color: #646970;
+	text-align: center;
+	padding: 22px 12px;
+}
+
+#bpfw_bundled_products_data .bpfw-totals-row td {
+	background: #f0f6fc;
+	border-top: 1px solid #c5d9ed;
+	font-size: 13px;
+}
+
+#bpfw_bundled_products_data .bpfw-total-regular {
+	font-weight: 600;
+}
+
+#bpfw_bundled_products_data .bpfw-total-savings {
+	color: #00a32a;
+	font-weight: 600;
+}
+
+#bpfw_bundled_products_data .bpfw-builder-hint {
+	margin: 0 12px 12px;
+}
+
+#bpfw_bundled_products_data .bpfw-item.ui-sortable-helper {
+	background: #fff;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.15 );
+}
+
+#bpfw_bundled_products_data .bpfw-layout-field .bpfw-choices {
+	vertical-align: middle;
+}
+
+/* ------------------------------------------------------------------ */
+/* Layout choice picker (product panel + settings tab)                 */
+/* ------------------------------------------------------------------ */
+
+.bpfw-choices {
+	display: inline-flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.bpfw-choice {
+	position: relative;
+	margin: 0 !important;
+}
+
+.bpfw-choice input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+}
+
+.bpfw-choice__box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
+	padding: 10px 14px;
+	min-width: 72px;
+	cursor: pointer;
+	transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.bpfw-choice:hover .bpfw-choice__box {
+	border-color: #2271b1;
+}
+
+.bpfw-choice input:checked + .bpfw-choice__box {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	background: #f0f6fc;
+}
+
+.bpfw-choice input:focus-visible + .bpfw-choice__box {
+	outline: 2px solid #2271b1;
+	outline-offset: 1px;
+}
+
+.bpfw-choice__label {
+	font-size: 12px;
+	font-weight: 600;
+	color: #3c434a;
+}
+
+.bpfw-choice__icon {
+	display: grid;
+	width: 34px;
+	height: 24px;
+	gap: 3px;
+}
+
+.bpfw-choice__icon i {
+	display: block;
+	background: #c3c4c7;
+	border-radius: 2px;
+	min-height: 2px;
+}
+
+.bpfw-choice input:checked + .bpfw-choice__box .bpfw-choice__icon i {
+	background: #2271b1;
+}
+
+.bpfw-choice__icon--list {
+	grid-template-rows: repeat( 3, 1fr );
+}
+
+.bpfw-choice__icon--grid {
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+
+.bpfw-choice__icon--compact {
+	grid-template-rows: repeat( 3, 1fr );
+	align-items: center;
+}
+
+.bpfw-choice__icon--compact i {
+	height: 2px;
+}
+
+.bpfw-choice__icon--card {
+	grid-template-rows: 8px 1fr;
+}
+
+.bpfw-choice__icon--wide {
+	grid-template-rows: 1fr 1fr;
+}
+
+.bpfw-choice__icon--default {
+	border: 1px dashed #c3c4c7;
+	border-radius: 4px;
+}
+
+.bpfw-choice input:checked + .bpfw-choice__box .bpfw-choice__icon--default {
+	border-color: #2271b1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Bundles admin page (Overview / Settings / Import-Export)            */
+/* ------------------------------------------------------------------ */
+
+.bpfw-admin-page .bpfw-cards {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 180px, 1fr ) );
+	gap: 16px;
+	margin: 20px 0;
+	max-width: 1200px;
+}
+
+.bpfw-admin-page .bpfw-stat-card {
+	position: relative;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	padding: 18px 20px 18px 24px;
+}
+
+.bpfw-admin-page .bpfw-stat-card::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 4px;
+	background: #2271b1;
+}
+
+.bpfw-admin-page .bpfw-stat-card:nth-child(2)::before { background: #7c3aed; }
+.bpfw-admin-page .bpfw-stat-card:nth-child(3)::before { background: #00a32a; }
+.bpfw-admin-page .bpfw-stat-card:nth-child(4)::before { background: #d63638; }
+.bpfw-admin-page .bpfw-stat-card:nth-child(5)::before { background: #dba617; }
+
+.bpfw-admin-page .bpfw-stat-card h3 {
+	margin: 0 0 6px;
+	color: #646970;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.bpfw-admin-page .bpfw-stat {
+	font-size: 26px;
+	font-weight: 600;
+	line-height: 1.2;
+	overflow-wrap: anywhere;
+}
+
+.bpfw-overview-grid {
+	display: grid;
+	grid-template-columns: minmax( 0, 1.5fr ) minmax( 280px, 1fr );
+	gap: 16px;
+	align-items: start;
+	max-width: 1200px;
+}
+
+@media ( max-width: 960px ) {
+	.bpfw-overview-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.bpfw-panel-card {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	padding: 20px 22px;
+	box-sizing: border-box;
+}
+
+.bpfw-panel-card > h2 {
+	margin-top: 0;
+}
+
+.bpfw-panel-card .bpfw-table {
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	overflow: hidden;
+	box-shadow: none;
+}
+
+.bpfw-help-card ol {
+	margin: 12px 0 16px 20px;
+}
+
+.bpfw-help-card li {
+	margin-bottom: 6px;
+}
+
+/* Settings tab */
+
+.bpfw-settings-grid {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 320px, 1fr ) );
+	gap: 16px;
+	max-width: 1000px;
+	margin-top: 20px;
+}
+
+.bpfw-settings-form .bpfw-field {
+	margin: 0 0 20px;
+}
+
+.bpfw-settings-form .bpfw-field:last-child {
+	margin-bottom: 0;
+}
+
+.bpfw-settings-form .bpfw-field__label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.bpfw-settings-form .bpfw-toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 500;
+}
+
+.bpfw-settings-form .submit {
+	display: flex;
+	gap: 8px;
+}
