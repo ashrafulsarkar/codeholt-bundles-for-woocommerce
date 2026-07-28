@@ -94,33 +94,33 @@ echo wc_get_stock_html( $bundle ); // phpcs:ignore WordPress.Security.EscapeOutp
 
 if ( $bundle->is_in_stock() ) : ?>
 
-	<?php do_action( 'woocommerce_before_add_to_cart_form' ); ?>
+	<?php do_action( 'woocommerce_before_add_to_cart_form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name. ?>
 
-	<form class="cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $bundle->get_permalink() ) ); ?>" method="post" enctype="multipart/form-data">
+	<form class="cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $bundle->get_permalink() ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name. ?>" method="post" enctype="multipart/form-data">
 
-		<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
+		<?php do_action( 'woocommerce_before_add_to_cart_button' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name. ?>
 
 		<?php
-		do_action( 'woocommerce_before_add_to_cart_quantity' );
+		do_action( 'woocommerce_before_add_to_cart_quantity' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name.
 
 		woocommerce_quantity_input(
 			array(
-				'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $bundle->get_min_purchase_quantity(), $bundle ),
-				'max_value'   => apply_filters( 'woocommerce_quantity_input_max', null !== $bpfw_max ? $bpfw_max : $bundle->get_max_purchase_quantity(), $bundle ),
+				'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $bundle->get_min_purchase_quantity(), $bundle ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name.
+				'max_value'   => apply_filters( 'woocommerce_quantity_input_max', null !== $bpfw_max ? $bpfw_max : $bundle->get_max_purchase_quantity(), $bundle ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name.
 				'input_value' => isset( $_POST['quantity'] ) ? wc_stock_amount( sanitize_text_field( wp_unslash( $_POST['quantity'] ) ) ) : $bundle->get_min_purchase_quantity(), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Add-to-cart form submission is handled and verified by WooCommerce.
 			)
 		);
 
-		do_action( 'woocommerce_after_add_to_cart_quantity' );
+		do_action( 'woocommerce_after_add_to_cart_quantity' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name.
 		?>
 
 		<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $bundle->get_id() ); ?>" class="single_add_to_cart_button button alt<?php echo esc_attr( wc_wp_theme_get_element_class_name( 'button' ) ? ' ' . wc_wp_theme_get_element_class_name( 'button' ) : '' ); ?>">
 			<?php echo esc_html( $bundle->single_add_to_cart_text() ); ?>
 		</button>
 
-		<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>
+		<?php do_action( 'woocommerce_after_add_to_cart_button' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name. ?>
 	</form>
 
-	<?php do_action( 'woocommerce_after_add_to_cart_form' ); ?>
+	<?php do_action( 'woocommerce_after_add_to_cart_form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce template hook, must keep its original name. ?>
 
 <?php endif; ?>

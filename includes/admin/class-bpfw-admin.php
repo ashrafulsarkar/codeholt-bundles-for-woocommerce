@@ -215,9 +215,9 @@ class BPFW_Admin {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified by WooCommerce before this hook fires.
 		$raw_items = isset( $_POST['bpfw_items'] ) && is_array( $_POST['bpfw_items'] ) ? wp_unslash( $_POST['bpfw_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$mode      = isset( $_POST['_bpfw_pricing_mode'] ) ? sanitize_key( $_POST['_bpfw_pricing_mode'] ) : 'auto';
+		$mode      = isset( $_POST['_bpfw_pricing_mode'] ) ? sanitize_key( wp_unslash( $_POST['_bpfw_pricing_mode'] ) ) : 'auto';
 		$fixed     = isset( $_POST['_bpfw_fixed_price'] ) ? wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['_bpfw_fixed_price'] ) ) ) : '';
-		$layout    = isset( $_POST['_bpfw_layout'] ) ? sanitize_key( $_POST['_bpfw_layout'] ) : '';
+		$layout    = isset( $_POST['_bpfw_layout'] ) ? sanitize_key( wp_unslash( $_POST['_bpfw_layout'] ) ) : '';
 		// phpcs:enable
 
 		$items = array();

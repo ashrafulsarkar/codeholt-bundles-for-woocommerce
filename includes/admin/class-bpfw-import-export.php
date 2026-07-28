@@ -134,20 +134,41 @@ class BPFW_Import_Export {
 
 			fputcsv(
 				$out,
-				array(
-					$bundle['name'],
-					$bundle['slug'],
-					$bundle['status'],
-					$bundle['sku'],
-					$bundle['pricing_mode'],
-					$bundle['fixed_price'],
-					implode( '|', $items ),
+				array_map(
+					array( __CLASS__, 'escape_csv_cell' ),
+					array(
+						$bundle['name'],
+						$bundle['slug'],
+						$bundle['status'],
+						$bundle['sku'],
+						$bundle['pricing_mode'],
+						$bundle['fixed_price'],
+						implode( '|', $items ),
+					)
 				)
 			);
 		}
 
 		fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		exit;
+	}
+
+	/**
+	 * Neutralize CSV formula injection by prefixing a leading
+	 * `= + - @` (or tab/CR) with a single quote, as spreadsheet
+	 * apps treat such cells as executable formulas.
+	 *
+	 * @param string $cell Raw cell value.
+	 * @return string
+	 */
+	protected static function escape_csv_cell( $cell ) {
+		$cell = (string) $cell;
+
+		if ( '' !== $cell && false !== strpos( "=+-@\t\r", $cell[0] ) ) {
+			return "'" . $cell;
+		}
+
+		return $cell;
 	}
 
 	/**
@@ -202,19 +223,27 @@ class BPFW_Import_Export {
 				}
 			}
 
-			$bundle = new BPFW_Product_Bundle();
-			$bundle->set_name( sanitize_text_field( $bundle_data['name'] ) );
-			$bundle->set_status( in_array( $bundle_data['status'] ?? 'draft', array( 'publish', 'draft' ), true ) ? $bundle_data['status'] : 'draft' );
-			$bundle->set_description( wp_kses_post( $bundle_data['description'] ?? '' ) );
-			$bundle->set_short_description( wp_kses_post( $bundle_data['short_desc'] ?? '' ) );
+			$name         = is_string( $bundle_data['name'] ?? null ) ? $bundle_data['name'] : '';
+			$status       = is_string( $bundle_data['status'] ?? null ) ? $bundle_data['status'] : 'draft';
+			$description  = is_string( $bundle_data['description'] ?? null ) ? $bundle_data['description'] : '';
+			$short_desc   = is_string( $bundle_data['short_desc'] ?? null ) ? $bundle_data['short_desc'] : '';
+			$sku          = is_string( $bundle_data['sku'] ?? null ) ? $bundle_data['sku'] : '';
+			$pricing_mode = is_string( $bundle_data['pricing_mode'] ?? null ) ? $bundle_data['pricing_mode'] : 'auto';
+			$fixed_price  = is_scalar( $bundle_data['fixed_price'] ?? null ) ? $bundle_data['fixed_price'] : '';
 
-			if ( ! empty( $bundle_data['sku'] ) && ! wc_get_product_id_by_sku( wc_clean( $bundle_data['sku'] ) ) ) {
-				$bundle->set_sku( wc_clean( $bundle_data['sku'] ) );
+			$bundle = new BPFW_Product_Bundle();
+			$bundle->set_name( sanitize_text_field( $name ) );
+			$bundle->set_status( in_array( $status, array( 'publish', 'draft' ), true ) ? $status : 'draft' );
+			$bundle->set_description( wp_kses_post( $description ) );
+			$bundle->set_short_description( wp_kses_post( $short_desc ) );
+
+			if ( '' !== $sku && ! wc_get_product_id_by_sku( wc_clean( $sku ) ) ) {
+				$bundle->set_sku( wc_clean( $sku ) );
 			}
 
 			$bundle->update_meta_data( '_bpfw_bundled_items', $items );
-			$bundle->update_meta_data( '_bpfw_pricing_mode', in_array( $bundle_data['pricing_mode'] ?? 'auto', bpfw_get_pricing_modes(), true ) ? $bundle_data['pricing_mode'] : 'auto' );
-			$bundle->update_meta_data( '_bpfw_fixed_price', wc_format_decimal( $bundle_data['fixed_price'] ?? '' ) );
+			$bundle->update_meta_data( '_bpfw_pricing_mode', in_array( $pricing_mode, bpfw_get_pricing_modes(), true ) ? $pricing_mode : 'auto' );
+			$bundle->update_meta_data( '_bpfw_fixed_price', wc_format_decimal( $fixed_price ) );
 
 			foreach ( $items as $item ) {
 				$bundle->add_meta_data( '_bpfw_contains', (string) $item['id'] );

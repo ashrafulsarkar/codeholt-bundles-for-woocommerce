@@ -132,7 +132,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 			&& count( $this->get_bundled_products() ) > 0;
 
 		/** This filter is documented in WooCommerce. */
-		return apply_filters( 'woocommerce_is_purchasable', $purchasable, $this );
+		return apply_filters( 'woocommerce_is_purchasable', $purchasable, $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce filter, must keep its original name.
 	}
 
 	/**
@@ -210,6 +210,6 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 			: __( 'Read more', 'bundle-product-for-woocommerce' );
 
 		/** This filter is documented in WooCommerce. */
-		return apply_filters( 'woocommerce_product_add_to_cart_text', $text, $this );
+		return apply_filters( 'woocommerce_product_add_to_cart_text', $text, $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce filter, must keep its original name.
 	}
 }
