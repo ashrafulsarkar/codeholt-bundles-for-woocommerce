@@ -3,7 +3,7 @@
  * Plugin Name:       Bundle Product for WooCommerce
  * Plugin URI:        https://wordpress.org/plugins/bundle-product-for-woocommerce/
  * Description:       Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, auto price calculation, stock sync, Gutenberg block, Elementor widget and analytics.
- * Version:           1.1.0
+ * Version:           1.0.0
  * Author:            Ashraful Sarkar
  * Author URI:        https://ashrafulsarkar.com/
  * License:           GPL-2.0-or-later
@@ -21,11 +21,21 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BPFW_VERSION', '1.1.0' );
+define( 'BPFW_VERSION', '1.0.0' );
 define( 'BPFW_PLUGIN_FILE', __FILE__ );
 define( 'BPFW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BPFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BPFW_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+
+/**
+ * Master switch for the locked/disabled Pro-preview UI in the free plugin
+ * (Design card, Savings badge text field, Inline/Custom layout choices).
+ * Off for now — parked for a future version. Flip to true (or hook the
+ * `bpfw_show_pro_placeholders` filter) to bring the placeholders back.
+ */
+if ( ! defined( 'BPFW_SHOW_PRO_PLACEHOLDERS' ) ) {
+	define( 'BPFW_SHOW_PRO_PLACEHOLDERS', false );
+}
 
 /**
  * Autoload BPFW_* classes from the includes directory.

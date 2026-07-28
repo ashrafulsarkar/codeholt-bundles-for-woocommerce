@@ -109,6 +109,17 @@ class BPFW_Frontend {
 			esc_html( $pricing['percent'] )
 		);
 
+		/**
+		 * Filter the savings badge text.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string     $badge   Badge text (escaped).
+		 * @param WC_Product $product Bundle product.
+		 * @param array      $pricing Pricing summary.
+		 */
+		$badge = apply_filters( 'bpfw_savings_badge_text', $badge, $product, $pricing );
+
 		return $price_html . ' <span class="bpfw-savings-badge">' . $badge . '</span>';
 	}
 }

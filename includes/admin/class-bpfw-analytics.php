@@ -55,36 +55,54 @@ class BPFW_Analytics {
 
 		$since = gmdate( 'Y-m-d H:i:s', time() - ( $days * DAY_IN_SECONDS ) );
 
+		// Aggregate reporting query — WooCommerce has no CRUD/API equivalent for
+		// this per-bundle rollup. Results are cached in a transient for 15 minutes
+		// (see set_transient() below), so no repeated direct queries occur.
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		if ( $hpos ) {
-			$orders_join  = "INNER JOIN {$wpdb->prefix}wc_orders o ON o.id = oi.order_id AND o.type = 'shop_order'";
-			$status_where = "o.status IN ('wc-processing','wc-completed') AND o.date_created_gmt >= %s";
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT oim_pid.meta_value AS bundle_id,
+							SUM( oim_qty.meta_value + 0 ) AS sold,
+							SUM( oim_total.meta_value + 0 ) AS revenue,
+							SUM( COALESCE( oim_save.meta_value + 0, 0 ) ) AS savings
+					 FROM {$wpdb->prefix}woocommerce_order_items oi
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_bpfw_bundled_items'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_pid   ON oim_pid.order_item_id   = oi.order_item_id AND oim_pid.meta_key   = '_product_id'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_qty   ON oim_qty.order_item_id   = oi.order_item_id AND oim_qty.meta_key   = '_qty'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_total ON oim_total.order_item_id = oi.order_item_id AND oim_total.meta_key = '_line_total'
+					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_bpfw_savings'
+					 INNER JOIN {$wpdb->prefix}wc_orders o ON o.id = oi.order_id AND o.type = 'shop_order'
+					 WHERE o.status IN ('wc-processing','wc-completed') AND o.date_created_gmt >= %s
+					 GROUP BY oim_pid.meta_value
+					 ORDER BY revenue DESC",
+					$since
+				),
+				ARRAY_A
+			);
 		} else {
-			$orders_join  = "INNER JOIN {$wpdb->posts} o ON o.ID = oi.order_id AND o.post_type = 'shop_order'";
-			$status_where = "o.post_status IN ('wc-processing','wc-completed') AND o.post_date_gmt >= %s";
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT oim_pid.meta_value AS bundle_id,
+							SUM( oim_qty.meta_value + 0 ) AS sold,
+							SUM( oim_total.meta_value + 0 ) AS revenue,
+							SUM( COALESCE( oim_save.meta_value + 0, 0 ) ) AS savings
+					 FROM {$wpdb->prefix}woocommerce_order_items oi
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_bpfw_bundled_items'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_pid   ON oim_pid.order_item_id   = oi.order_item_id AND oim_pid.meta_key   = '_product_id'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_qty   ON oim_qty.order_item_id   = oi.order_item_id AND oim_qty.meta_key   = '_qty'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_total ON oim_total.order_item_id = oi.order_item_id AND oim_total.meta_key = '_line_total'
+					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_bpfw_savings'
+					 INNER JOIN {$wpdb->posts} o ON o.ID = oi.order_id AND o.post_type = 'shop_order'
+					 WHERE o.post_status IN ('wc-processing','wc-completed') AND o.post_date_gmt >= %s
+					 GROUP BY oim_pid.meta_value
+					 ORDER BY revenue DESC",
+					$since
+				),
+				ARRAY_A
+			);
 		}
-
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names/joins are built from safe constants above.
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT oim_pid.meta_value AS bundle_id,
-						SUM( oim_qty.meta_value + 0 ) AS sold,
-						SUM( oim_total.meta_value + 0 ) AS revenue,
-						SUM( COALESCE( oim_save.meta_value + 0, 0 ) ) AS savings
-				 FROM {$wpdb->prefix}woocommerce_order_items oi
-				 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_bpfw_bundled_items'
-				 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_pid   ON oim_pid.order_item_id   = oi.order_item_id AND oim_pid.meta_key   = '_product_id'
-				 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_qty   ON oim_qty.order_item_id   = oi.order_item_id AND oim_qty.meta_key   = '_qty'
-				 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_total ON oim_total.order_item_id = oi.order_item_id AND oim_total.meta_key = '_line_total'
-				 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_bpfw_savings'
-				 {$orders_join}
-				 WHERE {$status_where}
-				 GROUP BY oim_pid.meta_value
-				 ORDER BY revenue DESC",
-				$since
-			),
-			ARRAY_A
-		);
-		// phpcs:enable
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 		$stats = array(
 			'sold'    => 0,
@@ -115,14 +133,35 @@ class BPFW_Analytics {
 	 */
 	public function render_page() {
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'overview'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		/**
+		 * Filter the tabs on the Bundles admin page (slug => label).
+		 * Non-core tabs are rendered via the `bpfw_admin_tab_{slug}` action.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $tabs slug => label.
+		 */
+		$tabs = apply_filters(
+			'bpfw_admin_tabs',
+			array(
+				'overview'      => __( 'Overview', 'bundle-product-for-woocommerce' ),
+				'settings'      => __( 'Settings', 'bundle-product-for-woocommerce' ),
+				'import_export' => __( 'Import / Export', 'bundle-product-for-woocommerce' ),
+			)
+		);
+
+		if ( ! isset( $tabs[ $tab ] ) ) {
+			$tab = 'overview';
+		}
 		?>
 		<div class="wrap bpfw-admin-page">
 			<h1><?php esc_html_e( 'Product Bundles', 'bundle-product-for-woocommerce' ); ?></h1>
 
 			<nav class="nav-tab-wrapper">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=overview' ) ); ?>" class="nav-tab <?php echo 'overview' === $tab ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Overview', 'bundle-product-for-woocommerce' ); ?></a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=settings' ) ); ?>" class="nav-tab <?php echo 'settings' === $tab ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Settings', 'bundle-product-for-woocommerce' ); ?></a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=import_export' ) ); ?>" class="nav-tab <?php echo 'import_export' === $tab ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Import / Export', 'bundle-product-for-woocommerce' ); ?></a>
+				<?php foreach ( $tabs as $bpfw_slug => $bpfw_label ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=' . $bpfw_slug ) ); ?>" class="nav-tab <?php echo $bpfw_slug === $tab ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $bpfw_label ); ?></a>
+				<?php endforeach; ?>
 			</nav>
 
 			<?php
@@ -130,8 +169,15 @@ class BPFW_Analytics {
 				BPFW_Import_Export::render_tab();
 			} elseif ( 'settings' === $tab ) {
 				BPFW_Settings::render_tab();
-			} else {
+			} elseif ( 'overview' === $tab ) {
 				$this->render_overview();
+			} else {
+				/**
+				 * Fires to render a custom Bundles page tab.
+				 *
+				 * @since 1.0.0
+				 */
+				do_action( 'bpfw_admin_tab_' . $tab );
 			}
 			?>
 		</div>
@@ -142,7 +188,16 @@ class BPFW_Analytics {
 	 * Render the overview tab.
 	 */
 	protected function render_overview() {
-		$stats = self::get_stats( 30 );
+		/**
+		 * Filter the Overview reporting period in days.
+		 * The Pro add-on hooks this to make the period selectable.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int $days Days to look back (default 30).
+		 */
+		$days  = max( 1, absint( apply_filters( 'bpfw_overview_days', 30 ) ) );
+		$stats = self::get_stats( $days );
 		$top   = $stats['rows'] ? $stats['rows'][0] : null;
 
 		$bundle_count = count(
@@ -156,7 +211,31 @@ class BPFW_Analytics {
 			)
 		);
 		?>
-		<p class="description"><?php esc_html_e( 'Bundle performance for the last 30 days (processing and completed orders).', 'bundle-product-for-woocommerce' ); ?></p>
+		<div class="bpfw-toolbar">
+			<p class="bpfw-toolbar__text">
+				<span class="dashicons dashicons-chart-bar" aria-hidden="true"></span>
+				<?php
+				printf(
+					/* translators: %s: number of days. */
+					esc_html__( 'Bundle performance for the last %s days — processing and completed orders.', 'bundle-product-for-woocommerce' ),
+					esc_html( number_format_i18n( $days ) )
+				);
+				?>
+			</p>
+			<div class="bpfw-toolbar__actions">
+				<?php
+				/**
+				 * Fires in the Overview toolbar — add period selectors or
+				 * export buttons here (used by the Pro add-on).
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param int $days Current reporting period in days.
+				 */
+				do_action( 'bpfw_overview_actions', $days );
+				?>
+			</div>
+		</div>
 
 		<div class="bpfw-cards">
 			<div class="bpfw-stat-card">
@@ -183,7 +262,15 @@ class BPFW_Analytics {
 
 		<div class="bpfw-overview-grid">
 			<section class="bpfw-panel-card">
-				<h2><?php esc_html_e( 'Sales by bundle', 'bundle-product-for-woocommerce' ); ?></h2>
+				<h2>
+					<?php
+					printf(
+						/* translators: %s: number of days. */
+						esc_html__( 'Sales by bundle — last %s days', 'bundle-product-for-woocommerce' ),
+						esc_html( number_format_i18n( $days ) )
+					);
+					?>
+				</h2>
 
 				<table class="widefat striped bpfw-table">
 					<thead>
@@ -191,20 +278,28 @@ class BPFW_Analytics {
 							<th><?php esc_html_e( 'Bundle', 'bundle-product-for-woocommerce' ); ?></th>
 							<th><?php esc_html_e( 'Sold', 'bundle-product-for-woocommerce' ); ?></th>
 							<th><?php esc_html_e( 'Revenue', 'bundle-product-for-woocommerce' ); ?></th>
+							<th><?php esc_html_e( 'Share of revenue', 'bundle-product-for-woocommerce' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php if ( $stats['rows'] ) : ?>
 							<?php foreach ( $stats['rows'] as $row ) : ?>
+								<?php $bpfw_share = $stats['revenue'] > 0 ? round( ( $row['revenue'] / $stats['revenue'] ) * 100 ) : 0; ?>
 								<tr>
 									<td><a href="<?php echo esc_url( get_edit_post_link( $row['bundle_id'] ) ); ?>"><?php echo esc_html( $row['name'] ); ?></a></td>
 									<td><?php echo esc_html( number_format_i18n( $row['sold'] ) ); ?></td>
 									<td><?php echo wp_kses_post( wc_price( $row['revenue'] ) ); ?></td>
+									<td>
+										<span class="bpfw-share">
+											<span class="bpfw-share__bar" aria-hidden="true"><i style="width:<?php echo esc_attr( min( 100, $bpfw_share ) ); ?>%;"></i></span>
+											<?php echo esc_html( $stats['revenue'] > 0 ? $bpfw_share . '%' : '—' ); ?>
+										</span>
+									</td>
 								</tr>
 							<?php endforeach; ?>
 						<?php else : ?>
 							<tr>
-								<td colspan="3"><?php esc_html_e( 'No bundle sales in the last 30 days yet.', 'bundle-product-for-woocommerce' ); ?></td>
+								<td colspan="4"><?php esc_html_e( 'No bundle sales in this period yet.', 'bundle-product-for-woocommerce' ); ?></td>
 							</tr>
 						<?php endif; ?>
 					</tbody>

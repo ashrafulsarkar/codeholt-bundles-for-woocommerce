@@ -30,22 +30,26 @@ class BPFW_Ajax {
 			wp_die( -1 );
 		}
 
-		$term    = isset( $_GET['term'] ) ? wc_clean( wp_unslash( $_GET['term'] ) ) : '';
+		$term    = isset( $_GET['term'] ) ? sanitize_text_field( wp_unslash( $_GET['term'] ) ) : '';
 		$exclude = isset( $_GET['exclude'] ) ? array_map( 'absint', (array) wp_unslash( $_GET['exclude'] ) ) : array();
 
 		if ( '' === $term ) {
 			wp_die();
 		}
 
+		$types              = bpfw_get_allowed_child_types();
+		$include_variations = in_array( 'variation', $types, true );
+		$search_type        = ( 1 === count( $types ) && ! $include_variations ) ? reset( $types ) : '';
+
 		$data_store = WC_Data_Store::load( 'product' );
-		$ids        = $data_store->search_products( $term, 'simple', false, false, 30, null, $exclude );
+		$ids        = $data_store->search_products( $term, $search_type, $include_variations, false, 30, null, $exclude );
 
 		$results = array();
 
 		foreach ( $ids as $id ) {
 			$product = wc_get_product( $id );
 
-			if ( ! $product || 'publish' !== $product->get_status() ) {
+			if ( ! $product || 'publish' !== $product->get_status() || ! in_array( $product->get_type(), $types, true ) ) {
 				continue;
 			}
 
@@ -70,8 +74,8 @@ class BPFW_Ajax {
 		$index      = isset( $_POST['index'] ) ? absint( $_POST['index'] ) : 0;
 		$product    = wc_get_product( $product_id );
 
-		if ( ! $product || ! $product->is_type( 'simple' ) || 'publish' !== $product->get_status() ) {
-			wp_send_json_error( array( 'message' => __( 'Only published simple products can be bundled.', 'bundle-product-for-woocommerce' ) ) );
+		if ( ! $product || 'publish' !== $product->get_status() || ! in_array( $product->get_type(), bpfw_get_allowed_child_types(), true ) ) {
+			wp_send_json_error( array( 'message' => __( 'This product cannot be bundled.', 'bundle-product-for-woocommerce' ) ) );
 		}
 
 		ob_start();

@@ -46,7 +46,39 @@ class BPFW_Sync {
 			return;
 		}
 
-		if ( 'fixed' === $bundle->get_pricing_mode() && '' !== $bundle->get_fixed_price() ) {
+		$mode = $bundle->get_pricing_mode();
+
+		/**
+		 * Allow custom pricing modes (registered via `bpfw_pricing_modes`) to
+		 * supply computed prices. Return array{regular:string,sale:string}
+		 * to take over; return null to fall through to auto/fixed.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array|null          $prices Computed prices or null.
+		 * @param BPFW_Product_Bundle $bundle Bundle product.
+		 * @param string              $mode   Pricing mode slug.
+		 * @param array               $totals Items totals (regular/active).
+		 */
+		$custom = apply_filters( 'bpfw_custom_mode_prices', null, $bundle, $mode, $totals );
+
+		if ( is_array( $custom ) && isset( $custom['regular'] ) ) {
+			$regular = wc_format_decimal( $custom['regular'] );
+			$sale    = isset( $custom['sale'] ) && '' !== $custom['sale'] ? wc_format_decimal( $custom['sale'] ) : '';
+
+			$bundle->set_regular_price( $regular );
+
+			if ( '' !== $sale && (float) $sale < (float) $regular ) {
+				$bundle->set_sale_price( $sale );
+				$bundle->set_price( $sale );
+			} else {
+				$bundle->set_sale_price( '' );
+				$bundle->set_price( $regular );
+			}
+			return;
+		}
+
+		if ( 'fixed' === $mode && '' !== $bundle->get_fixed_price() ) {
 			$fixed = wc_format_decimal( $bundle->get_fixed_price() );
 
 			if ( (float) $fixed < (float) $regular_total ) {

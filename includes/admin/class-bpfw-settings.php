@@ -51,9 +51,6 @@ class BPFW_Settings {
 		}
 
 		wp_enqueue_style( 'bpfw-admin', BPFW_PLUGIN_URL . 'assets/css/admin.css', array(), BPFW_VERSION );
-		wp_enqueue_style( 'wp-color-picker' );
-		wp_enqueue_script( 'wp-color-picker' );
-		wp_add_inline_script( 'wp-color-picker', 'jQuery( function( $ ) { $( ".bpfw-color-field" ).wpColorPicker(); } );' );
 	}
 
 	/**
@@ -92,26 +89,30 @@ class BPFW_Settings {
 		}
 
 		$defaults = bpfw_get_default_settings();
+		$is_pro   = bpfw_is_pro();
 
 		$product_layout = isset( $_POST['product_layout'] ) ? sanitize_key( wp_unslash( $_POST['product_layout'] ) ) : '';
 		$card_layout    = isset( $_POST['card_layout'] ) ? sanitize_key( wp_unslash( $_POST['card_layout'] ) ) : '';
 		$included_title = isset( $_POST['included_title'] ) ? sanitize_text_field( wp_unslash( $_POST['included_title'] ) ) : '';
 
+		// A Pro-only layout can't be selected on a free site, no matter what was posted.
+		if ( ! array_key_exists( $product_layout, bpfw_get_product_layouts() )
+			|| ( ! $is_pro && bpfw_layout_requires_pro( $product_layout ) )
+		) {
+			$product_layout = $defaults['product_layout'];
+		}
+
 		$settings = array(
-			'product_layout'     => in_array( $product_layout, array( 'list', 'grid', 'compact' ), true ) ? $product_layout : $defaults['product_layout'],
+			'product_layout'     => $product_layout,
 			'card_layout'        => in_array( $card_layout, array( 'card', 'list' ), true ) ? $card_layout : $defaults['card_layout'],
 			'included_title'     => '' !== $included_title ? $included_title : $defaults['included_title'],
 			'show_savings_badge' => empty( $_POST['show_savings_badge'] ) ? 'no' : 'yes',
-			'accent_color'       => self::sanitize_color( 'accent_color', $defaults ),
-			'savings_color'      => self::sanitize_color( 'savings_color', $defaults ),
-			'border_color'       => self::sanitize_color( 'border_color', $defaults ),
-			'border_radius'      => isset( $_POST['border_radius'] ) ? min( 40, absint( $_POST['border_radius'] ) ) : $defaults['border_radius'],
 		);
 
 		/**
 		 * Filter settings before they are saved.
 		 *
-		 * @since 1.1.0
+		 * @since 1.0.0
 		 *
 		 * @param array $settings Sanitized settings.
 		 */
@@ -122,21 +123,6 @@ class BPFW_Settings {
 	}
 
 	/**
-	 * Sanitize a posted hex color, falling back to the default.
-	 *
-	 * @param string $key      POST/settings key.
-	 * @param array  $defaults Default settings.
-	 * @return string
-	 */
-	protected static function sanitize_color( $key, $defaults ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce checked in save().
-		$raw   = isset( $_POST[ $key ] ) ? sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) : '';
-		$color = sanitize_hex_color( $raw );
-
-		return $color ? $color : $defaults[ $key ];
-	}
-
-	/**
 	 * Render one layout choice (radio styled as a visual picker).
 	 * Also used by the product data panel for the per-bundle layout override.
 	 *
@@ -144,22 +130,47 @@ class BPFW_Settings {
 	 * @param string $value   Option value.
 	 * @param string $current Currently selected value.
 	 * @param string $label   Visible label.
-	 * @param string $icon    Icon style: default|list|grid|compact|card|wide.
+	 * @param string $icon    Icon style: default|list|grid|compact|card|wide (Pro add-ons register more).
+	 * @param bool   $locked  Whether this choice requires Pro and should render locked.
 	 */
-	public static function layout_choice( $name, $value, $current, $label, $icon = 'default' ) {
-		$cells = array(
-			'list'    => 3,
-			'grid'    => 4,
-			'compact' => 3,
-			'card'    => 2,
-			'wide'    => 2,
-			'default' => 0,
+	public static function layout_choice( $name, $value, $current, $label, $icon = 'default', $locked = false ) {
+		/**
+		 * Filter the cell count used to draw a layout icon.
+		 * Add-ons registering layouts can map their icon slug here and
+		 * style `.bpfw-choice__icon--{slug}` with their own admin CSS.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $cells icon slug => number of <i> cells.
+		 */
+		$cells = apply_filters(
+			'bpfw_layout_icon_cells',
+			array(
+				'list'    => 3,
+				'grid'    => 4,
+				'compact' => 3,
+				'table'   => 6,
+				'card'    => 2,
+				'wide'    => 2,
+				'inline'  => 3,
+				'custom'  => 4,
+				'default' => 0,
+			)
 		);
 		$count = isset( $cells[ $icon ] ) ? $cells[ $icon ] : 0;
 		?>
-		<label class="bpfw-choice">
-			<input type="radio" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" <?php checked( $current, $value ); ?> />
+		<label class="bpfw-choice <?php echo $locked ? 'bpfw-choice--locked' : ''; ?>">
+			<input
+				type="radio"
+				name="<?php echo esc_attr( $name ); ?>"
+				value="<?php echo esc_attr( $value ); ?>"
+				<?php checked( $current, $value ); ?>
+				<?php disabled( $locked ); ?>
+			/>
 			<span class="bpfw-choice__box">
+				<?php if ( $locked ) : ?>
+					<span class="bpfw-choice__lock dashicons dashicons-lock" aria-hidden="true"></span>
+				<?php endif; ?>
 				<span class="bpfw-choice__icon bpfw-choice__icon--<?php echo esc_attr( $icon ); ?>" aria-hidden="true"><?php echo str_repeat( '<i></i>', $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup. ?></span>
 				<span class="bpfw-choice__label"><?php echo esc_html( $label ); ?></span>
 			</span>
@@ -172,6 +183,7 @@ class BPFW_Settings {
 	 */
 	public static function render_tab() {
 		$settings = bpfw_get_settings();
+		$is_pro   = bpfw_is_pro();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only success notices.
 		if ( isset( $_GET['updated'] ) ) {
@@ -186,7 +198,16 @@ class BPFW_Settings {
 			<input type="hidden" name="action" value="bpfw_save_settings" />
 			<?php wp_nonce_field( 'bpfw-settings' ); ?>
 
-			<div class="bpfw-settings-grid">
+			<?php
+			if ( $is_pro ) {
+				$bpfw_grid_class = 'bpfw-settings-grid--pro';
+			} elseif ( bpfw_show_pro_placeholders() ) {
+				$bpfw_grid_class = 'bpfw-settings-grid--free';
+			} else {
+				$bpfw_grid_class = 'bpfw-settings-grid--single';
+			}
+			?>
+			<div class="bpfw-settings-grid <?php echo esc_attr( $bpfw_grid_class ); ?>">
 
 				<section class="bpfw-panel-card">
 					<h2><?php esc_html_e( 'Layout', 'bundle-product-for-woocommerce' ); ?></h2>
@@ -196,9 +217,9 @@ class BPFW_Settings {
 						<span class="bpfw-field__label"><?php esc_html_e( 'Product page layout', 'bundle-product-for-woocommerce' ); ?></span>
 						<div class="bpfw-choices">
 							<?php
-							self::layout_choice( 'product_layout', 'list', $settings['product_layout'], __( 'List', 'bundle-product-for-woocommerce' ), 'list' );
-							self::layout_choice( 'product_layout', 'grid', $settings['product_layout'], __( 'Grid', 'bundle-product-for-woocommerce' ), 'grid' );
-							self::layout_choice( 'product_layout', 'compact', $settings['product_layout'], __( 'Compact', 'bundle-product-for-woocommerce' ), 'compact' );
+							foreach ( bpfw_get_product_layouts() as $bpfw_slug => $bpfw_label ) {
+								self::layout_choice( 'product_layout', $bpfw_slug, $settings['product_layout'], $bpfw_label, $bpfw_slug, ! $is_pro && bpfw_layout_requires_pro( $bpfw_slug ) );
+							}
 							?>
 						</div>
 					</div>
@@ -225,35 +246,104 @@ class BPFW_Settings {
 							<span><?php esc_html_e( 'Show the "Save X (Y%)" badge next to bundle prices', 'bundle-product-for-woocommerce' ); ?></span>
 						</label>
 					</div>
+
+					<?php if ( ! $is_pro && bpfw_show_pro_placeholders() ) : ?>
+						<div class="bpfw-field bpfw-locked-preview">
+							<span class="bpfw-field__label">
+								<?php esc_html_e( 'Savings badge text', 'bundle-product-for-woocommerce' ); ?>
+								<span class="bpfw-pro-badge dashicons dashicons-lock" aria-hidden="true"></span>
+							</span>
+							<input type="text" class="regular-text" placeholder="<?php esc_attr_e( 'Save {amount} ({percent}%)', 'bundle-product-for-woocommerce' ); ?>" readonly="readonly" />
+							<p class="description">
+								<?php
+								echo wp_kses_post(
+									sprintf(
+										/* translators: 1: opening anchor tag to the upgrade page, 2: closing anchor tag. */
+										__( 'Custom badge text templates are available in %1$sPro%2$s.', 'bundle-product-for-woocommerce' ),
+										'<a href="' . esc_url( bpfw_get_upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">',
+										'</a>'
+									)
+								);
+								?>
+							</p>
+						</div>
+					<?php endif; ?>
+
+					<?php
+					/**
+					 * Fires at the bottom of the Layout card so add-ons can append
+					 * closely-related fields (e.g. Pro badge settings) without
+					 * opening a separate panel card.
+					 *
+					 * @since 1.0.0
+					 *
+					 * @param array $settings Current settings.
+					 */
+					do_action( 'bpfw_layout_card_fields', $settings );
+					?>
 				</section>
 
-				<section class="bpfw-panel-card">
-					<h2><?php esc_html_e( 'Design', 'bundle-product-for-woocommerce' ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Light-touch styling applied via CSS variables — your theme keeps control of everything else.', 'bundle-product-for-woocommerce' ); ?></p>
+				<?php if ( ! $is_pro && bpfw_show_pro_placeholders() ) : ?>
+					<section class="bpfw-panel-card bpfw-panel-card--locked">
+						<h2>
+							<?php esc_html_e( 'Design', 'bundle-product-for-woocommerce' ); ?>
+							<span class="bpfw-pro-badge dashicons dashicons-lock" aria-hidden="true"></span>
+						</h2>
+						<p class="description"><?php esc_html_e( 'Accent, savings and border colors, corner radius and Custom CSS — light-touch styling applied via CSS variables.', 'bundle-product-for-woocommerce' ); ?></p>
+						<fieldset class="bpfw-locked-preview" disabled="disabled">
+							<div class="bpfw-field">
+								<span class="bpfw-field__label"><?php esc_html_e( 'Accent color', 'bundle-product-for-woocommerce' ); ?></span>
+								<span class="bpfw-locked-preview__swatch" style="background:#2f4df5;">#2f4df5</span>
+							</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-field__label" for="bpfw_accent_color"><?php esc_html_e( 'Accent color', 'bundle-product-for-woocommerce' ); ?></label>
-						<input type="text" id="bpfw_accent_color" name="accent_color" class="bpfw-color-field" value="<?php echo esc_attr( $settings['accent_color'] ); ?>" data-default-color="#2f4df5" />
-						<p class="description"><?php esc_html_e( 'Used for quantity badges and the bundle card button.', 'bundle-product-for-woocommerce' ); ?></p>
-					</div>
+							<div class="bpfw-field">
+								<span class="bpfw-field__label"><?php esc_html_e( 'Savings color', 'bundle-product-for-woocommerce' ); ?></span>
+								<span class="bpfw-locked-preview__swatch" style="background:#00a32a;">#00a32a</span>
+							</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-field__label" for="bpfw_savings_color"><?php esc_html_e( 'Savings color', 'bundle-product-for-woocommerce' ); ?></label>
-						<input type="text" id="bpfw_savings_color" name="savings_color" class="bpfw-color-field" value="<?php echo esc_attr( $settings['savings_color'] ); ?>" data-default-color="#00a32a" />
-						<p class="description"><?php esc_html_e( 'Used for the savings badge and savings text.', 'bundle-product-for-woocommerce' ); ?></p>
-					</div>
+							<div class="bpfw-field">
+								<span class="bpfw-field__label"><?php esc_html_e( 'Border color', 'bundle-product-for-woocommerce' ); ?></span>
+								<span class="bpfw-locked-preview__swatch" style="background:#e3e5e8;color:#3c434a;">#e3e5e8</span>
+							</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-field__label" for="bpfw_border_color"><?php esc_html_e( 'Border color', 'bundle-product-for-woocommerce' ); ?></label>
-						<input type="text" id="bpfw_border_color" name="border_color" class="bpfw-color-field" value="<?php echo esc_attr( $settings['border_color'] ); ?>" data-default-color="#e3e5e8" />
-					</div>
+							<div class="bpfw-field">
+								<span class="bpfw-field__label"><?php esc_html_e( 'Corner radius (px)', 'bundle-product-for-woocommerce' ); ?></span>
+								<input type="number" value="10" readonly="readonly" class="small-text" />
+							</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-field__label" for="bpfw_border_radius"><?php esc_html_e( 'Corner radius (px)', 'bundle-product-for-woocommerce' ); ?></label>
-						<input type="number" id="bpfw_border_radius" name="border_radius" min="0" max="40" step="1" value="<?php echo esc_attr( $settings['border_radius'] ); ?>" class="small-text" />
-						<p class="description"><?php esc_html_e( '0 for square corners, up to 40 for very round. Default: 10.', 'bundle-product-for-woocommerce' ); ?></p>
-					</div>
-				</section>
+							<div class="bpfw-field">
+								<span class="bpfw-field__label"><?php esc_html_e( 'Custom CSS', 'bundle-product-for-woocommerce' ); ?></span>
+								<textarea rows="4" readonly="readonly" placeholder=".bpfw-bundled-item { box-shadow: 0 1px 4px rgba(0,0,0,.06); }"></textarea>
+							</div>
+						</fieldset>
+
+						<p class="bpfw-pro-upsell">
+							<?php
+							echo wp_kses_post(
+								sprintf(
+									/* translators: 1: opening anchor tag to the upgrade page, 2: closing anchor tag. */
+									__( 'Design settings are available in %1$sPro%2$s.', 'bundle-product-for-woocommerce' ),
+									'<a href="' . esc_url( bpfw_get_upgrade_url() ) . '" target="_blank" rel="noopener noreferrer">',
+									'</a>'
+								)
+							);
+							?>
+						</p>
+					</section>
+				<?php endif; ?>
+
+				<?php
+				/**
+				 * Fires after the core settings sections so add-ons can render
+				 * their own sections. Add-on fields are saved through the
+				 * `bpfw_save_settings` filter.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param array $settings Current settings.
+				 */
+				do_action( 'bpfw_settings_sections', $settings );
+				?>
 
 			</div>
 

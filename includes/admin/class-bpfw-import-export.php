@@ -50,16 +50,29 @@ class BPFW_Import_Export {
 				);
 			}
 
-			$data[] = array(
-				'name'         => $bundle->get_name(),
-				'slug'         => $bundle->get_slug(),
-				'status'       => $bundle->get_status(),
-				'description'  => $bundle->get_description(),
-				'short_desc'   => $bundle->get_short_description(),
-				'sku'          => $bundle->get_sku(),
-				'pricing_mode' => $bundle->get_pricing_mode(),
-				'fixed_price'  => $bundle->get_fixed_price(),
-				'items'        => $items,
+			/**
+			 * Filter a bundle's export row — add-ons can append their own
+			 * fields here and restore them via the `bpfw_import_bundle` action.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array               $row    Export data.
+			 * @param BPFW_Product_Bundle $bundle Bundle product.
+			 */
+			$data[] = apply_filters(
+				'bpfw_export_bundle_data',
+				array(
+					'name'         => $bundle->get_name(),
+					'slug'         => $bundle->get_slug(),
+					'status'       => $bundle->get_status(),
+					'description'  => $bundle->get_description(),
+					'short_desc'   => $bundle->get_short_description(),
+					'sku'          => $bundle->get_sku(),
+					'pricing_mode' => $bundle->get_pricing_mode(),
+					'fixed_price'  => $bundle->get_fixed_price(),
+					'items'        => $items,
+				),
+				$bundle
 			);
 		}
 
@@ -143,12 +156,14 @@ class BPFW_Import_Export {
 	public function import_json() {
 		$this->guard( 'bpfw_import' );
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in guard() via check_admin_referer() above.
 		if ( empty( $_FILES['bpfw_import_file']['tmp_name'] ) ) {
 			$this->redirect_with( 'error', __( 'No file uploaded.', 'bundle-product-for-woocommerce' ) );
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- tmp_name is a server-generated upload path, not user input.
 		$raw  = file_get_contents( wp_unslash( $_FILES['bpfw_import_file']['tmp_name'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$data = json_decode( $raw, true );
 
 		if ( ! is_array( $data ) || empty( $data['bundles'] ) || ! is_array( $data['bundles'] ) ) {
@@ -198,7 +213,7 @@ class BPFW_Import_Export {
 			}
 
 			$bundle->update_meta_data( '_bpfw_bundled_items', $items );
-			$bundle->update_meta_data( '_bpfw_pricing_mode', in_array( $bundle_data['pricing_mode'] ?? 'auto', array( 'auto', 'fixed' ), true ) ? $bundle_data['pricing_mode'] : 'auto' );
+			$bundle->update_meta_data( '_bpfw_pricing_mode', in_array( $bundle_data['pricing_mode'] ?? 'auto', bpfw_get_pricing_modes(), true ) ? $bundle_data['pricing_mode'] : 'auto' );
 			$bundle->update_meta_data( '_bpfw_fixed_price', wc_format_decimal( $bundle_data['fixed_price'] ?? '' ) );
 
 			foreach ( $items as $item ) {
@@ -206,6 +221,17 @@ class BPFW_Import_Export {
 			}
 
 			$bundle->save();
+
+			/**
+			 * Fires after a bundle is created from an import row, before
+			 * prices are resynced — add-ons restore their own fields here.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param BPFW_Product_Bundle $bundle      Imported bundle.
+			 * @param array               $bundle_data Raw import row.
+			 */
+			do_action( 'bpfw_import_bundle', $bundle, $bundle_data );
 
 			// Assign the bundle product type term + recalc prices.
 			wp_set_object_terms( $bundle->get_id(), 'bundle', 'product_type' );
@@ -249,25 +275,98 @@ class BPFW_Import_Export {
 			echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( rawurldecode( sanitize_text_field( wp_unslash( $_GET['bpfw_notice'] ) ) ) ) . '</p></div>';
 		}
 		// phpcs:enable
+
+		$bundle_count = count(
+			wc_get_products(
+				array(
+					'type'   => 'bundle',
+					'status' => array( 'publish', 'draft' ),
+					'limit'  => -1,
+					'return' => 'ids',
+				)
+			)
+		);
 		?>
-		<h2><?php esc_html_e( 'Export bundles', 'bundle-product-for-woocommerce' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'Download all bundles including their products, quantities and pricing settings.', 'bundle-product-for-woocommerce' ); ?></p>
-		<p>
-			<a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_json' ), 'bpfw_export' ) ); ?>"><?php esc_html_e( 'Export JSON', 'bundle-product-for-woocommerce' ); ?></a>
-			<a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_csv' ), 'bpfw_export' ) ); ?>"><?php esc_html_e( 'Export CSV', 'bundle-product-for-woocommerce' ); ?></a>
-		</p>
+		<div class="bpfw-ie-grid">
 
-		<hr />
+			<section class="bpfw-panel-card bpfw-ie-card">
+				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--export" aria-hidden="true">
+					<span class="dashicons dashicons-download"></span>
+				</div>
+				<h2><?php esc_html_e( 'Export bundles', 'bundle-product-for-woocommerce' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Download every bundle with its products, quantities and pricing settings.', 'bundle-product-for-woocommerce' ); ?></p>
 
-		<h2><?php esc_html_e( 'Import bundles', 'bundle-product-for-woocommerce' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'Upload a JSON export. Bundled products are matched by SKU first, then by product ID.', 'bundle-product-for-woocommerce' ); ?></p>
+				<ul class="bpfw-ie-list">
+					<li>
+						<?php
+						printf(
+							/* translators: %s: number of bundles. */
+							esc_html( _n( '%s bundle will be exported (published and draft).', '%s bundles will be exported (published and draft).', $bundle_count, 'bundle-product-for-woocommerce' ) ),
+							'<strong>' . esc_html( number_format_i18n( $bundle_count ) ) . '</strong>'
+						);
+						?>
+					</li>
+					<li><?php esc_html_e( 'JSON keeps everything and can be re-imported on any site.', 'bundle-product-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'CSV is a flat list for spreadsheets — export only.', 'bundle-product-for-woocommerce' ); ?></li>
+				</ul>
 
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
-			<input type="hidden" name="action" value="bpfw_import_json" />
-			<?php wp_nonce_field( 'bpfw_import' ); ?>
-			<p><input type="file" name="bpfw_import_file" accept=".json,application/json" required /></p>
-			<p><button type="submit" class="button button-primary"><?php esc_html_e( 'Import', 'bundle-product-for-woocommerce' ); ?></button></p>
-		</form>
+				<p class="bpfw-ie-actions">
+					<a class="button button-primary button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_json' ), 'bpfw_export' ) ); ?>">
+						<span class="dashicons dashicons-media-code" aria-hidden="true"></span>
+						<?php esc_html_e( 'Export JSON', 'bundle-product-for-woocommerce' ); ?>
+					</a>
+					<a class="button button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_csv' ), 'bpfw_export' ) ); ?>">
+						<span class="dashicons dashicons-media-spreadsheet" aria-hidden="true"></span>
+						<?php esc_html_e( 'Export CSV', 'bundle-product-for-woocommerce' ); ?>
+					</a>
+				</p>
+			</section>
+
+			<section class="bpfw-panel-card bpfw-ie-card">
+				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--import" aria-hidden="true">
+					<span class="dashicons dashicons-upload"></span>
+				</div>
+				<h2><?php esc_html_e( 'Import bundles', 'bundle-product-for-woocommerce' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Upload a JSON export from this plugin — new bundles are created, nothing is overwritten.', 'bundle-product-for-woocommerce' ); ?></p>
+
+				<ul class="bpfw-ie-list">
+					<li><?php esc_html_e( 'Bundled products are matched by SKU first, then by product ID.', 'bundle-product-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Products missing on this site are skipped safely.', 'bundle-product-for-woocommerce' ); ?></li>
+				</ul>
+
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
+					<input type="hidden" name="action" value="bpfw_import_json" />
+					<?php wp_nonce_field( 'bpfw_import' ); ?>
+
+					<label class="bpfw-ie-dropzone" for="bpfw_import_file">
+						<span class="dashicons dashicons-media-archive" aria-hidden="true"></span>
+						<span class="bpfw-ie-dropzone__text"><?php esc_html_e( 'Choose a .json export file', 'bundle-product-for-woocommerce' ); ?></span>
+						<span class="bpfw-ie-dropzone__filename" data-placeholder="<?php esc_attr_e( 'No file chosen', 'bundle-product-for-woocommerce' ); ?>"><?php esc_html_e( 'No file chosen', 'bundle-product-for-woocommerce' ); ?></span>
+						<input type="file" id="bpfw_import_file" name="bpfw_import_file" accept=".json,application/json" required />
+					</label>
+
+					<p class="bpfw-ie-actions">
+						<button type="submit" class="button button-primary button-hero">
+							<span class="dashicons dashicons-upload" aria-hidden="true"></span>
+							<?php esc_html_e( 'Import bundles', 'bundle-product-for-woocommerce' ); ?>
+						</button>
+					</p>
+					<script>
+					( function() {
+						var input = document.getElementById( 'bpfw_import_file' );
+						if ( ! input ) {
+							return;
+						}
+						var label = input.closest( '.bpfw-ie-dropzone' ).querySelector( '.bpfw-ie-dropzone__filename' );
+						input.addEventListener( 'change', function() {
+							label.textContent = input.files && input.files.length ? input.files[0].name : label.getAttribute( 'data-placeholder' );
+						} );
+					} )();
+					</script>
+				</form>
+			</section>
+
+		</div>
 		<?php
 	}
 }

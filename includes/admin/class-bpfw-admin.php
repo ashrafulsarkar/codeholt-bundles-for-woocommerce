@@ -50,7 +50,7 @@ class BPFW_Admin {
 		$pricing_mode = in_array( $pricing_mode, array( 'auto', 'fixed' ), true ) ? $pricing_mode : 'auto';
 		$fixed_price  = get_post_meta( $post->ID, '_bpfw_fixed_price', true );
 		$layout       = get_post_meta( $post->ID, '_bpfw_layout', true );
-		$layout       = in_array( $layout, array( 'list', 'grid', 'compact' ), true ) ? $layout : '';
+		$layout       = array_key_exists( $layout, bpfw_get_product_layouts() ) ? $layout : '';
 		?>
 		<div id="bpfw_bundled_products_data" class="panel woocommerce_options_panel hidden">
 
@@ -58,8 +58,9 @@ class BPFW_Admin {
 				<p class="form-field">
 					<label for="bpfw_pricing_mode"><?php esc_html_e( 'Pricing mode', 'bundle-product-for-woocommerce' ); ?></label>
 					<select id="bpfw_pricing_mode" name="_bpfw_pricing_mode" class="select short">
-						<option value="auto" <?php selected( $pricing_mode, 'auto' ); ?>><?php esc_html_e( 'Auto calculate (sum of products)', 'bundle-product-for-woocommerce' ); ?></option>
-						<option value="fixed" <?php selected( $pricing_mode, 'fixed' ); ?>><?php esc_html_e( 'Fixed bundle price', 'bundle-product-for-woocommerce' ); ?></option>
+						<?php foreach ( bpfw_get_pricing_mode_options() as $bpfw_mode => $bpfw_label ) : ?>
+							<option value="<?php echo esc_attr( $bpfw_mode ); ?>" <?php selected( $pricing_mode, $bpfw_mode ); ?>><?php echo esc_html( $bpfw_label ); ?></option>
+						<?php endforeach; ?>
 					</select>
 					<?php echo wc_help_tip( __( 'Auto: bundle price is the sum of bundled product prices. Fixed: you set one bundle price, savings are calculated automatically.', 'bundle-product-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
@@ -73,6 +74,18 @@ class BPFW_Admin {
 					</label>
 					<input type="text" id="bpfw_fixed_price" name="_bpfw_fixed_price" class="short wc_input_price" value="<?php echo esc_attr( wc_format_localized_price( $fixed_price ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 99', 'bundle-product-for-woocommerce' ); ?>" />
 				</p>
+
+				<?php
+				/**
+				 * Fires after the pricing fields in the bundle builder panel.
+				 * Used by add-ons to render extra pricing fields (e.g. discount %).
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param WP_Post $post Current product post.
+				 */
+				do_action( 'bpfw_pricing_fields', $post );
+				?>
 			</div>
 
 			<div class="options_group">
@@ -81,9 +94,9 @@ class BPFW_Admin {
 					<span class="bpfw-choices">
 						<?php
 						BPFW_Settings::layout_choice( '_bpfw_layout', '', $layout, __( 'Default', 'bundle-product-for-woocommerce' ), 'default' );
-						BPFW_Settings::layout_choice( '_bpfw_layout', 'list', $layout, __( 'List', 'bundle-product-for-woocommerce' ), 'list' );
-						BPFW_Settings::layout_choice( '_bpfw_layout', 'grid', $layout, __( 'Grid', 'bundle-product-for-woocommerce' ), 'grid' );
-						BPFW_Settings::layout_choice( '_bpfw_layout', 'compact', $layout, __( 'Compact', 'bundle-product-for-woocommerce' ), 'compact' );
+						foreach ( bpfw_get_product_layouts() as $bpfw_slug => $bpfw_label ) {
+							BPFW_Settings::layout_choice( '_bpfw_layout', $bpfw_slug, $layout, $bpfw_label, $bpfw_slug, ! bpfw_is_pro() && bpfw_layout_requires_pro( $bpfw_slug ) );
+						}
 						?>
 					</span>
 					<?php echo wc_help_tip( __( 'How bundled products are shown on this bundle\'s page. "Default" follows WooCommerce → Bundles → Settings.', 'bundle-product-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -101,7 +114,7 @@ class BPFW_Admin {
 						data-action="bpfw_json_search_products"
 						data-exclude="<?php echo esc_attr( $post->ID ); ?>">
 					</select>
-					<?php echo wc_help_tip( __( 'Only published simple products can be bundled in the free version.', 'bundle-product-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo wc_help_tip( apply_filters( 'bpfw_child_search_help', __( 'Only published simple products can be bundled in the free version.', 'bundle-product-for-woocommerce' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
 
 				<table class="widefat striped bpfw-items-table">
@@ -203,7 +216,7 @@ class BPFW_Admin {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified by WooCommerce before this hook fires.
 		$raw_items = isset( $_POST['bpfw_items'] ) && is_array( $_POST['bpfw_items'] ) ? wp_unslash( $_POST['bpfw_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$mode      = isset( $_POST['_bpfw_pricing_mode'] ) ? sanitize_key( $_POST['_bpfw_pricing_mode'] ) : 'auto';
-		$fixed     = isset( $_POST['_bpfw_fixed_price'] ) ? wc_format_decimal( sanitize_text_field( $_POST['_bpfw_fixed_price'] ) ) : '';
+		$fixed     = isset( $_POST['_bpfw_fixed_price'] ) ? wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['_bpfw_fixed_price'] ) ) ) : '';
 		$layout    = isset( $_POST['_bpfw_layout'] ) ? sanitize_key( $_POST['_bpfw_layout'] ) : '';
 		// phpcs:enable
 
@@ -219,7 +232,7 @@ class BPFW_Admin {
 
 			$child = wc_get_product( $id );
 
-			if ( ! $child || ! $child->is_type( 'simple' ) ) {
+			if ( ! $child || ! in_array( $child->get_type(), bpfw_get_allowed_child_types(), true ) ) {
 				continue;
 			}
 
@@ -242,9 +255,10 @@ class BPFW_Admin {
 		$items = apply_filters( 'bpfw_save_bundled_items', $items, $product );
 
 		$product->update_meta_data( '_bpfw_bundled_items', $items );
-		$product->update_meta_data( '_bpfw_pricing_mode', in_array( $mode, array( 'auto', 'fixed' ), true ) ? $mode : 'auto' );
+		$product->update_meta_data( '_bpfw_pricing_mode', in_array( $mode, bpfw_get_pricing_modes(), true ) ? $mode : 'auto' );
 		$product->update_meta_data( '_bpfw_fixed_price', $fixed );
-		$product->update_meta_data( '_bpfw_layout', in_array( $layout, array( 'list', 'grid', 'compact' ), true ) ? $layout : '' );
+		$layout_valid = array_key_exists( $layout, bpfw_get_product_layouts() ) && ( bpfw_is_pro() || ! bpfw_layout_requires_pro( $layout ) );
+		$product->update_meta_data( '_bpfw_layout', $layout_valid ? $layout : '' );
 
 		// Rebuild the lookup index used to find bundles by child product.
 		$product->delete_meta_data( '_bpfw_contains' );

@@ -35,7 +35,6 @@ final class BPFW_Plugin {
 	 * Constructor — register all modules.
 	 */
 	private function __construct() {
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'ensure_product_type_term' ), 5 );
 
 		new BPFW_Product_Type();
@@ -64,13 +63,6 @@ final class BPFW_Plugin {
 		 * @since 1.0.0
 		 */
 		do_action( 'bpfw_loaded' );
-	}
-
-	/**
-	 * Load translations.
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'bundle-product-for-woocommerce', false, dirname( BPFW_PLUGIN_BASENAME ) . '/languages' );
 	}
 
 	/**

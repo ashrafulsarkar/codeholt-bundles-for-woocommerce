@@ -1,6 +1,6 @@
 # Bundle Product for WooCommerce — Feature Documentation
 
-> **Version:** 1.1.0 · **Last updated:** 2026-07-26
+> **Version:** 1.0.0 · **Last updated:** 2026-07-26
 > This document tracks every feature of the free plugin. It is updated with each development change.
 
 **Status legend:** ✅ Done · 🔄 In progress · 📅 Planned
@@ -25,8 +25,8 @@
 | 12 | Gutenberg Block | ✅ | Bundle select, layout, image/items toggles, live preview |
 | 13 | Elementor Widget | ✅ | Bundle select, layout, color style controls |
 | 14 | Responsive Layout | ✅ | Mobile-first CSS, works on desktop/tablet/mobile |
-| 15 | Basic Analytics | ✅ | Bundles sold, revenue, savings given, top bundle (30 days) |
-| 16 | Import / Export | ✅ | JSON + CSV export, JSON import (SKU matching) |
+| 15 | Basic Analytics | ✅ | Overview toolbar, stat cards, sales table with revenue share bars |
+| 16 | Import / Export | ✅ | Redesigned two-card UI; JSON + CSV export, JSON import (SKU matching) |
 | 17 | SEO Ready | ✅ | Enriched Product structured data for bundles |
 | 18 | Accessibility | ✅ | ARIA labels, keyboard-friendly forms, semantic markup |
 | 19 | Performance | ✅ | Conditional assets, cached analytics, HPOS compatible, no frontend JS |
@@ -97,6 +97,8 @@ Three layouts are available:
 
 The default layout is set in **WooCommerce → Bundles → Settings**; each bundle can override it from the **Bundled Products** tab (visual layout picker: Default / List / Grid / Compact). Meta key: `_bpfw_layout` (empty = follow settings).
 
+The layout registry is extensible: add-ons register extra layouts via the `bpfw_product_layouts` filter (they appear automatically in the settings picker and the per-bundle picker) and draw their picker icons via `bpfw_layout_icon_cells` + `.bpfw-choice__icon--{slug}` CSS. The Pro add-on adds **Table**, **Inline** and **Custom** this way.
+
 ### 11. Shortcode
 ```
 [bundle id="123" layout="card" show_image="yes" show_items="yes"]
@@ -113,12 +115,20 @@ The default layout is set in **WooCommerce → Bundles → Settings**; each bund
 Mobile-first CSS with CSS variables (`--bpfw-*`) so themes/agencies can restyle without overriding rules.
 
 ### 15. Basic Analytics
-**WooCommerce → Bundles**: active bundles, bundles sold, bundle revenue, customer savings given, and top bundle for the last 30 days, plus a per-bundle sales table and a **Quick start** panel with shortcuts (create a bundle, open settings). HPOS-aware SQL, cached for 15 minutes.
+**WooCommerce → Bundles** (Overview tab):
+
+- A **toolbar** shows the reporting period; add-ons can inject controls into it (`bpfw_overview_actions` action — the Pro add-on adds a period selector and CSV export here) and change the period (`bpfw_overview_days` filter, default 30 days)
+- Stat cards: active bundles, bundles sold, bundle revenue, customer savings given, top bundle
+- **Sales by bundle** table with sold, revenue and a **Share of revenue** mini bar per bundle
+- **Quick start** panel with shortcuts (create a bundle, open settings)
+- HPOS-aware SQL, cached for 15 minutes
 
 ### 16. Import / Export
-**WooCommerce → Bundles → Import/Export**:
-- Export all bundles as **JSON** (portable, re-importable) or **CSV**
-- Import from JSON — bundled products matched by **SKU first**, then product ID
+**WooCommerce → Bundles → Import/Export** — redesigned as two cards:
+
+- **Export card**: bundle count, JSON (portable, re-importable) and CSV (spreadsheet) downloads
+- **Import card**: styled upload dropzone; bundled products matched by **SKU first**, then product ID; missing products skipped safely
+- Add-ons can append fields to each exported bundle (`bpfw_export_bundle_data` filter) and restore them on import (`bpfw_import_bundle` action) — the Pro add-on round-trips its discount, quantity-rule and sale-date fields this way
 
 ### 17. SEO
 Bundle structured data is enriched with the bundled products (`isRelatedTo`), on top of WooCommerce's native Product schema with correct offer pricing.
@@ -148,6 +158,17 @@ ARIA labels on bundle sections and controls, keyboard-accessible forms, semantic
 | `bpfw_save_settings` | Filter settings before they are saved |
 | `bpfw_bundle_layout` | Filter the resolved product page layout |
 | `bpfw_inline_css` | Filter the CSS variable overrides |
+| `bpfw_pricing_modes` | Register extra pricing mode slugs (Pro: `discount`) |
+| `bpfw_pricing_mode_options` | Add options to the pricing mode dropdown |
+| `bpfw_custom_mode_prices` | Compute prices for a custom pricing mode |
+| `bpfw_allowed_child_types` | Product types allowed as bundle children (Pro adds `variation`) |
+| `bpfw_child_search_help` | Builder search help tip text |
+| `bpfw_admin_tabs` | Add tabs to the Bundles admin page |
+| `bpfw_savings_badge_text` | Filter the savings badge text |
+| `bpfw_product_layouts` | Register extra product page layouts (Pro: Table / Inline / Custom) |
+| `bpfw_layout_icon_cells` | Cell counts for custom layout picker icons |
+| `bpfw_overview_days` | Overview reporting period in days (Pro: period selector) |
+| `bpfw_export_bundle_data` | Append add-on fields to each exported bundle |
 
 **Actions**
 | Hook | Purpose |
@@ -155,6 +176,12 @@ ARIA labels on bundle sections and controls, keyboard-accessible forms, semantic
 | `bpfw_loaded` | Plugin fully loaded |
 | `bpfw_before_bundled_items` / `bpfw_after_bundled_items` | Around the product page items list |
 | `bpfw_after_builder_panel` | End of the admin builder panel |
+| `bpfw_pricing_fields` | After the pricing fields in the builder panel |
+| `bpfw_layout_card_fields` | Bottom of the Layout card on the Settings tab (Pro: badge fields) |
+| `bpfw_settings_sections` | After the core sections on the Settings tab |
+| `bpfw_admin_tab_{slug}` | Render a custom Bundles page tab |
+| `bpfw_overview_actions` | Overview toolbar controls (Pro: period + CSV export) |
+| `bpfw_import_bundle` | After a bundle is created from an import row |
 | `bpfw_bundle_synced` | After a bundle resyncs with children |
 | `bpfw_order_line_item_created` | After bundle meta is added to an order item |
 
@@ -189,6 +216,7 @@ bundle-product-for-woocommerce/
 ├── bundle-product-for-woocommerce.php   Main file (constants, autoloader, HPOS declare)
 ├── uninstall.php                        Cleanup (options + transients only)
 ├── readme.txt                           WordPress.org readme
+├── README.md                            Developer readme (GitHub)
 ├── docs/FEATURES.md                     This document
 ├── includes/
 │   ├── class-bpfw-plugin.php            Loader
@@ -228,17 +256,14 @@ Mix & Match · Variable product support · Quantity rules · Dynamic/tiered disc
 
 ## Changelog
 
-### 1.1.0 — 2026-07-26
-- **New: Settings panel** — WooCommerce → Bundles → **Settings** tab with two sections:
-  - *Layout*: default product page layout (List / Grid / Compact), default bundle card layout (Card / Wide), included-products heading text, savings badge on/off
-  - *Design*: accent color, savings color, border color, corner radius — output as CSS variable overrides (`bpfw_get_inline_css()`), theme keeps control of everything else
-- **New: Product page layouts** — List, Grid and Compact; per-bundle override via a visual layout picker in the Bundled Products tab (`_bpfw_layout` meta)
-- **New: Overview tab redesign** — Active bundles stat card, color-coded stat cards, Quick start panel with shortcuts
-- **New:** "Settings" action link on the Plugins screen row
-- **Improved:** bundle builder panel design (styled table, hover states, highlighted totals row)
-- **Improved:** accent color now drives quantity badges and the bundle card button
-- Settings stored in a single `bpfw_settings` option (removed on uninstall); shortcode/card default layout follows settings
-- Verified: 21 new CLI assertions + all 31 original smoke tests passing (52/52)
-
 ### 1.0.0 — 2026-07-26
-- Initial release: all 20 free features implemented (see table above).
+Initial release (pre-release development consolidated into one version):
+
+- All 22 free features in the table above, including:
+  - Bundle product type, builder, auto/fixed pricing, stock sync, cart/order support
+  - Product page layouts (List / Grid / Compact) with per-bundle override — extensible registry for add-ons
+  - Settings panel (layout defaults + design options via CSS variables)
+  - **Overview tab** with toolbar (period text + add-on controls area), color-coded stat cards, sales table with revenue-share bars, Quick start panel
+  - **Import/Export tab** with a two-card design (export summary + upload dropzone)
+  - Shortcode, Gutenberg block, Elementor widget, SEO structured data
+- Full add-on/extension hook surface (see Developer Hooks) consumed by the Pro add-on: custom pricing modes, extra child product types, custom layouts, admin tabs, settings sections, overview period/actions, import/export data round-trip.

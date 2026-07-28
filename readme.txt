@@ -2,13 +2,13 @@
 Contributors: ashrafulsarkar
 Tags: woocommerce, product bundle, bundle, upsell, cross-sell
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Create product bundles for WooCommerce — fixed bundle pricing, automatic savings calculation, stock sync, Gutenberg block, Elementor widget and analytics.
+Create product bundles for WooCommerce with fixed pricing, automatic savings, stock sync, Gutenberg block, Elementor widget and analytics.
 
 == Description ==
 
@@ -72,13 +72,6 @@ Yes — bundle contents and savings display in both classic and block-based cart
 Yes. Copy any file from `templates/` into `yourtheme/bundle-product-for-woocommerce/` and edit it.
 
 == Changelog ==
-
-= 1.1.0 =
-* New: Settings tab (WooCommerce → Bundles → Settings) — default product page layout, bundle card layout, included-products heading and savings badge toggle.
-* New: Product page layouts — List, Grid and Compact, with a per-bundle override in the product editor.
-* New: Design settings — accent, savings and border colors plus corner radius, applied via CSS variables.
-* New: Overview tab redesign — Active bundles stat and a Quick start panel.
-* Improved: bundle builder panel design.
 
 = 1.0.0 =
 * Initial release.

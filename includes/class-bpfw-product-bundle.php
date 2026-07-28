@@ -48,7 +48,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 */
 	public function get_pricing_mode() {
 		$mode = $this->get_meta( '_bpfw_pricing_mode', true );
-		return in_array( $mode, array( 'auto', 'fixed' ), true ) ? $mode : 'auto';
+		return in_array( $mode, bpfw_get_pricing_modes(), true ) ? $mode : 'auto';
 	}
 
 	/**
@@ -71,11 +71,12 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 		}
 
 		$resolved = array();
+		$types    = bpfw_get_allowed_child_types();
 
 		foreach ( $this->get_bundled_items() as $item ) {
 			$product = wc_get_product( absint( $item['id'] ) );
 
-			if ( ! $product || 'publish' !== $product->get_status() || ! $product->is_type( 'simple' ) ) {
+			if ( ! $product || 'publish' !== $product->get_status() || ! in_array( $product->get_type(), $types, true ) ) {
 				continue;
 			}
 
@@ -206,7 +207,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	public function add_to_cart_text() {
 		$text = $this->is_purchasable() && $this->is_in_stock()
 			? __( 'Add bundle to cart', 'bundle-product-for-woocommerce' )
-			: __( 'Read more', 'woocommerce' );
+			: __( 'Read more', 'bundle-product-for-woocommerce' );
 
 		/** This filter is documented in WooCommerce. */
 		return apply_filters( 'woocommerce_product_add_to_cart_text', $text, $this );

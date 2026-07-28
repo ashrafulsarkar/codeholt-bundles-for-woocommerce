@@ -158,6 +158,61 @@
 	flex-wrap: wrap;
 }
 
+/* Table — spreadsheet-style rows: image | name | price | qty columns. */
+.bpfw-layout-table .bpfw-bundled-items__list {
+	display: block;
+	border: 1px solid var( --bpfw-border );
+	border-radius: var( --bpfw-radius );
+	overflow: hidden;
+}
+
+.bpfw-layout-table .bpfw-bundled-item {
+	display: grid;
+	grid-template-columns: 48px minmax( 0, 1fr ) auto auto;
+	align-items: center;
+	column-gap: var( --bpfw-gap );
+	border: 0;
+	border-bottom: 1px solid var( --bpfw-border );
+	border-radius: 0;
+	padding: 8px 14px;
+}
+
+.bpfw-layout-table .bpfw-bundled-item:last-child {
+	border-bottom: 0;
+}
+
+.bpfw-layout-table .bpfw-bundled-item:nth-child( even ) {
+	background: var( --bpfw-bg-soft );
+}
+
+.bpfw-layout-table .bpfw-bundled-item__info {
+	display: contents;
+}
+
+.bpfw-layout-table .bpfw-bundled-item__image {
+	flex-basis: auto;
+}
+
+.bpfw-layout-table .bpfw-bundled-item__image img {
+	width: 40px;
+	height: 40px;
+}
+
+.bpfw-layout-table .bpfw-bundled-item__price {
+	text-align: right;
+	white-space: nowrap;
+}
+
+@media ( max-width: 480px ) {
+	.bpfw-layout-table .bpfw-bundled-item {
+		grid-template-columns: 40px minmax( 0, 1fr ) auto;
+	}
+
+	.bpfw-layout-table .bpfw-bundled-item__price {
+		display: none;
+	}
+}
+
 /* ------------------------------------------------------------------ */
 /* Totals / savings summary                                            */
 /* ------------------------------------------------------------------ */

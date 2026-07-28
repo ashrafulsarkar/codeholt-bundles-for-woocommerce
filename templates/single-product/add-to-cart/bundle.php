@@ -6,11 +6,11 @@
  * yourtheme/bundle-product-for-woocommerce/single-product/add-to-cart/bundle.php
  *
  * @package BPFW\Templates
- * @version 1.1.0
+ * @version 1.0.0
  *
  * @var BPFW_Product_Bundle $bundle         Bundle product.
  * @var array               $pricing        Pricing summary.
- * @var string              $layout         Layout: list | grid | compact.
+ * @var string              $layout         Layout slug (see bpfw_get_product_layouts()).
  * @var string              $included_title Heading above the items list.
  */
 
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 
 $bpfw_items  = $bundle->get_bundled_products();
 $bpfw_max    = $bundle->get_max_purchasable();
-$bpfw_layout = isset( $layout ) && in_array( $layout, array( 'list', 'grid', 'compact' ), true ) ? $layout : bpfw_get_bundle_layout( $bundle );
+$bpfw_layout = isset( $layout ) && array_key_exists( $layout, bpfw_get_product_layouts() ) ? $layout : bpfw_get_bundle_layout( $bundle );
 $bpfw_title  = isset( $included_title ) && '' !== trim( (string) $included_title ) ? $included_title : __( "What's included", 'bundle-product-for-woocommerce' );
 
 if ( ! $bpfw_items ) {
@@ -107,7 +107,7 @@ if ( $bundle->is_in_stock() ) : ?>
 			array(
 				'min_value'   => apply_filters( 'woocommerce_quantity_input_min', $bundle->get_min_purchase_quantity(), $bundle ),
 				'max_value'   => apply_filters( 'woocommerce_quantity_input_max', null !== $bpfw_max ? $bpfw_max : $bundle->get_max_purchase_quantity(), $bundle ),
-				'input_value' => isset( $_POST['quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['quantity'] ) ) : $bundle->get_min_purchase_quantity(), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				'input_value' => isset( $_POST['quantity'] ) ? wc_stock_amount( sanitize_text_field( wp_unslash( $_POST['quantity'] ) ) ) : $bundle->get_min_purchase_quantity(), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Add-to-cart form submission is handled and verified by WooCommerce.
 			)
 		);
 

@@ -55,6 +55,159 @@ function bpfw_get_bundle_choices() {
 }
 
 /**
+ * Registered pricing mode slugs.
+ *
+ * @return string[]
+ */
+function bpfw_get_pricing_modes() {
+	/**
+	 * Filter the registered pricing mode slugs.
+	 * Custom modes must also hook `bpfw_custom_mode_prices` to compute prices.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string[] $modes Mode slugs.
+	 */
+	return apply_filters( 'bpfw_pricing_modes', array( 'auto', 'fixed' ) );
+}
+
+/**
+ * Pricing mode options for the admin select (slug => label).
+ *
+ * @return array
+ */
+function bpfw_get_pricing_mode_options() {
+	/**
+	 * Filter the pricing mode dropdown options.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $options slug => label.
+	 */
+	return apply_filters(
+		'bpfw_pricing_mode_options',
+		array(
+			'auto'  => __( 'Auto calculate (sum of products)', 'bundle-product-for-woocommerce' ),
+			'fixed' => __( 'Fixed bundle price', 'bundle-product-for-woocommerce' ),
+		)
+	);
+}
+
+/**
+ * Product types allowed as bundled children.
+ *
+ * @return string[]
+ */
+function bpfw_get_allowed_child_types() {
+	/**
+	 * Filter which product types can be bundled.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string[] $types Allowed product types.
+	 */
+	return apply_filters( 'bpfw_allowed_child_types', array( 'simple' ) );
+}
+
+/**
+ * Whether the Pro add-on is installed and licensed.
+ * Defers to the Pro add-on's own `bpfwp_is_licensed()` when present.
+ *
+ * @return bool
+ */
+function bpfw_is_pro() {
+	return function_exists( 'bpfwp_is_licensed' ) && bpfwp_is_licensed();
+}
+
+/**
+ * Whether the locked/disabled Pro-preview UI should render in the free
+ * plugin (Design card, Savings badge text field, Inline/Custom layout
+ * choices). Parked off by default — see BPFW_SHOW_PRO_PLACEHOLDERS.
+ *
+ * @return bool
+ */
+function bpfw_show_pro_placeholders() {
+	return apply_filters( 'bpfw_show_pro_placeholders', BPFW_SHOW_PRO_PLACEHOLDERS );
+}
+
+/**
+ * Registered product page layouts (slug => label).
+ * Table and Compact are free. List, Grid, Inline and Custom are Pro-only;
+ * they're only listed here (as locked choices) when Pro is active or the
+ * locked-preview placeholders are switched on — see
+ * bpfw_show_pro_placeholders(). BPFWP_Layouts takes over their actual
+ * rendering when licensed.
+ *
+ * @return array
+ */
+function bpfw_get_product_layouts() {
+	$layouts = array(
+		'table'   => __( 'Table', 'bundle-product-for-woocommerce' ),
+		'compact' => __( 'Compact', 'bundle-product-for-woocommerce' ),
+	);
+
+	if ( bpfw_is_pro() || bpfw_show_pro_placeholders() ) {
+		$layouts['list']   = __( 'List', 'bundle-product-for-woocommerce' );
+		$layouts['grid']   = __( 'Grid', 'bundle-product-for-woocommerce' );
+		$layouts['inline'] = __( 'Inline', 'bundle-product-for-woocommerce' );
+		$layouts['custom'] = __( 'Custom', 'bundle-product-for-woocommerce' );
+	}
+
+	/**
+	 * Filter the registered product page layouts.
+	 * Custom layouts render the standard bundled-items markup with a
+	 * `bpfw-layout-{slug}` wrapper class — style them via CSS.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $layouts slug => label.
+	 */
+	return apply_filters( 'bpfw_product_layouts', $layouts );
+}
+
+/**
+ * Product page layout slugs available without Pro.
+ *
+ * @return string[]
+ */
+function bpfw_get_free_product_layouts() {
+	/**
+	 * Filter which product page layout slugs are free (not Pro-gated).
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string[] $free_layouts Free layout slugs.
+	 */
+	return apply_filters( 'bpfw_free_product_layouts', array( 'table', 'compact' ) );
+}
+
+/**
+ * Whether a given product page layout slug requires Pro.
+ *
+ * @param string $layout Layout slug.
+ * @return bool
+ */
+function bpfw_layout_requires_pro( $layout ) {
+	return ! in_array( $layout, bpfw_get_free_product_layouts(), true );
+}
+
+/**
+ * URL to point free-plugin upsell links at.
+ *
+ * @return string
+ */
+function bpfw_get_upgrade_url() {
+	/**
+	 * Filter the upgrade-to-Pro URL used by upsell links.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url Upgrade URL.
+	 */
+	return apply_filters( 'bpfw_upgrade_url', function_exists( 'bpfwp_license_page_url' ) ? bpfwp_license_page_url() : admin_url( 'admin.php?page=bpfw-bundles' ) );
+}
+
+/**
  * Default plugin settings.
  *
  * @return array
@@ -63,7 +216,7 @@ function bpfw_get_default_settings() {
 	/**
 	 * Filter the default plugin settings.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $defaults Default settings.
 	 */
@@ -74,10 +227,6 @@ function bpfw_get_default_settings() {
 			'card_layout'        => 'card',
 			'included_title'     => __( "What's included", 'bundle-product-for-woocommerce' ),
 			'show_savings_badge' => 'yes',
-			'accent_color'       => '#2f4df5',
-			'savings_color'      => '#00a32a',
-			'border_color'       => '#e3e5e8',
-			'border_radius'      => 10,
 		)
 	);
 }
@@ -93,7 +242,7 @@ function bpfw_get_settings() {
 	/**
 	 * Filter the resolved plugin settings.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param array $settings Settings merged with defaults.
 	 */
@@ -120,10 +269,10 @@ function bpfw_get_setting( $key, $fallback = null ) {
  * (`_bpfw_layout` meta) falling back to the global setting.
  *
  * @param BPFW_Product_Bundle $bundle Bundle product.
- * @return string 'list' | 'grid' | 'compact'
+ * @return string Layout slug (see bpfw_get_product_layouts()).
  */
 function bpfw_get_bundle_layout( $bundle ) {
-	$allowed = array( 'list', 'grid', 'compact' );
+	$allowed = array_keys( bpfw_get_product_layouts() );
 	$layout  = $bundle->get_meta( '_bpfw_layout' );
 
 	if ( ! in_array( $layout, $allowed, true ) ) {
@@ -134,10 +283,15 @@ function bpfw_get_bundle_layout( $bundle ) {
 		$layout = 'list';
 	}
 
+	// A layout saved while Pro was active must fall back gracefully once Pro is gone.
+	if ( ! bpfw_is_pro() && bpfw_layout_requires_pro( $layout ) ) {
+		$layout = 'compact';
+	}
+
 	/**
 	 * Filter the resolved bundle page layout.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param string              $layout Layout slug.
 	 * @param BPFW_Product_Bundle $bundle Bundle product.
@@ -146,36 +300,26 @@ function bpfw_get_bundle_layout( $bundle ) {
 }
 
 /**
- * CSS variable overrides generated from the design settings.
- * Attached inline to the frontend stylesheet.
+ * CSS variable overrides, attached inline to the frontend stylesheet.
+ * The free plugin ships no design settings of its own — colors and corner
+ * radius are a Pro feature (see BPFWP_Design) that hooks the
+ * `bpfw_inline_css` filter below. Free sites render with the plugin's
+ * built-in CSS defaults (see :root in frontend.css).
  *
  * @return string
  */
 function bpfw_get_inline_css() {
 	$settings = bpfw_get_settings();
-	$defaults = bpfw_get_default_settings();
-
-	$vars = array(
-		'--bpfw-accent'  => sanitize_hex_color( $settings['accent_color'] ) ? sanitize_hex_color( $settings['accent_color'] ) : $defaults['accent_color'],
-		'--bpfw-savings' => sanitize_hex_color( $settings['savings_color'] ) ? sanitize_hex_color( $settings['savings_color'] ) : $defaults['savings_color'],
-		'--bpfw-border'  => sanitize_hex_color( $settings['border_color'] ) ? sanitize_hex_color( $settings['border_color'] ) : $defaults['border_color'],
-		'--bpfw-radius'  => absint( $settings['border_radius'] ) . 'px',
-	);
-
-	$css = '';
-	foreach ( $vars as $name => $value ) {
-		$css .= $name . ':' . $value . ';';
-	}
 
 	/**
-	 * Filter the inline CSS generated from the design settings.
+	 * Filter the inline CSS attached to the frontend stylesheet.
 	 *
-	 * @since 1.1.0
+	 * @since 1.0.0
 	 *
 	 * @param string $css      Inline CSS.
 	 * @param array  $settings Plugin settings.
 	 */
-	return apply_filters( 'bpfw_inline_css', ':root{' . $css . '}', $settings );
+	return apply_filters( 'bpfw_inline_css', '', $settings );
 }
 
 /**
