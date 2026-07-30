@@ -1,4 +1,4 @@
-/* Bundle Product for WooCommerce — admin styles. */
+/* Codeholt Bundles for WooCommerce — admin styles. */
 
 /* ------------------------------------------------------------------ */
 /* Product data panel — bundle builder                                 */
@@ -274,103 +274,6 @@
 	border-color: #2271b1;
 }
 
-/* Locked (Pro-only) layout choice. */
-
-.bpfw-choice--locked .bpfw-choice__box {
-	cursor: default;
-	opacity: 0.55;
-}
-
-.bpfw-choice--locked:hover .bpfw-choice__box {
-	border-color: #dcdcde;
-}
-
-.bpfw-choice__lock {
-	position: absolute;
-	top: -6px;
-	right: -6px;
-	width: 18px;
-	height: 18px;
-	font-size: 14px;
-	line-height: 18px;
-	color: #fff;
-	background: #dba617;
-	border-radius: 50%;
-	text-align: center;
-}
-
-.bpfw-choice__upsell {
-	display: block;
-	font-size: 11px;
-	color: #646970;
-	text-align: center;
-	margin-top: 2px;
-	max-width: 90px;
-}
-
-.bpfw-choice__upsell a {
-	font-weight: 600;
-	text-decoration: none;
-}
-
-/* Locked (Pro-only) settings card. */
-
-.bpfw-panel-card--locked {
-	position: relative;
-}
-
-.bpfw-pro-badge {
-	color: #dba617;
-	font-size: 16px;
-	vertical-align: middle;
-	margin-left: 4px;
-}
-
-.bpfw-pro-upsell {
-	background: #fcf9e8;
-	border: 1px solid #f0e4a8;
-	border-radius: 6px;
-	padding: 10px 12px;
-	margin: 12px 0 0;
-}
-
-.bpfw-pro-upsell a {
-	font-weight: 600;
-}
-
-/* Read-only preview of Pro-only fields (locked cards / locked fields). */
-
-fieldset.bpfw-locked-preview {
-	border: 0;
-	margin: 0;
-	padding: 0;
-	opacity: 0.6;
-}
-
-.bpfw-locked-preview input,
-.bpfw-locked-preview textarea {
-	cursor: not-allowed;
-	background: #f6f7f7;
-}
-
-.bpfw-locked-preview__swatch {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 90px;
-	height: 30px;
-	border-radius: 4px;
-	font-size: 12px;
-	font-family: Consolas, Monaco, monospace;
-	color: #fff;
-	text-shadow: 0 1px 1px rgba( 0, 0, 0, 0.25 );
-}
-
-div.bpfw-field.bpfw-locked-preview input {
-	cursor: not-allowed;
-	background: #f6f7f7;
-}
-
 /* ------------------------------------------------------------------ */
 /* Bundles admin page (Overview / Settings / Import-Export)            */
 /* ------------------------------------------------------------------ */
@@ -524,37 +427,28 @@ div.bpfw-field.bpfw-locked-preview input {
 
 /* Settings tab */
 
+/* Flexbox (not CSS grid) so cards share the row and shrink together
+   down to 320px before wrapping — 1 card in the free plugin, more
+   once add-ons register extra cards — with no empty trailing column
+   and no card left wrapping alone onto its own row. */
 .bpfw-settings-grid {
-	display: grid;
-	align-items: start;
+	display: flex;
+	align-items: flex-start;
+	flex-wrap: wrap;
 	gap: 16px;
 	max-width: 1400px;
 	margin-top: 20px;
 }
 
-/* Every card is the same fixed width no matter how many cards show —
-   1, 2 or 3 up, a card is always exactly as wide as it is on its own. */
-
-/* Free plugin: fixed 2-column grid (Layout, Design). */
-.bpfw-settings-grid--free {
-	grid-template-columns: repeat( 2, 460px );
+.bpfw-settings-grid > .bpfw-panel-card {
+	flex: 1 1 320px;
+	max-width: 460px;
 }
 
-/* Pro plugin: fixed 3-column grid (Layout, Design, Custom layout). */
-.bpfw-settings-grid--pro {
-	grid-template-columns: repeat( 3, 460px );
-}
-
-/* Free plugin with placeholders switched off: only the Layout card. */
-.bpfw-settings-grid--single {
-	grid-template-columns: 460px;
-}
-
-@media ( max-width: 960px ) {
-	.bpfw-settings-grid--free,
-	.bpfw-settings-grid--pro,
-	.bpfw-settings-grid--single {
-		grid-template-columns: 1fr;
+@media ( max-width: 640px ) {
+	.bpfw-settings-grid > .bpfw-panel-card {
+		flex-basis: 100%;
+		max-width: 100%;
 	}
 }
 

@@ -87,8 +87,8 @@ function bpfw_get_pricing_mode_options() {
 	return apply_filters(
 		'bpfw_pricing_mode_options',
 		array(
-			'auto'  => __( 'Auto calculate (sum of products)', 'bundle-product-for-woocommerce' ),
-			'fixed' => __( 'Fixed bundle price', 'bundle-product-for-woocommerce' ),
+			'auto'  => __( 'Auto calculate (sum of products)', 'codeholt-bundles-for-woocommerce' ),
+			'fixed' => __( 'Fixed bundle price', 'codeholt-bundles-for-woocommerce' ),
 		)
 	);
 }
@@ -120,38 +120,18 @@ function bpfw_is_pro() {
 }
 
 /**
- * Whether the locked/disabled Pro-preview UI should render in the free
- * plugin (Design card, Savings badge text field, Inline/Custom layout
- * choices). Parked off by default — see BPFW_SHOW_PRO_PLACEHOLDERS.
- *
- * @return bool
- */
-function bpfw_show_pro_placeholders() {
-	return apply_filters( 'bpfw_show_pro_placeholders', BPFW_SHOW_PRO_PLACEHOLDERS );
-}
-
-/**
  * Registered product page layouts (slug => label).
- * Table and Compact are free. List, Grid, Inline and Custom are Pro-only;
- * they're only listed here (as locked choices) when Pro is active or the
- * locked-preview placeholders are switched on — see
- * bpfw_show_pro_placeholders(). BPFWP_Layouts takes over their actual
- * rendering when licensed.
+ * Table and Compact ship in the free plugin. Add-ons can register more
+ * layouts (e.g. List, Grid, Inline, Custom) via the `bpfw_product_layouts`
+ * filter — BPFWP_Layouts does this and takes over their rendering.
  *
  * @return array
  */
 function bpfw_get_product_layouts() {
 	$layouts = array(
-		'table'   => __( 'Table', 'bundle-product-for-woocommerce' ),
-		'compact' => __( 'Compact', 'bundle-product-for-woocommerce' ),
+		'table'   => __( 'Table', 'codeholt-bundles-for-woocommerce' ),
+		'compact' => __( 'Compact', 'codeholt-bundles-for-woocommerce' ),
 	);
-
-	if ( bpfw_is_pro() || bpfw_show_pro_placeholders() ) {
-		$layouts['list']   = __( 'List', 'bundle-product-for-woocommerce' );
-		$layouts['grid']   = __( 'Grid', 'bundle-product-for-woocommerce' );
-		$layouts['inline'] = __( 'Inline', 'bundle-product-for-woocommerce' );
-		$layouts['custom'] = __( 'Custom', 'bundle-product-for-woocommerce' );
-	}
 
 	/**
 	 * Filter the registered product page layouts.
@@ -225,7 +205,7 @@ function bpfw_get_default_settings() {
 		array(
 			'product_layout'     => 'list',
 			'card_layout'        => 'card',
-			'included_title'     => __( "What's included", 'bundle-product-for-woocommerce' ),
+			'included_title'     => __( "What's included", 'codeholt-bundles-for-woocommerce' ),
 			'show_savings_badge' => 'yes',
 		)
 	);
@@ -358,7 +338,7 @@ function bpfw_get_bundle_pricing( $bundle ) {
 
 /**
  * Load a plugin template, allowing theme overrides in
- * yourtheme/bundle-product-for-woocommerce/{template}.
+ * yourtheme/codeholt-bundles-for-woocommerce/{template}.
  *
  * @param string $template Template file relative to templates dir.
  * @param array  $args     Variables passed to the template.
@@ -367,7 +347,7 @@ function bpfw_get_template( $template, $args = array() ) {
 	wc_get_template(
 		$template,
 		$args,
-		'bundle-product-for-woocommerce/',
+		'codeholt-bundles-for-woocommerce/',
 		BPFW_PLUGIN_DIR . 'templates/'
 	);
 }
@@ -435,7 +415,7 @@ function bpfw_get_items_summary( $bundle, $include_hidden = true ) {
 			continue;
 		}
 		/* translators: 1: quantity, 2: product name. */
-		$parts[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'bundle-product-for-woocommerce' ), $item['qty'], $item['product']->get_name() );
+		$parts[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'codeholt-bundles-for-woocommerce' ), $item['qty'], $item['product']->get_name() );
 	}
 
 	return implode( ', ', $parts );

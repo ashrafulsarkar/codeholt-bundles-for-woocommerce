@@ -1,11 +1,11 @@
-# Bundle Product for WooCommerce
+# Codeholt Bundles for WooCommerce
 
 Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, automatic savings calculation, stock sync, a Gutenberg block, an Elementor widget and built-in analytics.
 
 - **Version:** 1.0.0
 - **Requires:** WordPress 6.2+, WooCommerce 8.0+, PHP 7.4+
 - **License:** GPL-2.0-or-later
-- **Author:** [Ashraful Sarkar](https://ashrafulsarkar.com/)
+- **Author:** [Ashraful Sarkar Naiem](https://profiles.wordpress.org/ashrafulsarkar/) · [Codeholt](https://codeholt.com/)
 
 ## What it does
 
@@ -17,8 +17,8 @@ Adds a native **Bundle** product type to WooCommerce. Combine multiple products 
 - **Pricing modes** — Auto calculate (sum of products) or Fixed bundle price with automatic "Save $X (Y%)" savings
 - **Stock management** — validates and reduces bundled product stock, prevents overselling, restores on cancel/refund, live child sync
 - **Cart & orders** — one cart line with contents and savings shown in classic and block cart/checkout, orders, emails and admin
-- **Product page layouts** — List, Grid or Compact; global default plus a per-bundle override (extensible registry for add-ons)
-- **Settings panel** — WooCommerce → Bundles → Settings: layout defaults, included-products heading, savings badge toggle, and design options (accent/savings/border colors + corner radius via CSS variables)
+- **Product page layouts** — Table or Compact; global default plus a per-bundle override (extensible registry for add-ons — Pro adds List, Grid, Inline and Custom)
+- **Settings panel** — WooCommerce → Bundles → Settings: layout defaults, included-products heading, savings badge toggle
 - **Overview analytics** — bundles sold, revenue, customer savings, top bundle, per-bundle sales table with revenue-share bars (HPOS-aware, cached)
 - **Import / Export** — JSON (re-importable, SKU matching) and CSV exports with a clean two-card UI
 - **Display anywhere** — `[bundle id="123"]` shortcode, Product Bundle Gutenberg block, Elementor widget
@@ -42,8 +42,4 @@ The plugin is built to be extended — the Pro add-on uses only public hooks:
 - Admin page: `bpfw_admin_tabs`, `bpfw_admin_tab_{slug}`, `bpfw_settings_sections`, `bpfw_save_settings`, `bpfw_overview_days`, `bpfw_overview_actions`
 - Data: `bpfw_export_bundle_data`, `bpfw_import_bundle`, `bpfw_save_bundled_items`, `bpfw_bundle_pricing`
 
-Templates can be overridden by copying files from `templates/` to `yourtheme/bundle-product-for-woocommerce/`.
-
-## Pro add-on
-
-[Bundle Product for WooCommerce Pro](https://ashrafulsarkar.com/plugins/bundle-product-for-woocommerce-pro/) adds percentage discounts with scheduling, variation bundling, quantity rules, custom badges, Table/Inline/Custom layouts, a custom CSS panel and advanced reports.
+Templates can be overridden by copying files from `templates/` to `yourtheme/codeholt-bundles-for-woocommerce/`.

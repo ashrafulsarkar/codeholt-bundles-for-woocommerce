@@ -3,7 +3,7 @@
  * Bundle product add-to-cart area.
  *
  * Override this template by copying it to
- * yourtheme/bundle-product-for-woocommerce/single-product/add-to-cart/bundle.php
+ * yourtheme/codeholt-bundles-for-woocommerce/single-product/add-to-cart/bundle.php
  *
  * @package BPFW\Templates
  * @version 1.0.0
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 $bpfw_items  = $bundle->get_bundled_products();
 $bpfw_max    = $bundle->get_max_purchasable();
 $bpfw_layout = isset( $layout ) && array_key_exists( $layout, bpfw_get_product_layouts() ) ? $layout : bpfw_get_bundle_layout( $bundle );
-$bpfw_title  = isset( $included_title ) && '' !== trim( (string) $included_title ) ? $included_title : __( "What's included", 'bundle-product-for-woocommerce' );
+$bpfw_title  = isset( $included_title ) && '' !== trim( (string) $included_title ) ? $included_title : __( "What's included", 'codeholt-bundles-for-woocommerce' );
 
 if ( ! $bpfw_items ) {
 	return;
@@ -35,7 +35,7 @@ if ( ! $bpfw_items ) {
 do_action( 'bpfw_before_bundled_items', $bundle );
 ?>
 
-<div class="bpfw-bundled-items bpfw-layout-<?php echo esc_attr( $bpfw_layout ); ?>" aria-label="<?php esc_attr_e( 'Products included in this bundle', 'bundle-product-for-woocommerce' ); ?>">
+<div class="bpfw-bundled-items bpfw-layout-<?php echo esc_attr( $bpfw_layout ); ?>" aria-label="<?php esc_attr_e( 'Products included in this bundle', 'codeholt-bundles-for-woocommerce' ); ?>">
 	<h3 class="bpfw-bundled-items__title"><?php echo esc_html( $bpfw_title ); ?></h3>
 
 	<ul class="bpfw-bundled-items__list">
@@ -67,7 +67,7 @@ do_action( 'bpfw_before_bundled_items', $bundle );
 
 	<?php if ( $pricing['savings'] > 0 ) : ?>
 		<div class="bpfw-summary">
-			<span class="bpfw-summary__label"><?php esc_html_e( 'Total bundle price:', 'bundle-product-for-woocommerce' ); ?></span>
+			<span class="bpfw-summary__label"><?php esc_html_e( 'Total bundle price:', 'codeholt-bundles-for-woocommerce' ); ?></span>
 			<span class="bpfw-summary__prices">
 				<del><?php echo wp_kses_post( wc_price( $pricing['regular'] ) ); ?></del>
 				<ins><?php echo wp_kses_post( wc_price( $pricing['price'] ) ); ?></ins>

@@ -1,5 +1,5 @@
-=== Bundle Product for WooCommerce ===
-Contributors: ashrafulsarkar
+=== Codeholt Bundles for WooCommerce ===
+Contributors: ashrafulsarkar, codeholt
 Tags: woocommerce, product bundle, bundle, upsell, cross-sell
 Requires at least: 6.2
 Tested up to: 7.0
@@ -12,7 +12,7 @@ Create product bundles for WooCommerce with fixed pricing, automatic savings, st
 
 == Description ==
 
-**Bundle Product for WooCommerce** adds a lightweight, native "Bundle" product type to your store. Combine multiple products into one bundle with a fixed discounted price (or auto-calculated price), show customers exactly how much they save, and sell more per order.
+**Codeholt Bundles for WooCommerce** adds a lightweight, native "Bundle" product type to your store. Combine multiple products into one bundle with a fixed discounted price (or auto-calculated price), show customers exactly how much they save, and sell more per order.
 
 = Why bundles? =
 
@@ -32,8 +32,7 @@ Create product bundles for WooCommerce with fixed pricing, automatic savings, st
 * **One-click add to cart** — the whole bundle in a single cart line
 * **Cart display** — bundle contents and savings shown in cart and checkout (classic + blocks)
 * **Order support** — bundled products listed in orders, emails and admin
-* **Product page layouts** — List, Grid or Compact, selectable globally or per bundle
-* **Design settings** — accent/savings/border colors and corner radius from the admin panel
+* **Product page layouts** — Table or Compact, selectable globally or per bundle
 * **Shortcode** — `[bundle id="123"]`
 * **Gutenberg block** — select bundle, layout and display options
 * **Elementor widget** — with style controls
@@ -69,7 +68,7 @@ Yes — bundle contents and savings display in both classic and block-based cart
 
 = Can I override the templates? =
 
-Yes. Copy any file from `templates/` into `yourtheme/bundle-product-for-woocommerce/` and edit it.
+Yes. Copy any file from `templates/` into `yourtheme/codeholt-bundles-for-woocommerce/` and edit it.
 
 == Changelog ==
 

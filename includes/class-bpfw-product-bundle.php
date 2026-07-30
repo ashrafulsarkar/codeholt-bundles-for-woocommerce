@@ -150,7 +150,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 				return new WP_Error(
 					'bpfw_out_of_stock',
 					/* translators: %s: product name. */
-					sprintf( __( '"%s" is out of stock and cannot be bundled right now.', 'bundle-product-for-woocommerce' ), $product->get_name() )
+					sprintf( __( '"%s" is out of stock and cannot be bundled right now.', 'codeholt-bundles-for-woocommerce' ), $product->get_name() )
 				);
 			}
 
@@ -159,7 +159,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 					'bpfw_not_enough_stock',
 					sprintf(
 						/* translators: 1: product name, 2: available quantity. */
-						__( 'Not enough stock for "%1$s" — only %2$s available.', 'bundle-product-for-woocommerce' ),
+						__( 'Not enough stock for "%1$s" — only %2$s available.', 'codeholt-bundles-for-woocommerce' ),
 						$product->get_name(),
 						wc_stock_amount( $product->get_stock_quantity() )
 					)
@@ -206,8 +206,8 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 */
 	public function add_to_cart_text() {
 		$text = $this->is_purchasable() && $this->is_in_stock()
-			? __( 'Add bundle to cart', 'bundle-product-for-woocommerce' )
-			: __( 'Read more', 'bundle-product-for-woocommerce' );
+			? __( 'Add bundle to cart', 'codeholt-bundles-for-woocommerce' )
+			: __( 'Read more', 'codeholt-bundles-for-woocommerce' );
 
 		/** This filter is documented in WooCommerce. */
 		return apply_filters( 'woocommerce_product_add_to_cart_text', $text, $this ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core WooCommerce filter, must keep its original name.

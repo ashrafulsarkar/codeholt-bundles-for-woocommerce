@@ -58,7 +58,7 @@ final class BPFW_Plugin {
 		add_action( 'elementor/widgets/register', array( $this, 'register_elementor_widget' ) );
 
 		/**
-		 * Fires after Bundle Product for WooCommerce is fully loaded.
+		 * Fires after Codeholt Bundles for WooCommerce is fully loaded.
 		 *
 		 * @since 1.0.0
 		 */

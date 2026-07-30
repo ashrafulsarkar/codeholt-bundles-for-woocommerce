@@ -86,7 +86,7 @@ class BPFW_Import_Export {
 	 */
 	protected function guard( $action ) {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You are not allowed to do this.', 'bundle-product-for-woocommerce' ) );
+			wp_die( esc_html__( 'You are not allowed to do this.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 		check_admin_referer( $action );
 	}
@@ -98,7 +98,7 @@ class BPFW_Import_Export {
 		$this->guard( 'bpfw_export' );
 
 		$payload = array(
-			'plugin'    => 'bundle-product-for-woocommerce',
+			'plugin'    => 'codeholt-bundles-for-woocommerce',
 			'version'   => BPFW_VERSION,
 			'exported'  => gmdate( 'c' ),
 			'bundles'   => self::collect(),
@@ -179,7 +179,7 @@ class BPFW_Import_Export {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in guard() via check_admin_referer() above.
 		if ( empty( $_FILES['bpfw_import_file']['tmp_name'] ) ) {
-			$this->redirect_with( 'error', __( 'No file uploaded.', 'bundle-product-for-woocommerce' ) );
+			$this->redirect_with( 'error', __( 'No file uploaded.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- tmp_name is a server-generated upload path, not user input.
@@ -188,7 +188,7 @@ class BPFW_Import_Export {
 		$data = json_decode( $raw, true );
 
 		if ( ! is_array( $data ) || empty( $data['bundles'] ) || ! is_array( $data['bundles'] ) ) {
-			$this->redirect_with( 'error', __( 'Invalid file — expected a JSON export from this plugin.', 'bundle-product-for-woocommerce' ) );
+			$this->redirect_with( 'error', __( 'Invalid file — expected a JSON export from this plugin.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 
 		$created = 0;
@@ -270,7 +270,7 @@ class BPFW_Import_Export {
 		}
 
 		/* translators: %d: number of bundles imported. */
-		$this->redirect_with( 'success', sprintf( __( '%d bundle(s) imported.', 'bundle-product-for-woocommerce' ), $created ) );
+		$this->redirect_with( 'success', sprintf( __( '%d bundle(s) imported.', 'codeholt-bundles-for-woocommerce' ), $created ) );
 	}
 
 	/**
@@ -322,31 +322,31 @@ class BPFW_Import_Export {
 				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--export" aria-hidden="true">
 					<span class="dashicons dashicons-download"></span>
 				</div>
-				<h2><?php esc_html_e( 'Export bundles', 'bundle-product-for-woocommerce' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Download every bundle with its products, quantities and pricing settings.', 'bundle-product-for-woocommerce' ); ?></p>
+				<h2><?php esc_html_e( 'Export bundles', 'codeholt-bundles-for-woocommerce' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Download every bundle with its products, quantities and pricing settings.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 
 				<ul class="bpfw-ie-list">
 					<li>
 						<?php
 						printf(
 							/* translators: %s: number of bundles. */
-							esc_html( _n( '%s bundle will be exported (published and draft).', '%s bundles will be exported (published and draft).', $bundle_count, 'bundle-product-for-woocommerce' ) ),
+							esc_html( _n( '%s bundle will be exported (published and draft).', '%s bundles will be exported (published and draft).', $bundle_count, 'codeholt-bundles-for-woocommerce' ) ),
 							'<strong>' . esc_html( number_format_i18n( $bundle_count ) ) . '</strong>'
 						);
 						?>
 					</li>
-					<li><?php esc_html_e( 'JSON keeps everything and can be re-imported on any site.', 'bundle-product-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'CSV is a flat list for spreadsheets — export only.', 'bundle-product-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'JSON keeps everything and can be re-imported on any site.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'CSV is a flat list for spreadsheets — export only.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ul>
 
 				<p class="bpfw-ie-actions">
 					<a class="button button-primary button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_json' ), 'bpfw_export' ) ); ?>">
 						<span class="dashicons dashicons-media-code" aria-hidden="true"></span>
-						<?php esc_html_e( 'Export JSON', 'bundle-product-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Export JSON', 'codeholt-bundles-for-woocommerce' ); ?>
 					</a>
 					<a class="button button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_csv' ), 'bpfw_export' ) ); ?>">
 						<span class="dashicons dashicons-media-spreadsheet" aria-hidden="true"></span>
-						<?php esc_html_e( 'Export CSV', 'bundle-product-for-woocommerce' ); ?>
+						<?php esc_html_e( 'Export CSV', 'codeholt-bundles-for-woocommerce' ); ?>
 					</a>
 				</p>
 			</section>
@@ -355,12 +355,12 @@ class BPFW_Import_Export {
 				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--import" aria-hidden="true">
 					<span class="dashicons dashicons-upload"></span>
 				</div>
-				<h2><?php esc_html_e( 'Import bundles', 'bundle-product-for-woocommerce' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Upload a JSON export from this plugin — new bundles are created, nothing is overwritten.', 'bundle-product-for-woocommerce' ); ?></p>
+				<h2><?php esc_html_e( 'Import bundles', 'codeholt-bundles-for-woocommerce' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Upload a JSON export from this plugin — new bundles are created, nothing is overwritten.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 
 				<ul class="bpfw-ie-list">
-					<li><?php esc_html_e( 'Bundled products are matched by SKU first, then by product ID.', 'bundle-product-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'Products missing on this site are skipped safely.', 'bundle-product-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Bundled products are matched by SKU first, then by product ID.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Products missing on this site are skipped safely.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ul>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
@@ -369,29 +369,17 @@ class BPFW_Import_Export {
 
 					<label class="bpfw-ie-dropzone" for="bpfw_import_file">
 						<span class="dashicons dashicons-media-archive" aria-hidden="true"></span>
-						<span class="bpfw-ie-dropzone__text"><?php esc_html_e( 'Choose a .json export file', 'bundle-product-for-woocommerce' ); ?></span>
-						<span class="bpfw-ie-dropzone__filename" data-placeholder="<?php esc_attr_e( 'No file chosen', 'bundle-product-for-woocommerce' ); ?>"><?php esc_html_e( 'No file chosen', 'bundle-product-for-woocommerce' ); ?></span>
+						<span class="bpfw-ie-dropzone__text"><?php esc_html_e( 'Choose a .json export file', 'codeholt-bundles-for-woocommerce' ); ?></span>
+						<span class="bpfw-ie-dropzone__filename" data-placeholder="<?php esc_attr_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?>"><?php esc_html_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?></span>
 						<input type="file" id="bpfw_import_file" name="bpfw_import_file" accept=".json,application/json" required />
 					</label>
 
 					<p class="bpfw-ie-actions">
 						<button type="submit" class="button button-primary button-hero">
 							<span class="dashicons dashicons-upload" aria-hidden="true"></span>
-							<?php esc_html_e( 'Import bundles', 'bundle-product-for-woocommerce' ); ?>
+							<?php esc_html_e( 'Import bundles', 'codeholt-bundles-for-woocommerce' ); ?>
 						</button>
 					</p>
-					<script>
-					( function() {
-						var input = document.getElementById( 'bpfw_import_file' );
-						if ( ! input ) {
-							return;
-						}
-						var label = input.closest( '.bpfw-ie-dropzone' ).querySelector( '.bpfw-ie-dropzone__filename' );
-						input.addEventListener( 'change', function() {
-							label.textContent = input.files && input.files.length ? input.files[0].name : label.getAttribute( 'data-placeholder' );
-						} );
-					} )();
-					</script>
 				</form>
 			</section>
 

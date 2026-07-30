@@ -1,5 +1,5 @@
 /**
- * Bundle Product for WooCommerce — admin bundle builder.
+ * Codeholt Bundles for WooCommerce — admin bundle builder.
  */
 ( function ( $ ) {
 	'use strict';

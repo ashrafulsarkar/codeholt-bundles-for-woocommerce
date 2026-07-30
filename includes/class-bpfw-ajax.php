@@ -67,7 +67,7 @@ class BPFW_Ajax {
 		check_ajax_referer( 'bpfw-admin', 'nonce' );
 
 		if ( ! current_user_can( 'edit_products' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'bundle-product-for-woocommerce' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'codeholt-bundles-for-woocommerce' ) ) );
 		}
 
 		$product_id = isset( $_POST['product_id'] ) ? absint( $_POST['product_id'] ) : 0;
@@ -75,7 +75,7 @@ class BPFW_Ajax {
 		$product    = wc_get_product( $product_id );
 
 		if ( ! $product || 'publish' !== $product->get_status() || ! in_array( $product->get_type(), bpfw_get_allowed_child_types(), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'This product cannot be bundled.', 'bundle-product-for-woocommerce' ) ) );
+			wp_send_json_error( array( 'message' => __( 'This product cannot be bundled.', 'codeholt-bundles-for-woocommerce' ) ) );
 		}
 
 		ob_start();

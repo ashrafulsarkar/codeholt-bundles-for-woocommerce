@@ -41,8 +41,8 @@ class BPFW_Block {
 			'bpfw/bundle',
 			array(
 				'api_version'     => 3,
-				'title'           => __( 'Product Bundle', 'bundle-product-for-woocommerce' ),
-				'description'     => __( 'Display a WooCommerce product bundle.', 'bundle-product-for-woocommerce' ),
+				'title'           => __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' ),
+				'description'     => __( 'Display a WooCommerce product bundle.', 'codeholt-bundles-for-woocommerce' ),
 				'category'        => 'woocommerce',
 				'editor_script'   => 'bpfw-block',
 				'style'           => 'bpfw-frontend',
@@ -79,7 +79,7 @@ class BPFW_Block {
 		$choices = array(
 			array(
 				'value' => 0,
-				'label' => __( '— Select a bundle —', 'bundle-product-for-woocommerce' ),
+				'label' => __( '— Select a bundle —', 'codeholt-bundles-for-woocommerce' ),
 			),
 		);
 
@@ -116,7 +116,7 @@ class BPFW_Block {
 		);
 
 		if ( '' === $html && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			return '<p>' . esc_html__( 'Bundle not found or not published.', 'bundle-product-for-woocommerce' ) . '</p>';
+			return '<p>' . esc_html__( 'Bundle not found or not published.', 'codeholt-bundles-for-woocommerce' ) . '</p>';
 		}
 
 		return $html;

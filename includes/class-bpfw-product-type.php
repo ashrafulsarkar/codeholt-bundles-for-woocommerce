@@ -27,7 +27,7 @@ class BPFW_Product_Type {
 	 * @return array
 	 */
 	public function add_type( $types ) {
-		$types['bundle'] = __( 'Bundle product', 'bundle-product-for-woocommerce' );
+		$types['bundle'] = __( 'Bundle product', 'codeholt-bundles-for-woocommerce' );
 		return $types;
 	}
 

@@ -25,8 +25,8 @@ class BPFW_Analytics {
 	public function add_menu() {
 		add_submenu_page(
 			'woocommerce',
-			__( 'Bundles', 'bundle-product-for-woocommerce' ),
-			__( 'Bundles', 'bundle-product-for-woocommerce' ),
+			__( 'Bundles', 'codeholt-bundles-for-woocommerce' ),
+			__( 'Bundles', 'codeholt-bundles-for-woocommerce' ),
 			'manage_woocommerce',
 			'bpfw-bundles',
 			array( $this, 'render_page' )
@@ -145,9 +145,9 @@ class BPFW_Analytics {
 		$tabs = apply_filters(
 			'bpfw_admin_tabs',
 			array(
-				'overview'      => __( 'Overview', 'bundle-product-for-woocommerce' ),
-				'settings'      => __( 'Settings', 'bundle-product-for-woocommerce' ),
-				'import_export' => __( 'Import / Export', 'bundle-product-for-woocommerce' ),
+				'overview'      => __( 'Overview', 'codeholt-bundles-for-woocommerce' ),
+				'settings'      => __( 'Settings', 'codeholt-bundles-for-woocommerce' ),
+				'import_export' => __( 'Import / Export', 'codeholt-bundles-for-woocommerce' ),
 			)
 		);
 
@@ -156,7 +156,7 @@ class BPFW_Analytics {
 		}
 		?>
 		<div class="wrap bpfw-admin-page">
-			<h1><?php esc_html_e( 'Product Bundles', 'bundle-product-for-woocommerce' ); ?></h1>
+			<h1><?php esc_html_e( 'Product Bundles', 'codeholt-bundles-for-woocommerce' ); ?></h1>
 
 			<nav class="nav-tab-wrapper">
 				<?php foreach ( $tabs as $bpfw_slug => $bpfw_label ) : ?>
@@ -217,7 +217,7 @@ class BPFW_Analytics {
 				<?php
 				printf(
 					/* translators: %s: number of days. */
-					esc_html__( 'Bundle performance for the last %s days — processing and completed orders.', 'bundle-product-for-woocommerce' ),
+					esc_html__( 'Bundle performance for the last %s days — processing and completed orders.', 'codeholt-bundles-for-woocommerce' ),
 					esc_html( number_format_i18n( $days ) )
 				);
 				?>
@@ -239,23 +239,23 @@ class BPFW_Analytics {
 
 		<div class="bpfw-cards">
 			<div class="bpfw-stat-card">
-				<h3><?php esc_html_e( 'Active bundles', 'bundle-product-for-woocommerce' ); ?></h3>
+				<h3><?php esc_html_e( 'Active bundles', 'codeholt-bundles-for-woocommerce' ); ?></h3>
 				<div class="bpfw-stat"><?php echo esc_html( number_format_i18n( $bundle_count ) ); ?></div>
 			</div>
 			<div class="bpfw-stat-card">
-				<h3><?php esc_html_e( 'Bundles sold', 'bundle-product-for-woocommerce' ); ?></h3>
+				<h3><?php esc_html_e( 'Bundles sold', 'codeholt-bundles-for-woocommerce' ); ?></h3>
 				<div class="bpfw-stat"><?php echo esc_html( number_format_i18n( $stats['sold'] ) ); ?></div>
 			</div>
 			<div class="bpfw-stat-card">
-				<h3><?php esc_html_e( 'Bundle revenue', 'bundle-product-for-woocommerce' ); ?></h3>
+				<h3><?php esc_html_e( 'Bundle revenue', 'codeholt-bundles-for-woocommerce' ); ?></h3>
 				<div class="bpfw-stat"><?php echo wp_kses_post( wc_price( $stats['revenue'] ) ); ?></div>
 			</div>
 			<div class="bpfw-stat-card">
-				<h3><?php esc_html_e( 'Customer savings given', 'bundle-product-for-woocommerce' ); ?></h3>
+				<h3><?php esc_html_e( 'Customer savings given', 'codeholt-bundles-for-woocommerce' ); ?></h3>
 				<div class="bpfw-stat"><?php echo wp_kses_post( wc_price( $stats['savings'] ) ); ?></div>
 			</div>
 			<div class="bpfw-stat-card">
-				<h3><?php esc_html_e( 'Top bundle', 'bundle-product-for-woocommerce' ); ?></h3>
+				<h3><?php esc_html_e( 'Top bundle', 'codeholt-bundles-for-woocommerce' ); ?></h3>
 				<div class="bpfw-stat"><?php echo $top ? esc_html( $top['name'] ) : '—'; ?></div>
 			</div>
 		</div>
@@ -266,7 +266,7 @@ class BPFW_Analytics {
 					<?php
 					printf(
 						/* translators: %s: number of days. */
-						esc_html__( 'Sales by bundle — last %s days', 'bundle-product-for-woocommerce' ),
+						esc_html__( 'Sales by bundle — last %s days', 'codeholt-bundles-for-woocommerce' ),
 						esc_html( number_format_i18n( $days ) )
 					);
 					?>
@@ -275,10 +275,10 @@ class BPFW_Analytics {
 				<table class="widefat striped bpfw-table">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Bundle', 'bundle-product-for-woocommerce' ); ?></th>
-							<th><?php esc_html_e( 'Sold', 'bundle-product-for-woocommerce' ); ?></th>
-							<th><?php esc_html_e( 'Revenue', 'bundle-product-for-woocommerce' ); ?></th>
-							<th><?php esc_html_e( 'Share of revenue', 'bundle-product-for-woocommerce' ); ?></th>
+							<th><?php esc_html_e( 'Bundle', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th><?php esc_html_e( 'Sold', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th><?php esc_html_e( 'Revenue', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th><?php esc_html_e( 'Share of revenue', 'codeholt-bundles-for-woocommerce' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -299,7 +299,7 @@ class BPFW_Analytics {
 							<?php endforeach; ?>
 						<?php else : ?>
 							<tr>
-								<td colspan="4"><?php esc_html_e( 'No bundle sales in this period yet.', 'bundle-product-for-woocommerce' ); ?></td>
+								<td colspan="4"><?php esc_html_e( 'No bundle sales in this period yet.', 'codeholt-bundles-for-woocommerce' ); ?></td>
 							</tr>
 						<?php endif; ?>
 					</tbody>
@@ -307,18 +307,18 @@ class BPFW_Analytics {
 			</section>
 
 			<section class="bpfw-panel-card bpfw-help-card">
-				<h2><?php esc_html_e( 'Quick start', 'bundle-product-for-woocommerce' ); ?></h2>
+				<h2><?php esc_html_e( 'Quick start', 'codeholt-bundles-for-woocommerce' ); ?></h2>
 				<ol>
-					<li><?php esc_html_e( 'Go to Products → Add New and choose the "Bundle product" type.', 'bundle-product-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'Open the Bundled Products tab, search and add simple products.', 'bundle-product-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'Pick Auto or Fixed pricing and a product page layout.', 'bundle-product-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'Publish — pricing, savings badge and stock sync are automatic.', 'bundle-product-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Go to Products → Add New and choose the "Bundle product" type.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Open the Bundled Products tab, search and add simple products.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Pick Auto or Fixed pricing and a product page layout.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Publish — pricing, savings badge and stock sync are automatic.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ol>
 				<p>
-					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>"><?php esc_html_e( 'Create a bundle', 'bundle-product-for-woocommerce' ); ?></a>
-					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=settings' ) ); ?>"><?php esc_html_e( 'Layout & design settings', 'bundle-product-for-woocommerce' ); ?></a>
+					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>"><?php esc_html_e( 'Create a bundle', 'codeholt-bundles-for-woocommerce' ); ?></a>
+					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=settings' ) ); ?>"><?php esc_html_e( 'Layout & design settings', 'codeholt-bundles-for-woocommerce' ); ?></a>
 				</p>
-				<p class="description"><?php esc_html_e( 'Display bundles anywhere with the [bundle id="123"] shortcode, the Product Bundle block, or the Elementor widget.', 'bundle-product-for-woocommerce' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Display bundles anywhere with the [bundle id="123"] shortcode, the Product Bundle block, or the Elementor widget.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 			</section>
 		</div>
 		<?php

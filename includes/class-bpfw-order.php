@@ -61,9 +61,9 @@ class BPFW_Order {
 		$lines = array();
 		foreach ( $contents as $content ) {
 			/* translators: 1: quantity, 2: product name. */
-			$lines[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'bundle-product-for-woocommerce' ), $content['qty'], $content['name'] );
+			$lines[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'codeholt-bundles-for-woocommerce' ), $content['qty'], $content['name'] );
 		}
-		$item->add_meta_data( __( 'Includes', 'bundle-product-for-woocommerce' ), implode( ', ', $lines ), true );
+		$item->add_meta_data( __( 'Includes', 'codeholt-bundles-for-woocommerce' ), implode( ', ', $lines ), true );
 
 		/**
 		 * Fires after bundle meta is added to an order line item.
@@ -112,7 +112,7 @@ class BPFW_Order {
 			if ( $notes ) {
 				$order->add_order_note(
 					/* translators: %s: list of stock changes. */
-					sprintf( __( 'Bundled product stock reduced: %s', 'bundle-product-for-woocommerce' ), implode( ', ', $notes ) )
+					sprintf( __( 'Bundled product stock reduced: %s', 'codeholt-bundles-for-woocommerce' ), implode( ', ', $notes ) )
 				);
 			}
 		}
@@ -154,7 +154,7 @@ class BPFW_Order {
 			if ( $notes ) {
 				$order->add_order_note(
 					/* translators: %s: list of stock changes. */
-					sprintf( __( 'Bundled product stock restored: %s', 'bundle-product-for-woocommerce' ), implode( ', ', $notes ) )
+					sprintf( __( 'Bundled product stock restored: %s', 'codeholt-bundles-for-woocommerce' ), implode( ', ', $notes ) )
 				);
 			}
 		}

@@ -27,7 +27,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 	 * @return string
 	 */
 	public function get_title() {
-		return __( 'Product Bundle', 'bundle-product-for-woocommerce' );
+		return __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' );
 	}
 
 	/**
@@ -73,14 +73,14 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->start_controls_section(
 			'section_bundle',
 			array(
-				'label' => __( 'Bundle', 'bundle-product-for-woocommerce' ),
+				'label' => __( 'Bundle', 'codeholt-bundles-for-woocommerce' ),
 			)
 		);
 
 		$this->add_control(
 			'bundle_id',
 			array(
-				'label'   => __( 'Select bundle', 'bundle-product-for-woocommerce' ),
+				'label'   => __( 'Select bundle', 'codeholt-bundles-for-woocommerce' ),
 				'type'    => \Elementor\Controls_Manager::SELECT2,
 				'options' => bpfw_get_bundle_choices(),
 			)
@@ -89,12 +89,12 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'layout',
 			array(
-				'label'   => __( 'Layout', 'bundle-product-for-woocommerce' ),
+				'label'   => __( 'Layout', 'codeholt-bundles-for-woocommerce' ),
 				'type'    => \Elementor\Controls_Manager::SELECT,
 				'default' => 'card',
 				'options' => array(
-					'card' => __( 'Card', 'bundle-product-for-woocommerce' ),
-					'list' => __( 'List', 'bundle-product-for-woocommerce' ),
+					'card' => __( 'Card', 'codeholt-bundles-for-woocommerce' ),
+					'list' => __( 'List', 'codeholt-bundles-for-woocommerce' ),
 				),
 			)
 		);
@@ -102,7 +102,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'show_image',
 			array(
-				'label'        => __( 'Show bundle image', 'bundle-product-for-woocommerce' ),
+				'label'        => __( 'Show bundle image', 'codeholt-bundles-for-woocommerce' ),
 				'type'         => \Elementor\Controls_Manager::SWITCHER,
 				'default'      => 'yes',
 				'return_value' => 'yes',
@@ -112,7 +112,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'show_items',
 			array(
-				'label'        => __( 'Show bundled products', 'bundle-product-for-woocommerce' ),
+				'label'        => __( 'Show bundled products', 'codeholt-bundles-for-woocommerce' ),
 				'type'         => \Elementor\Controls_Manager::SWITCHER,
 				'default'      => 'yes',
 				'return_value' => 'yes',
@@ -124,7 +124,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->start_controls_section(
 			'section_style',
 			array(
-				'label' => __( 'Style', 'bundle-product-for-woocommerce' ),
+				'label' => __( 'Style', 'codeholt-bundles-for-woocommerce' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_STYLE,
 			)
 		);
@@ -132,7 +132,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'accent_color',
 			array(
-				'label'     => __( 'Accent color', 'bundle-product-for-woocommerce' ),
+				'label'     => __( 'Accent color', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .bpfw-card' => '--bpfw-accent: {{VALUE}};',
@@ -143,7 +143,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'button_bg',
 			array(
-				'label'     => __( 'Button background', 'bundle-product-for-woocommerce' ),
+				'label'     => __( 'Button background', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .bpfw-card__button' => 'background-color: {{VALUE}};',
@@ -154,7 +154,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 		$this->add_control(
 			'button_text_color',
 			array(
-				'label'     => __( 'Button text color', 'bundle-product-for-woocommerce' ),
+				'label'     => __( 'Button text color', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
 					'{{WRAPPER}} .bpfw-card__button' => 'color: {{VALUE}};',
@@ -174,7 +174,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 
 		if ( ! $bundle_id ) {
 			if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
-				echo '<p>' . esc_html__( 'Select a bundle to display.', 'bundle-product-for-woocommerce' ) . '</p>';
+				echo '<p>' . esc_html__( 'Select a bundle to display.', 'codeholt-bundles-for-woocommerce' ) . '</p>';
 			}
 			return;
 		}

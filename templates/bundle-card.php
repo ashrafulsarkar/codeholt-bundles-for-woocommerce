@@ -3,7 +3,7 @@
  * Bundle card — used by the [bundle] shortcode, Gutenberg block and Elementor widget.
  *
  * Override this template by copying it to
- * yourtheme/bundle-product-for-woocommerce/bundle-card.php
+ * yourtheme/codeholt-bundles-for-woocommerce/bundle-card.php
  *
  * @package BPFW\Templates
  * @version 1.0.0
@@ -28,7 +28,7 @@ $bpfw_layout  = in_array( $args['layout'], array( 'card', 'list' ), true ) ? $ar
 				<?php
 				printf(
 					/* translators: %s: formatted savings amount. */
-					esc_html__( 'Buy this bundle and save %s', 'bundle-product-for-woocommerce' ),
+					esc_html__( 'Buy this bundle and save %s', 'codeholt-bundles-for-woocommerce' ),
 					wp_kses_post( wc_price( $bpfw_pricing['savings'] ) )
 				);
 				?>
@@ -64,7 +64,7 @@ $bpfw_layout  = in_array( $args['layout'], array( 'card', 'list' ), true ) ? $ar
 	<?php endif; ?>
 
 	<div class="bpfw-summary">
-		<span class="bpfw-summary__label"><?php esc_html_e( 'Total bundle price:', 'bundle-product-for-woocommerce' ); ?></span>
+		<span class="bpfw-summary__label"><?php esc_html_e( 'Total bundle price:', 'codeholt-bundles-for-woocommerce' ); ?></span>
 		<span class="bpfw-summary__prices">
 			<?php if ( $bpfw_pricing['savings'] > 0 ) : ?>
 				<del><?php echo wp_kses_post( wc_price( $bpfw_pricing['regular'] ) ); ?></del>
@@ -80,16 +80,16 @@ $bpfw_layout  = in_array( $args['layout'], array( 'card', 'list' ), true ) ? $ar
 				if ( $bpfw_pricing['savings'] > 0 ) {
 					printf(
 						/* translators: %s: formatted savings amount. */
-						esc_html__( 'Add bundle to cart (%s OFF)', 'bundle-product-for-woocommerce' ),
+						esc_html__( 'Add bundle to cart (%s OFF)', 'codeholt-bundles-for-woocommerce' ),
 						wp_strip_all_tags( wc_price( $bpfw_pricing['savings'] ) ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					);
 				} else {
-					esc_html_e( 'Add bundle to cart', 'bundle-product-for-woocommerce' );
+					esc_html_e( 'Add bundle to cart', 'codeholt-bundles-for-woocommerce' );
 				}
 				?>
 			</button>
 		</form>
 	<?php else : ?>
-		<p class="bpfw-card__unavailable"><?php esc_html_e( 'This bundle is currently unavailable.', 'bundle-product-for-woocommerce' ); ?></p>
+		<p class="bpfw-card__unavailable"><?php esc_html_e( 'This bundle is currently unavailable.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 	<?php endif; ?>
 </div>

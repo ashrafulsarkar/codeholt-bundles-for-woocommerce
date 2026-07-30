@@ -1,5 +1,5 @@
 /**
- * Bundle Product for WooCommerce — Gutenberg block (no build step).
+ * Codeholt Bundles for WooCommerce — Gutenberg block (no build step).
  */
 ( function ( wp ) {
 	'use strict';
@@ -18,11 +18,11 @@
 	var bundleChoices =
 		window.bpfwBlockData && window.bpfwBlockData.bundles
 			? window.bpfwBlockData.bundles
-			: [ { value: 0, label: __( '— Select a bundle —', 'bundle-product-for-woocommerce' ) } ];
+			: [ { value: 0, label: __( '— Select a bundle —', 'codeholt-bundles-for-woocommerce' ) } ];
 
 	registerBlockType( 'bpfw/bundle', {
-		title: __( 'Product Bundle', 'bundle-product-for-woocommerce' ),
-		description: __( 'Display a WooCommerce product bundle.', 'bundle-product-for-woocommerce' ),
+		title: __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' ),
+		description: __( 'Display a WooCommerce product bundle.', 'codeholt-bundles-for-woocommerce' ),
 		icon: 'archive',
 		category: 'woocommerce',
 		attributes: {
@@ -42,9 +42,9 @@
 				{},
 				el(
 					PanelBody,
-					{ title: __( 'Bundle settings', 'bundle-product-for-woocommerce' ) },
+					{ title: __( 'Bundle settings', 'codeholt-bundles-for-woocommerce' ) },
 					el( SelectControl, {
-						label: __( 'Bundle', 'bundle-product-for-woocommerce' ),
+						label: __( 'Bundle', 'codeholt-bundles-for-woocommerce' ),
 						value: attributes.bundleId,
 						options: bundleChoices,
 						onChange: function ( value ) {
@@ -52,25 +52,25 @@
 						},
 					} ),
 					el( SelectControl, {
-						label: __( 'Layout', 'bundle-product-for-woocommerce' ),
+						label: __( 'Layout', 'codeholt-bundles-for-woocommerce' ),
 						value: attributes.layout,
 						options: [
-							{ value: 'card', label: __( 'Card', 'bundle-product-for-woocommerce' ) },
-							{ value: 'list', label: __( 'List', 'bundle-product-for-woocommerce' ) },
+							{ value: 'card', label: __( 'Card', 'codeholt-bundles-for-woocommerce' ) },
+							{ value: 'list', label: __( 'List', 'codeholt-bundles-for-woocommerce' ) },
 						],
 						onChange: function ( value ) {
 							setAttributes( { layout: value } );
 						},
 					} ),
 					el( ToggleControl, {
-						label: __( 'Show bundle image', 'bundle-product-for-woocommerce' ),
+						label: __( 'Show bundle image', 'codeholt-bundles-for-woocommerce' ),
 						checked: attributes.showImage,
 						onChange: function ( value ) {
 							setAttributes( { showImage: value } );
 						},
 					} ),
 					el( ToggleControl, {
-						label: __( 'Show bundled products', 'bundle-product-for-woocommerce' ),
+						label: __( 'Show bundled products', 'codeholt-bundles-for-woocommerce' ),
 						checked: attributes.showItems,
 						onChange: function ( value ) {
 							setAttributes( { showItems: value } );
@@ -84,8 +84,8 @@
 			if ( ! attributes.bundleId ) {
 				preview = el( Placeholder, {
 					icon: 'archive',
-					label: __( 'Product Bundle', 'bundle-product-for-woocommerce' ),
-					instructions: __( 'Choose a bundle in the block settings sidebar.', 'bundle-product-for-woocommerce' ),
+					label: __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' ),
+					instructions: __( 'Choose a bundle in the block settings sidebar.', 'codeholt-bundles-for-woocommerce' ),
 				} );
 			} else {
 				preview = el( ServerSideRender, {

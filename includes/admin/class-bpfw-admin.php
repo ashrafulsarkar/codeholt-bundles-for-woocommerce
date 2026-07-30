@@ -16,10 +16,18 @@ class BPFW_Admin {
 	 * Hook everything up.
 	 */
 	public function __construct() {
+		add_action( 'init', array( $this, 'register_image_size' ) );
 		add_filter( 'woocommerce_product_data_tabs', array( $this, 'add_tab' ) );
 		add_action( 'woocommerce_product_data_panels', array( $this, 'render_panel' ) );
 		add_action( 'woocommerce_admin_process_product_object', array( $this, 'save' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
+	}
+
+	/**
+	 * Register the small square thumbnail used in the bundle builder rows.
+	 */
+	public function register_image_size() {
+		add_image_size( 'bpfw_item_thumb', 40, 40, true );
 	}
 
 	/**
@@ -30,7 +38,7 @@ class BPFW_Admin {
 	 */
 	public function add_tab( $tabs ) {
 		$tabs['bpfw_bundled_products'] = array(
-			'label'    => __( 'Bundled Products', 'bundle-product-for-woocommerce' ),
+			'label'    => __( 'Bundled Products', 'codeholt-bundles-for-woocommerce' ),
 			'target'   => 'bpfw_bundled_products_data',
 			'class'    => array( 'show_if_bundle' ),
 			'priority' => 21,
@@ -56,23 +64,23 @@ class BPFW_Admin {
 
 			<div class="options_group">
 				<p class="form-field">
-					<label for="bpfw_pricing_mode"><?php esc_html_e( 'Pricing mode', 'bundle-product-for-woocommerce' ); ?></label>
+					<label for="bpfw_pricing_mode"><?php esc_html_e( 'Pricing mode', 'codeholt-bundles-for-woocommerce' ); ?></label>
 					<select id="bpfw_pricing_mode" name="_bpfw_pricing_mode" class="select short">
 						<?php foreach ( bpfw_get_pricing_mode_options() as $bpfw_mode => $bpfw_label ) : ?>
 							<option value="<?php echo esc_attr( $bpfw_mode ); ?>" <?php selected( $pricing_mode, $bpfw_mode ); ?>><?php echo esc_html( $bpfw_label ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<?php echo wc_help_tip( __( 'Auto: bundle price is the sum of bundled product prices. Fixed: you set one bundle price, savings are calculated automatically.', 'bundle-product-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo wc_help_tip( __( 'Auto: bundle price is the sum of bundled product prices. Fixed: you set one bundle price, savings are calculated automatically.', 'codeholt-bundles-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
 
 				<p class="form-field bpfw_fixed_price_field">
 					<label for="bpfw_fixed_price">
 						<?php
 						/* translators: %s: currency symbol. */
-						printf( esc_html__( 'Bundle price (%s)', 'bundle-product-for-woocommerce' ), esc_html( get_woocommerce_currency_symbol() ) );
+						printf( esc_html__( 'Bundle price (%s)', 'codeholt-bundles-for-woocommerce' ), esc_html( get_woocommerce_currency_symbol() ) );
 						?>
 					</label>
-					<input type="text" id="bpfw_fixed_price" name="_bpfw_fixed_price" class="short wc_input_price" value="<?php echo esc_attr( wc_format_localized_price( $fixed_price ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 99', 'bundle-product-for-woocommerce' ); ?>" />
+					<input type="text" id="bpfw_fixed_price" name="_bpfw_fixed_price" class="short wc_input_price" value="<?php echo esc_attr( wc_format_localized_price( $fixed_price ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 99', 'codeholt-bundles-for-woocommerce' ); ?>" />
 				</p>
 
 				<?php
@@ -90,42 +98,42 @@ class BPFW_Admin {
 
 			<div class="options_group">
 				<p class="form-field bpfw-layout-field">
-					<label><?php esc_html_e( 'Product page layout', 'bundle-product-for-woocommerce' ); ?></label>
+					<label><?php esc_html_e( 'Product page layout', 'codeholt-bundles-for-woocommerce' ); ?></label>
 					<span class="bpfw-choices">
 						<?php
-						BPFW_Settings::layout_choice( '_bpfw_layout', '', $layout, __( 'Default', 'bundle-product-for-woocommerce' ), 'default' );
+						BPFW_Settings::layout_choice( '_bpfw_layout', '', $layout, __( 'Default', 'codeholt-bundles-for-woocommerce' ), 'default' );
 						foreach ( bpfw_get_product_layouts() as $bpfw_slug => $bpfw_label ) {
-							BPFW_Settings::layout_choice( '_bpfw_layout', $bpfw_slug, $layout, $bpfw_label, $bpfw_slug, ! bpfw_is_pro() && bpfw_layout_requires_pro( $bpfw_slug ) );
+							BPFW_Settings::layout_choice( '_bpfw_layout', $bpfw_slug, $layout, $bpfw_label, $bpfw_slug );
 						}
 						?>
 					</span>
-					<?php echo wc_help_tip( __( 'How bundled products are shown on this bundle\'s page. "Default" follows WooCommerce → Bundles → Settings.', 'bundle-product-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo wc_help_tip( __( 'How bundled products are shown on this bundle\'s page. "Default" follows WooCommerce → Bundles → Settings.', 'codeholt-bundles-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
 			</div>
 
 			<div class="options_group bpfw-builder">
 				<p class="form-field">
-					<label for="bpfw_add_product"><?php esc_html_e( 'Add product', 'bundle-product-for-woocommerce' ); ?></label>
+					<label for="bpfw_add_product"><?php esc_html_e( 'Add product', 'codeholt-bundles-for-woocommerce' ); ?></label>
 					<select
 						id="bpfw_add_product"
 						class="wc-product-search"
 						style="width: 50%;"
-						data-placeholder="<?php esc_attr_e( 'Search for a simple product…', 'bundle-product-for-woocommerce' ); ?>"
+						data-placeholder="<?php esc_attr_e( 'Search for a simple product…', 'codeholt-bundles-for-woocommerce' ); ?>"
 						data-action="bpfw_json_search_products"
 						data-exclude="<?php echo esc_attr( $post->ID ); ?>">
 					</select>
-					<?php echo wc_help_tip( apply_filters( 'bpfw_child_search_help', __( 'Only published simple products can be bundled in the free version.', 'bundle-product-for-woocommerce' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo wc_help_tip( apply_filters( 'bpfw_child_search_help', __( 'Only published simple products can be bundled in the free version.', 'codeholt-bundles-for-woocommerce' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</p>
 
 				<table class="widefat striped bpfw-items-table">
 					<thead>
 						<tr>
-							<th class="bpfw-col-sort" aria-label="<?php esc_attr_e( 'Sort', 'bundle-product-for-woocommerce' ); ?>"></th>
-							<th><?php esc_html_e( 'Product', 'bundle-product-for-woocommerce' ); ?></th>
-							<th class="bpfw-col-price"><?php esc_html_e( 'Price', 'bundle-product-for-woocommerce' ); ?></th>
-							<th class="bpfw-col-qty"><?php esc_html_e( 'Quantity', 'bundle-product-for-woocommerce' ); ?></th>
-							<th class="bpfw-col-hide"><?php esc_html_e( 'Hide', 'bundle-product-for-woocommerce' ); ?></th>
-							<th class="bpfw-col-remove" aria-label="<?php esc_attr_e( 'Remove', 'bundle-product-for-woocommerce' ); ?>"></th>
+							<th class="bpfw-col-sort" aria-label="<?php esc_attr_e( 'Sort', 'codeholt-bundles-for-woocommerce' ); ?>"></th>
+							<th><?php esc_html_e( 'Product', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th class="bpfw-col-price"><?php esc_html_e( 'Price', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th class="bpfw-col-qty"><?php esc_html_e( 'Quantity', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th class="bpfw-col-hide"><?php esc_html_e( 'Hide', 'codeholt-bundles-for-woocommerce' ); ?></th>
+							<th class="bpfw-col-remove" aria-label="<?php esc_attr_e( 'Remove', 'codeholt-bundles-for-woocommerce' ); ?>"></th>
 						</tr>
 					</thead>
 					<tbody id="bpfw_items_body">
@@ -137,10 +145,10 @@ class BPFW_Admin {
 					</tbody>
 					<tfoot>
 						<tr class="bpfw-empty-row" <?php echo $bundle_items ? 'style="display:none;"' : ''; ?>>
-							<td colspan="6"><?php esc_html_e( 'No products in this bundle yet — search above to add some.', 'bundle-product-for-woocommerce' ); ?></td>
+							<td colspan="6"><?php esc_html_e( 'No products in this bundle yet — search above to add some.', 'codeholt-bundles-for-woocommerce' ); ?></td>
 						</tr>
 						<tr class="bpfw-totals-row">
-							<td colspan="2"><strong><?php esc_html_e( 'Products total', 'bundle-product-for-woocommerce' ); ?></strong></td>
+							<td colspan="2"><strong><?php esc_html_e( 'Products total', 'codeholt-bundles-for-woocommerce' ); ?></strong></td>
 							<td colspan="4">
 								<span class="bpfw-total-regular"></span>
 								<span class="bpfw-total-savings"></span>
@@ -148,7 +156,7 @@ class BPFW_Admin {
 						</tr>
 					</tfoot>
 				</table>
-				<p class="description bpfw-builder-hint"><?php esc_html_e( 'Drag rows to reorder. Prices and savings are recalculated when you update the product.', 'bundle-product-for-woocommerce' ); ?></p>
+				<p class="description bpfw-builder-hint"><?php esc_html_e( 'Drag rows to reorder. Prices and savings are recalculated when you update the product.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 			</div>
 
 			<?php
@@ -183,7 +191,7 @@ class BPFW_Admin {
 		<tr class="bpfw-item" data-price="<?php echo esc_attr( (float) $product->get_price() ); ?>" data-regular="<?php echo esc_attr( (float) $product->get_regular_price() ); ?>">
 			<td class="bpfw-col-sort"><span class="dashicons dashicons-menu" aria-hidden="true"></span></td>
 			<td class="bpfw-col-product">
-				<?php echo wp_kses_post( $product->get_image( array( 40, 40 ) ) ); ?>
+				<?php echo wp_kses_post( $product->get_image( 'bpfw_item_thumb' ) ); ?>
 				<a href="<?php echo esc_url( get_edit_post_link( $product_id ) ); ?>" target="_blank">
 					<?php echo esc_html( $product->get_formatted_name() ); ?>
 				</a>
@@ -194,10 +202,10 @@ class BPFW_Admin {
 				<input type="number" class="bpfw-item-qty" name="bpfw_items[<?php echo esc_attr( $index ); ?>][qty]" value="<?php echo esc_attr( max( 1, $qty ) ); ?>" min="1" step="1" />
 			</td>
 			<td class="bpfw-col-hide">
-				<input type="checkbox" name="bpfw_items[<?php echo esc_attr( $index ); ?>][hidden]" value="1" <?php checked( $hidden ); ?> title="<?php esc_attr_e( 'Hide this product on the bundle page', 'bundle-product-for-woocommerce' ); ?>" />
+				<input type="checkbox" name="bpfw_items[<?php echo esc_attr( $index ); ?>][hidden]" value="1" <?php checked( $hidden ); ?> title="<?php esc_attr_e( 'Hide this product on the bundle page', 'codeholt-bundles-for-woocommerce' ); ?>" />
 			</td>
 			<td class="bpfw-col-remove">
-				<button type="button" class="button-link bpfw-remove-item" aria-label="<?php esc_attr_e( 'Remove from bundle', 'bundle-product-for-woocommerce' ); ?>">&times;</button>
+				<button type="button" class="button-link bpfw-remove-item" aria-label="<?php esc_attr_e( 'Remove from bundle', 'codeholt-bundles-for-woocommerce' ); ?>">&times;</button>
 			</td>
 		</tr>
 		<?php
@@ -294,8 +302,8 @@ class BPFW_Admin {
 				'nonce'        => wp_create_nonce( 'bpfw-admin' ),
 				'currency'     => get_woocommerce_currency_symbol(),
 				'i18n'         => array(
-					'save'      => __( 'Savings:', 'bundle-product-for-woocommerce' ),
-					'duplicate' => __( 'This product is already in the bundle.', 'bundle-product-for-woocommerce' ),
+					'save'      => __( 'Savings:', 'codeholt-bundles-for-woocommerce' ),
+					'duplicate' => __( 'This product is already in the bundle.', 'codeholt-bundles-for-woocommerce' ),
 				),
 			)
 		);

@@ -39,7 +39,7 @@ class BPFW_Cart {
 		}
 
 		if ( ! $bundle->get_bundled_products() ) {
-			wc_add_notice( __( 'This bundle has no products configured yet.', 'bundle-product-for-woocommerce' ), 'error' );
+			wc_add_notice( __( 'This bundle has no products configured yet.', 'codeholt-bundles-for-woocommerce' ), 'error' );
 			return false;
 		}
 
@@ -83,13 +83,13 @@ class BPFW_Cart {
 
 			if ( ! $child->is_in_stock() ) {
 				/* translators: %s: product name. */
-				return sprintf( __( '"%s" is out of stock, so this bundle cannot be purchased right now.', 'bundle-product-for-woocommerce' ), $child->get_name() );
+				return sprintf( __( '"%s" is out of stock, so this bundle cannot be purchased right now.', 'codeholt-bundles-for-woocommerce' ), $child->get_name() );
 			}
 
 			if ( $child->managing_stock() && ! $child->backorders_allowed() && (float) $child->get_stock_quantity() < $required ) {
 				return sprintf(
 					/* translators: 1: product name, 2: quantity available, 3: quantity required. */
-					__( 'Not enough stock for "%1$s" — only %2$s left, but your cart needs %3$s.', 'bundle-product-for-woocommerce' ),
+					__( 'Not enough stock for "%1$s" — only %2$s left, but your cart needs %3$s.', 'codeholt-bundles-for-woocommerce' ),
 					$child->get_name(),
 					wc_stock_amount( $child->get_stock_quantity() ),
 					wc_stock_amount( $required )
@@ -181,11 +181,11 @@ class BPFW_Cart {
 
 		foreach ( $cart_item['bpfw_items'] as $item ) {
 			/* translators: 1: quantity, 2: product name. */
-			$lines[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'bundle-product-for-woocommerce' ), $item['qty'], $item['name'] );
+			$lines[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'codeholt-bundles-for-woocommerce' ), $item['qty'], $item['name'] );
 		}
 
 		$item_data[] = array(
-			'key'   => __( 'Includes', 'bundle-product-for-woocommerce' ),
+			'key'   => __( 'Includes', 'codeholt-bundles-for-woocommerce' ),
 			'value' => implode( ', ', $lines ),
 		);
 
@@ -196,7 +196,7 @@ class BPFW_Cart {
 
 			if ( $pricing['savings'] > 0 ) {
 				$item_data[] = array(
-					'key'   => __( 'You save', 'bundle-product-for-woocommerce' ),
+					'key'   => __( 'You save', 'codeholt-bundles-for-woocommerce' ),
 					'value' => wp_strip_all_tags( wc_price( $pricing['savings'] * $cart_item['quantity'] ) ),
 				);
 			}

@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name:       Bundle Product for WooCommerce
- * Plugin URI:        https://wordpress.org/plugins/bundle-product-for-woocommerce/
+ * Plugin Name:       Codeholt Bundles for WooCommerce
+ * Plugin URI:        https://wordpress.org/plugins/codeholt-bundles-for-woocommerce/
  * Description:       Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, auto price calculation, stock sync, Gutenberg block, Elementor widget and analytics.
  * Version:           1.0.0
- * Author:            Ashraful Sarkar
- * Author URI:        https://ashrafulsarkar.com/
+ * Author:            Codeholt
+ * Author URI:        https://codeholt.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       bundle-product-for-woocommerce
+ * Text Domain:       codeholt-bundles-for-woocommerce
  * Domain Path:       /languages
  * Requires at least: 6.2
  * Requires PHP:      7.4
@@ -26,16 +26,6 @@ define( 'BPFW_PLUGIN_FILE', __FILE__ );
 define( 'BPFW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'BPFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BPFW_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-
-/**
- * Master switch for the locked/disabled Pro-preview UI in the free plugin
- * (Design card, Savings badge text field, Inline/Custom layout choices).
- * Off for now — parked for a future version. Flip to true (or hook the
- * `bpfw_show_pro_placeholders` filter) to bring the placeholders back.
- */
-if ( ! defined( 'BPFW_SHOW_PRO_PLACEHOLDERS' ) ) {
-	define( 'BPFW_SHOW_PRO_PLACEHOLDERS', false );
-}
 
 /**
  * Autoload BPFW_* classes from the includes directory.
@@ -80,7 +70,7 @@ function bpfw_init() {
 			'admin_notices',
 			function () {
 				echo '<div class="notice notice-error"><p>';
-				echo esc_html__( 'Bundle Product for WooCommerce requires WooCommerce to be installed and active.', 'bundle-product-for-woocommerce' );
+				echo esc_html__( 'Codeholt Bundles for WooCommerce requires WooCommerce to be installed and active.', 'codeholt-bundles-for-woocommerce' );
 				echo '</p></div>';
 			}
 		);

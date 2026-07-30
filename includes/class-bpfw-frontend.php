@@ -104,7 +104,7 @@ class BPFW_Frontend {
 
 		$badge = sprintf(
 			/* translators: 1: formatted amount, 2: percentage. */
-			esc_html__( 'Save %1$s (%2$s%%)', 'bundle-product-for-woocommerce' ),
+			esc_html__( 'Save %1$s (%2$s%%)', 'codeholt-bundles-for-woocommerce' ),
 			wp_strip_all_tags( wc_price( $pricing['savings'] ) ),
 			esc_html( $pricing['percent'] )
 		);
