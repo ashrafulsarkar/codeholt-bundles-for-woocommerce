@@ -2,15 +2,15 @@
 /**
  * SEO: structured data enhancements for bundles.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_SEO.
+ * CBFW_SEO.
  */
-class BPFW_SEO {
+class CBFW_SEO {
 
 	/**
 	 * Hook everything up.
@@ -27,7 +27,7 @@ class BPFW_SEO {
 	 * @return array
 	 */
 	public function structured_data( $markup, $product ) {
-		$bundle = bpfw_get_bundle( $product );
+		$bundle = cbfw_get_bundle( $product );
 
 		if ( ! $bundle ) {
 			return $markup;
@@ -55,8 +55,8 @@ class BPFW_SEO {
 		 * @since 1.0.0
 		 *
 		 * @param array               $markup Structured data markup.
-		 * @param BPFW_Product_Bundle $bundle Bundle product.
+		 * @param CBFW_Product_Bundle $bundle Bundle product.
 		 */
-		return apply_filters( 'bpfw_structured_data', $markup, $bundle );
+		return apply_filters( 'cbfw_structured_data', $markup, $bundle );
 	}
 }

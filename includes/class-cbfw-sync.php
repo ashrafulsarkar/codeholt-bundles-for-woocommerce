@@ -2,15 +2,15 @@
 /**
  * Keeps bundle price & stock status in sync with bundled products.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Sync.
+ * CBFW_Sync.
  */
-class BPFW_Sync {
+class CBFW_Sync {
 
 	/**
 	 * Guard against recursive syncs within one request.
@@ -24,6 +24,8 @@ class BPFW_Sync {
 	 */
 	public function __construct() {
 		add_action( 'woocommerce_update_product', array( $this, 'on_child_update' ), 20, 2 );
+		// Variations are saved through their own data store and fire their own hook.
+		add_action( 'woocommerce_update_product_variation', array( $this, 'on_child_update' ), 20, 2 );
 		add_action( 'woocommerce_product_set_stock', array( $this, 'on_child_stock' ), 20 );
 		add_action( 'woocommerce_product_set_stock_status', array( $this, 'on_child_stock_status' ), 20, 3 );
 		add_action( 'wp_trash_post', array( $this, 'on_child_trashed' ) );
@@ -32,7 +34,7 @@ class BPFW_Sync {
 	/**
 	 * Compute and apply price + stock status on a bundle object (no save).
 	 *
-	 * @param BPFW_Product_Bundle $bundle Bundle product.
+	 * @param CBFW_Product_Bundle $bundle Bundle product.
 	 */
 	public static function apply_pricing( $bundle ) {
 		$totals        = $bundle->get_items_totals();
@@ -49,18 +51,18 @@ class BPFW_Sync {
 		$mode = $bundle->get_pricing_mode();
 
 		/**
-		 * Allow custom pricing modes (registered via `bpfw_pricing_modes`) to
+		 * Allow custom pricing modes (registered via `cbfw_pricing_modes`) to
 		 * supply computed prices. Return array{regular:string,sale:string}
 		 * to take over; return null to fall through to auto/fixed.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @param array|null          $prices Computed prices or null.
-		 * @param BPFW_Product_Bundle $bundle Bundle product.
+		 * @param CBFW_Product_Bundle $bundle Bundle product.
 		 * @param string              $mode   Pricing mode slug.
 		 * @param array               $totals Items totals (regular/active).
 		 */
-		$custom = apply_filters( 'bpfw_custom_mode_prices', null, $bundle, $mode, $totals );
+		$custom = apply_filters( 'cbfw_custom_mode_prices', null, $bundle, $mode, $totals );
 
 		if ( is_array( $custom ) && isset( $custom['regular'] ) ) {
 			$regular = wc_format_decimal( $custom['regular'] );
@@ -107,7 +109,7 @@ class BPFW_Sync {
 	/**
 	 * Compute and apply stock status from children (no save).
 	 *
-	 * @param BPFW_Product_Bundle $bundle Bundle product.
+	 * @param CBFW_Product_Bundle $bundle Bundle product.
 	 */
 	public static function apply_stock_status( $bundle ) {
 		$items = $bundle->get_bundled_products();
@@ -147,7 +149,7 @@ class BPFW_Sync {
 		}
 		self::$syncing[ $bundle_id ] = true;
 
-		$bundle = bpfw_get_bundle( $bundle_id );
+		$bundle = cbfw_get_bundle( $bundle_id );
 
 		if ( $bundle ) {
 			self::apply_pricing( $bundle );
@@ -159,9 +161,9 @@ class BPFW_Sync {
 			 *
 			 * @since 1.0.0
 			 *
-			 * @param BPFW_Product_Bundle $bundle Bundle product.
+			 * @param CBFW_Product_Bundle $bundle Bundle product.
 			 */
-			do_action( 'bpfw_bundle_synced', $bundle );
+			do_action( 'cbfw_bundle_synced', $bundle );
 		}
 
 		unset( self::$syncing[ $bundle_id ] );
@@ -182,7 +184,7 @@ class BPFW_Sync {
 				'posts_per_page' => -1,
 				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					array(
-						'key'   => '_bpfw_contains',
+						'key'   => '_cbfw_contains',
 						'value' => (string) $child_id,
 					),
 				),
@@ -210,7 +212,7 @@ class BPFW_Sync {
 	public function on_child_update( $product_id, $product = null ) {
 		$product = $product ? $product : wc_get_product( $product_id );
 
-		if ( ! $product || 'bundle' === $product->get_type() ) {
+		if ( ! $product || 'cbfw_bundle' === $product->get_type() ) {
 			return;
 		}
 
@@ -223,7 +225,7 @@ class BPFW_Sync {
 	 * @param WC_Product $product Product object.
 	 */
 	public function on_child_stock( $product ) {
-		if ( ! $product || 'bundle' === $product->get_type() ) {
+		if ( ! $product || 'cbfw_bundle' === $product->get_type() ) {
 			return;
 		}
 
@@ -240,7 +242,7 @@ class BPFW_Sync {
 	public function on_child_stock_status( $product_id, $status, $product = null ) {
 		$product = $product ? $product : wc_get_product( $product_id );
 
-		if ( ! $product || 'bundle' === $product->get_type() ) {
+		if ( ! $product || 'cbfw_bundle' === $product->get_type() ) {
 			return;
 		}
 
@@ -253,7 +255,7 @@ class BPFW_Sync {
 	 * @param int $post_id Post ID.
 	 */
 	public function on_child_trashed( $post_id ) {
-		if ( 'product' !== get_post_type( $post_id ) ) {
+		if ( ! in_array( get_post_type( $post_id ), array( 'product', 'product_variation' ), true ) ) {
 			return;
 		}
 

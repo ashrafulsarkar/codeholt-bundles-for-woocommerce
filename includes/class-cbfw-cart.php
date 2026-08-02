@@ -2,15 +2,15 @@
 /**
  * Cart integration: validation, item data, stock checks.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Cart.
+ * CBFW_Cart.
  */
-class BPFW_Cart {
+class CBFW_Cart {
 
 	/**
 	 * Hook everything up.
@@ -32,7 +32,7 @@ class BPFW_Cart {
 	 * @return bool
 	 */
 	public function validate_add( $passed, $product_id, $quantity ) {
-		$bundle = bpfw_get_bundle( $product_id );
+		$bundle = cbfw_get_bundle( $product_id );
 
 		if ( ! $bundle || ! $passed ) {
 			return $passed;
@@ -44,7 +44,7 @@ class BPFW_Cart {
 		}
 
 		return $this->validate_requirements(
-			bpfw_collect_child_requirements( WC()->cart, $product_id, $quantity )
+			cbfw_collect_child_requirements( WC()->cart, $product_id, $quantity )
 		);
 	}
 
@@ -58,12 +58,12 @@ class BPFW_Cart {
 	 * @return bool
 	 */
 	public function validate_update( $passed, $cart_item_key, $values, $quantity ) {
-		if ( ! $passed || empty( $values['data'] ) || ! bpfw_is_bundle( $values['data'] ) ) {
+		if ( ! $passed || empty( $values['data'] ) || ! cbfw_is_bundle( $values['data'] ) ) {
 			return $passed;
 		}
 
 		return $this->validate_requirements(
-			bpfw_collect_child_requirements( WC()->cart, null, 0, $cart_item_key, $quantity )
+			cbfw_collect_child_requirements( WC()->cart, null, 0, $cart_item_key, $quantity )
 		);
 	}
 
@@ -133,7 +133,7 @@ class BPFW_Cart {
 	 * @throws Exception When bundled products lack stock.
 	 */
 	public function add_item_data( $cart_item_data, $product_id, $variation_id = 0, $quantity = 1 ) {
-		$bundle = bpfw_get_bundle( $product_id );
+		$bundle = cbfw_get_bundle( $product_id );
 
 		if ( ! $bundle ) {
 			return $cart_item_data;
@@ -141,7 +141,7 @@ class BPFW_Cart {
 
 		if ( isset( WC()->cart ) ) {
 			$error = $this->requirement_error(
-				bpfw_collect_child_requirements( WC()->cart, $product_id, max( 1, (int) $quantity ) )
+				cbfw_collect_child_requirements( WC()->cart, $product_id, max( 1, (int) $quantity ) )
 			);
 
 			if ( $error ) {
@@ -159,7 +159,7 @@ class BPFW_Cart {
 			);
 		}
 
-		$cart_item_data['bpfw_items'] = $snapshot;
+		$cart_item_data['cbfw_items'] = $snapshot;
 
 		return $cart_item_data;
 	}
@@ -173,13 +173,13 @@ class BPFW_Cart {
 	 * @return array
 	 */
 	public function display_item_data( $item_data, $cart_item ) {
-		if ( empty( $cart_item['bpfw_items'] ) || ! is_array( $cart_item['bpfw_items'] ) ) {
+		if ( empty( $cart_item['cbfw_items'] ) || ! is_array( $cart_item['cbfw_items'] ) ) {
 			return $item_data;
 		}
 
 		$lines = array();
 
-		foreach ( $cart_item['bpfw_items'] as $item ) {
+		foreach ( $cart_item['cbfw_items'] as $item ) {
 			/* translators: 1: quantity, 2: product name. */
 			$lines[] = sprintf( _x( '%1$s × %2$s', 'bundled item summary', 'codeholt-bundles-for-woocommerce' ), $item['qty'], $item['name'] );
 		}
@@ -189,10 +189,10 @@ class BPFW_Cart {
 			'value' => implode( ', ', $lines ),
 		);
 
-		$bundle = isset( $cart_item['data'] ) ? bpfw_get_bundle( $cart_item['data'] ) : false;
+		$bundle = isset( $cart_item['data'] ) ? cbfw_get_bundle( $cart_item['data'] ) : false;
 
 		if ( $bundle ) {
-			$pricing = bpfw_get_bundle_pricing( $bundle );
+			$pricing = cbfw_get_bundle_pricing( $bundle );
 
 			if ( $pricing['savings'] > 0 ) {
 				$item_data[] = array(
@@ -212,14 +212,14 @@ class BPFW_Cart {
 		$has_bundle = false;
 
 		foreach ( WC()->cart->get_cart() as $cart_item ) {
-			if ( bpfw_is_bundle( $cart_item['data'] ) ) {
+			if ( cbfw_is_bundle( $cart_item['data'] ) ) {
 				$has_bundle = true;
 				break;
 			}
 		}
 
 		if ( $has_bundle ) {
-			$this->validate_requirements( bpfw_collect_child_requirements( WC()->cart ) );
+			$this->validate_requirements( cbfw_collect_child_requirements( WC()->cart ) );
 		}
 	}
 }

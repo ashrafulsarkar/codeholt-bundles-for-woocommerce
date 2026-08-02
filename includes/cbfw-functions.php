@@ -2,7 +2,7 @@
 /**
  * Helper functions.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,20 +13,20 @@ defined( 'ABSPATH' ) || exit;
  * @param mixed $product Product object or ID.
  * @return bool
  */
-function bpfw_is_bundle( $product ) {
+function cbfw_is_bundle( $product ) {
 	$product = is_a( $product, 'WC_Product' ) ? $product : wc_get_product( $product );
-	return $product && 'bundle' === $product->get_type();
+	return $product && 'cbfw_bundle' === $product->get_type();
 }
 
 /**
  * Get a bundle product object, or false.
  *
  * @param mixed $product Product object or ID.
- * @return BPFW_Product_Bundle|false
+ * @return CBFW_Product_Bundle|false
  */
-function bpfw_get_bundle( $product ) {
+function cbfw_get_bundle( $product ) {
 	$product = is_a( $product, 'WC_Product' ) ? $product : wc_get_product( $product );
-	return ( $product && 'bundle' === $product->get_type() ) ? $product : false;
+	return ( $product && 'cbfw_bundle' === $product->get_type() ) ? $product : false;
 }
 
 /**
@@ -34,12 +34,23 @@ function bpfw_get_bundle( $product ) {
  *
  * @return array
  */
-function bpfw_get_bundle_choices() {
+function cbfw_get_bundle_choices() {
+	/**
+	 * How many bundles to load into editor dropdowns. This is only there to
+	 * keep the block/widget selects from querying an unbounded number of
+	 * products on very large stores — raise it if you have more bundles.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $limit Number of bundles to load (-1 for all).
+	 */
+	$limit = (int) apply_filters( 'cbfw_bundle_choices_limit', 200 );
+
 	$ids = wc_get_products(
 		array(
-			'type'    => 'bundle',
+			'type'    => 'cbfw_bundle',
 			'status'  => 'publish',
-			'limit'   => 200,
+			'limit'   => $limit,
 			'orderby' => 'title',
 			'order'   => 'ASC',
 			'return'  => 'ids',
@@ -59,16 +70,16 @@ function bpfw_get_bundle_choices() {
  *
  * @return string[]
  */
-function bpfw_get_pricing_modes() {
+function cbfw_get_pricing_modes() {
 	/**
 	 * Filter the registered pricing mode slugs.
-	 * Custom modes must also hook `bpfw_custom_mode_prices` to compute prices.
+	 * Custom modes must also hook `cbfw_custom_mode_prices` to compute prices.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param string[] $modes Mode slugs.
 	 */
-	return apply_filters( 'bpfw_pricing_modes', array( 'auto', 'fixed' ) );
+	return apply_filters( 'cbfw_pricing_modes', array( 'auto', 'fixed' ) );
 }
 
 /**
@@ -76,7 +87,7 @@ function bpfw_get_pricing_modes() {
  *
  * @return array
  */
-function bpfw_get_pricing_mode_options() {
+function cbfw_get_pricing_mode_options() {
 	/**
 	 * Filter the pricing mode dropdown options.
 	 *
@@ -85,7 +96,7 @@ function bpfw_get_pricing_mode_options() {
 	 * @param array $options slug => label.
 	 */
 	return apply_filters(
-		'bpfw_pricing_mode_options',
+		'cbfw_pricing_mode_options',
 		array(
 			'auto'  => __( 'Auto calculate (sum of products)', 'codeholt-bundles-for-woocommerce' ),
 			'fixed' => __( 'Fixed bundle price', 'codeholt-bundles-for-woocommerce' ),
@@ -94,40 +105,46 @@ function bpfw_get_pricing_mode_options() {
 }
 
 /**
- * Product types allowed as bundled children.
+ * Whether a product can be added to a bundle.
  *
- * @return string[]
+ * Any purchasable product qualifies — simple products, variations, and any
+ * other purchasable type a third party registers. Two technical exclusions
+ * apply: a bundle cannot contain another bundle (that would recurse when
+ * totalling prices and stock), and a product WooCommerce reports as not
+ * purchasable has no price to total (variable parents, grouped and external
+ * products, or a product with an empty price) — pick a specific variation
+ * rather than its parent.
+ *
+ * @param mixed $product Product object or ID.
+ * @return bool
  */
-function bpfw_get_allowed_child_types() {
+function cbfw_can_bundle_product( $product ) {
+	$product = is_a( $product, 'WC_Product' ) ? $product : wc_get_product( $product );
+
+	$can = $product
+		&& ! cbfw_is_bundle( $product )
+		&& 'publish' === $product->get_status()
+		&& $product->is_purchasable();
+
 	/**
-	 * Filter which product types can be bundled.
+	 * Filter whether a product can be bundled.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string[] $types Allowed product types.
+	 * @param bool            $can     Whether the product can be bundled.
+	 * @param WC_Product|null $product Product object.
 	 */
-	return apply_filters( 'bpfw_allowed_child_types', array( 'simple' ) );
-}
-
-/**
- * Whether the Pro add-on is installed and licensed.
- * Defers to the Pro add-on's own `bpfwp_is_licensed()` when present.
- *
- * @return bool
- */
-function bpfw_is_pro() {
-	return function_exists( 'bpfwp_is_licensed' ) && bpfwp_is_licensed();
+	return (bool) apply_filters( 'cbfw_can_bundle_product', $can, $product );
 }
 
 /**
  * Registered product page layouts (slug => label).
- * Table and Compact ship in the free plugin. Add-ons can register more
- * layouts (e.g. List, Grid, Inline, Custom) via the `bpfw_product_layouts`
- * filter — BPFWP_Layouts does this and takes over their rendering.
+ * Table and Compact ship with the plugin. Other plugins can register more
+ * layouts via the `cbfw_product_layouts` filter and render them themselves.
  *
  * @return array
  */
-function bpfw_get_product_layouts() {
+function cbfw_get_product_layouts() {
 	$layouts = array(
 		'table'   => __( 'Table', 'codeholt-bundles-for-woocommerce' ),
 		'compact' => __( 'Compact', 'codeholt-bundles-for-woocommerce' ),
@@ -136,55 +153,13 @@ function bpfw_get_product_layouts() {
 	/**
 	 * Filter the registered product page layouts.
 	 * Custom layouts render the standard bundled-items markup with a
-	 * `bpfw-layout-{slug}` wrapper class — style them via CSS.
+	 * `cbfw-layout-{slug}` wrapper class — style them via CSS.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param array $layouts slug => label.
 	 */
-	return apply_filters( 'bpfw_product_layouts', $layouts );
-}
-
-/**
- * Product page layout slugs available without Pro.
- *
- * @return string[]
- */
-function bpfw_get_free_product_layouts() {
-	/**
-	 * Filter which product page layout slugs are free (not Pro-gated).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string[] $free_layouts Free layout slugs.
-	 */
-	return apply_filters( 'bpfw_free_product_layouts', array( 'table', 'compact' ) );
-}
-
-/**
- * Whether a given product page layout slug requires Pro.
- *
- * @param string $layout Layout slug.
- * @return bool
- */
-function bpfw_layout_requires_pro( $layout ) {
-	return ! in_array( $layout, bpfw_get_free_product_layouts(), true );
-}
-
-/**
- * URL to point free-plugin upsell links at.
- *
- * @return string
- */
-function bpfw_get_upgrade_url() {
-	/**
-	 * Filter the upgrade-to-Pro URL used by upsell links.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $url Upgrade URL.
-	 */
-	return apply_filters( 'bpfw_upgrade_url', function_exists( 'bpfwp_license_page_url' ) ? bpfwp_license_page_url() : admin_url( 'admin.php?page=bpfw-bundles' ) );
+	return apply_filters( 'cbfw_product_layouts', $layouts );
 }
 
 /**
@@ -192,7 +167,7 @@ function bpfw_get_upgrade_url() {
  *
  * @return array
  */
-function bpfw_get_default_settings() {
+function cbfw_get_default_settings() {
 	/**
 	 * Filter the default plugin settings.
 	 *
@@ -201,9 +176,9 @@ function bpfw_get_default_settings() {
 	 * @param array $defaults Default settings.
 	 */
 	return apply_filters(
-		'bpfw_default_settings',
+		'cbfw_default_settings',
 		array(
-			'product_layout'     => 'list',
+			'product_layout'     => 'table',
 			'card_layout'        => 'card',
 			'included_title'     => __( "What's included", 'codeholt-bundles-for-woocommerce' ),
 			'show_savings_badge' => 'yes',
@@ -216,8 +191,8 @@ function bpfw_get_default_settings() {
  *
  * @return array
  */
-function bpfw_get_settings() {
-	$saved = get_option( 'bpfw_settings', array() );
+function cbfw_get_settings() {
+	$saved = get_option( 'cbfw_settings', array() );
 
 	/**
 	 * Filter the resolved plugin settings.
@@ -227,8 +202,8 @@ function bpfw_get_settings() {
 	 * @param array $settings Settings merged with defaults.
 	 */
 	return apply_filters(
-		'bpfw_settings',
-		wp_parse_args( is_array( $saved ) ? $saved : array(), bpfw_get_default_settings() )
+		'cbfw_settings',
+		wp_parse_args( is_array( $saved ) ? $saved : array(), cbfw_get_default_settings() )
 	);
 }
 
@@ -239,33 +214,29 @@ function bpfw_get_settings() {
  * @param mixed  $fallback Value when the key is unknown.
  * @return mixed
  */
-function bpfw_get_setting( $key, $fallback = null ) {
-	$settings = bpfw_get_settings();
+function cbfw_get_setting( $key, $fallback = null ) {
+	$settings = cbfw_get_settings();
 	return isset( $settings[ $key ] ) ? $settings[ $key ] : $fallback;
 }
 
 /**
  * Resolve the product page layout for a bundle: per-product override
- * (`_bpfw_layout` meta) falling back to the global setting.
+ * (`_cbfw_layout` meta) falling back to the global setting.
  *
- * @param BPFW_Product_Bundle $bundle Bundle product.
- * @return string Layout slug (see bpfw_get_product_layouts()).
+ * @param CBFW_Product_Bundle $bundle Bundle product.
+ * @return string Layout slug (see cbfw_get_product_layouts()).
  */
-function bpfw_get_bundle_layout( $bundle ) {
-	$allowed = array_keys( bpfw_get_product_layouts() );
-	$layout  = $bundle->get_meta( '_bpfw_layout' );
+function cbfw_get_bundle_layout( $bundle ) {
+	$allowed = array_keys( cbfw_get_product_layouts() );
+	$layout  = $bundle->get_meta( '_cbfw_layout' );
 
 	if ( ! in_array( $layout, $allowed, true ) ) {
-		$layout = bpfw_get_setting( 'product_layout', 'list' );
+		$layout = cbfw_get_setting( 'product_layout', 'table' );
 	}
 
+	// A layout registered by another plugin must fall back once that plugin is gone.
 	if ( ! in_array( $layout, $allowed, true ) ) {
-		$layout = 'list';
-	}
-
-	// A layout saved while Pro was active must fall back gracefully once Pro is gone.
-	if ( ! bpfw_is_pro() && bpfw_layout_requires_pro( $layout ) ) {
-		$layout = 'compact';
+		$layout = 'table';
 	}
 
 	/**
@@ -274,22 +245,20 @@ function bpfw_get_bundle_layout( $bundle ) {
 	 * @since 1.0.0
 	 *
 	 * @param string              $layout Layout slug.
-	 * @param BPFW_Product_Bundle $bundle Bundle product.
+	 * @param CBFW_Product_Bundle $bundle Bundle product.
 	 */
-	return apply_filters( 'bpfw_bundle_layout', $layout, $bundle );
+	return apply_filters( 'cbfw_bundle_layout', $layout, $bundle );
 }
 
 /**
  * CSS variable overrides, attached inline to the frontend stylesheet.
- * The free plugin ships no design settings of its own — colors and corner
- * radius are a Pro feature (see BPFWP_Design) that hooks the
- * `bpfw_inline_css` filter below. Free sites render with the plugin's
- * built-in CSS defaults (see :root in frontend.css).
+ * Nothing is emitted unless another plugin or theme filters `cbfw_inline_css`;
+ * otherwise the built-in defaults in frontend.css (:root) apply.
  *
  * @return string
  */
-function bpfw_get_inline_css() {
-	$settings = bpfw_get_settings();
+function cbfw_get_inline_css() {
+	$settings = cbfw_get_settings();
 
 	/**
 	 * Filter the inline CSS attached to the frontend stylesheet.
@@ -299,16 +268,16 @@ function bpfw_get_inline_css() {
 	 * @param string $css      Inline CSS.
 	 * @param array  $settings Plugin settings.
 	 */
-	return apply_filters( 'bpfw_inline_css', '', $settings );
+	return apply_filters( 'cbfw_inline_css', '', $settings );
 }
 
 /**
  * Get pricing totals for a bundle.
  *
- * @param BPFW_Product_Bundle $bundle Bundle product.
+ * @param CBFW_Product_Bundle $bundle Bundle product.
  * @return array{regular:float,active:float,price:float,savings:float,percent:float}
  */
-function bpfw_get_bundle_pricing( $bundle ) {
+function cbfw_get_bundle_pricing( $bundle ) {
 	$totals  = $bundle->get_items_totals();
 	$price   = (float) $bundle->get_price();
 	$regular = (float) $totals['regular'];
@@ -321,10 +290,10 @@ function bpfw_get_bundle_pricing( $bundle ) {
 	 * @since 1.0.0
 	 *
 	 * @param array               $pricing Pricing data.
-	 * @param BPFW_Product_Bundle $bundle  Bundle product.
+	 * @param CBFW_Product_Bundle $bundle  Bundle product.
 	 */
 	return apply_filters(
-		'bpfw_bundle_pricing',
+		'cbfw_bundle_pricing',
 		array(
 			'regular' => $regular,
 			'active'  => (float) $totals['active'],
@@ -343,12 +312,12 @@ function bpfw_get_bundle_pricing( $bundle ) {
  * @param string $template Template file relative to templates dir.
  * @param array  $args     Variables passed to the template.
  */
-function bpfw_get_template( $template, $args = array() ) {
+function cbfw_get_template( $template, $args = array() ) {
 	wc_get_template(
 		$template,
 		$args,
 		'codeholt-bundles-for-woocommerce/',
-		BPFW_PLUGIN_DIR . 'templates/'
+		CBFW_PLUGIN_DIR . 'templates/'
 	);
 }
 
@@ -359,8 +328,8 @@ function bpfw_get_template( $template, $args = array() ) {
  * @param array $args      Display args.
  * @return string HTML.
  */
-function bpfw_render_bundle_card( $bundle_id, $args = array() ) {
-	$bundle = bpfw_get_bundle( absint( $bundle_id ) );
+function cbfw_render_bundle_card( $bundle_id, $args = array() ) {
+	$bundle = cbfw_get_bundle( absint( $bundle_id ) );
 
 	if ( ! $bundle || 'publish' !== $bundle->get_status() ) {
 		return '';
@@ -369,17 +338,17 @@ function bpfw_render_bundle_card( $bundle_id, $args = array() ) {
 	$args = wp_parse_args(
 		$args,
 		array(
-			'layout'     => bpfw_get_setting( 'card_layout', 'card' ), // card | list.
+			'layout'     => cbfw_get_setting( 'card_layout', 'card' ), // card | list.
 			'show_image' => true,
 			'show_items' => true,
 		)
 	);
 
 	// Frontend styles are needed wherever a card renders.
-	wp_enqueue_style( 'bpfw-frontend' );
+	wp_enqueue_style( 'cbfw-frontend' );
 
 	ob_start();
-	bpfw_get_template(
+	cbfw_get_template(
 		'bundle-card.php',
 		array(
 			'bundle' => $bundle,
@@ -393,21 +362,21 @@ function bpfw_render_bundle_card( $bundle_id, $args = array() ) {
 	 * @since 1.0.0
 	 *
 	 * @param string              $html   Card HTML.
-	 * @param BPFW_Product_Bundle $bundle Bundle product.
+	 * @param CBFW_Product_Bundle $bundle Bundle product.
 	 * @param array               $args   Display args.
 	 */
-	return apply_filters( 'bpfw_bundle_card_html', ob_get_clean(), $bundle, $args );
+	return apply_filters( 'cbfw_bundle_card_html', ob_get_clean(), $bundle, $args );
 }
 
 /**
  * Build a short, human readable summary of bundled items.
  * Example: "2 × Cake Bars, 1 × Stadium Sauce".
  *
- * @param BPFW_Product_Bundle $bundle       Bundle product.
+ * @param CBFW_Product_Bundle $bundle       Bundle product.
  * @param bool                $include_hidden Include hidden items.
  * @return string
  */
-function bpfw_get_items_summary( $bundle, $include_hidden = true ) {
+function cbfw_get_items_summary( $bundle, $include_hidden = true ) {
 	$parts = array();
 
 	foreach ( $bundle->get_bundled_products() as $item ) {
@@ -431,7 +400,7 @@ function bpfw_get_items_summary( $bundle, $include_hidden = true ) {
  * @param int      $override_qty  Quantity to use for the skipped item instead.
  * @return array child_product_id => required quantity
  */
-function bpfw_collect_child_requirements( $cart, $extra_bundle = null, $extra_qty = 0, $skip_item_key = '', $override_qty = 0 ) {
+function cbfw_collect_child_requirements( $cart, $extra_bundle = null, $extra_qty = 0, $skip_item_key = '', $override_qty = 0 ) {
 	$needs = array();
 
 	$add = function ( $bundle, $qty ) use ( &$needs ) {
@@ -448,7 +417,7 @@ function bpfw_collect_child_requirements( $cart, $extra_bundle = null, $extra_qt
 		$product = $cart_item['data'];
 		$qty     = ( $key === $skip_item_key ) ? $override_qty : $cart_item['quantity'];
 
-		if ( bpfw_is_bundle( $product ) ) {
+		if ( cbfw_is_bundle( $product ) ) {
 			$add( $product, $qty );
 		} elseif ( $product && $product->managing_stock() ) {
 			$pid = $product->get_stock_managed_by_id();
@@ -460,7 +429,7 @@ function bpfw_collect_child_requirements( $cart, $extra_bundle = null, $extra_qt
 	}
 
 	if ( $extra_bundle ) {
-		$bundle = bpfw_get_bundle( $extra_bundle );
+		$bundle = cbfw_get_bundle( $extra_bundle );
 		if ( $bundle ) {
 			$add( $bundle, max( 1, (int) $extra_qty ) );
 		}

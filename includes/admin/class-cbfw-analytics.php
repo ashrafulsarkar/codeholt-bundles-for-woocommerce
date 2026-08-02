@@ -2,15 +2,15 @@
 /**
  * Basic analytics dashboard (HPOS compatible).
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Analytics.
+ * CBFW_Analytics.
  */
-class BPFW_Analytics {
+class CBFW_Analytics {
 
 	/**
 	 * Hook everything up.
@@ -28,7 +28,7 @@ class BPFW_Analytics {
 			__( 'Bundles', 'codeholt-bundles-for-woocommerce' ),
 			__( 'Bundles', 'codeholt-bundles-for-woocommerce' ),
 			'manage_woocommerce',
-			'bpfw-bundles',
+			'cbfw-bundles',
 			array( $this, 'render_page' )
 		);
 	}
@@ -41,7 +41,7 @@ class BPFW_Analytics {
 	 */
 	public static function get_stats( $days = 30 ) {
 		$days      = max( 1, absint( $days ) );
-		$cache_key = 'bpfw_stats_' . $days;
+		$cache_key = 'cbfw_stats_' . $days;
 		$cached    = get_transient( $cache_key );
 
 		if ( false !== $cached ) {
@@ -67,11 +67,11 @@ class BPFW_Analytics {
 							SUM( oim_total.meta_value + 0 ) AS revenue,
 							SUM( COALESCE( oim_save.meta_value + 0, 0 ) ) AS savings
 					 FROM {$wpdb->prefix}woocommerce_order_items oi
-					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_bpfw_bundled_items'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_cbfw_bundled_items'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_pid   ON oim_pid.order_item_id   = oi.order_item_id AND oim_pid.meta_key   = '_product_id'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_qty   ON oim_qty.order_item_id   = oi.order_item_id AND oim_qty.meta_key   = '_qty'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_total ON oim_total.order_item_id = oi.order_item_id AND oim_total.meta_key = '_line_total'
-					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_bpfw_savings'
+					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_cbfw_savings'
 					 INNER JOIN {$wpdb->prefix}wc_orders o ON o.id = oi.order_id AND o.type = 'shop_order'
 					 WHERE o.status IN ('wc-processing','wc-completed') AND o.date_created_gmt >= %s
 					 GROUP BY oim_pid.meta_value
@@ -88,11 +88,11 @@ class BPFW_Analytics {
 							SUM( oim_total.meta_value + 0 ) AS revenue,
 							SUM( COALESCE( oim_save.meta_value + 0, 0 ) ) AS savings
 					 FROM {$wpdb->prefix}woocommerce_order_items oi
-					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_bpfw_bundled_items'
+					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_flag  ON oim_flag.order_item_id  = oi.order_item_id AND oim_flag.meta_key  = '_cbfw_bundled_items'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_pid   ON oim_pid.order_item_id   = oi.order_item_id AND oim_pid.meta_key   = '_product_id'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_qty   ON oim_qty.order_item_id   = oi.order_item_id AND oim_qty.meta_key   = '_qty'
 					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim_total ON oim_total.order_item_id = oi.order_item_id AND oim_total.meta_key = '_line_total'
-					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_bpfw_savings'
+					 LEFT JOIN  {$wpdb->prefix}woocommerce_order_itemmeta oim_save  ON oim_save.order_item_id  = oi.order_item_id AND oim_save.meta_key  = '_cbfw_savings'
 					 INNER JOIN {$wpdb->posts} o ON o.ID = oi.order_id AND o.post_type = 'shop_order'
 					 WHERE o.post_status IN ('wc-processing','wc-completed') AND o.post_date_gmt >= %s
 					 GROUP BY oim_pid.meta_value
@@ -136,14 +136,14 @@ class BPFW_Analytics {
 
 		/**
 		 * Filter the tabs on the Bundles admin page (slug => label).
-		 * Non-core tabs are rendered via the `bpfw_admin_tab_{slug}` action.
+		 * Non-core tabs are rendered via the `cbfw_admin_tab_{slug}` action.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @param array $tabs slug => label.
 		 */
 		$tabs = apply_filters(
-			'bpfw_admin_tabs',
+			'cbfw_admin_tabs',
 			array(
 				'overview'      => __( 'Overview', 'codeholt-bundles-for-woocommerce' ),
 				'settings'      => __( 'Settings', 'codeholt-bundles-for-woocommerce' ),
@@ -155,20 +155,20 @@ class BPFW_Analytics {
 			$tab = 'overview';
 		}
 		?>
-		<div class="wrap bpfw-admin-page">
+		<div class="wrap cbfw-admin-page">
 			<h1><?php esc_html_e( 'Product Bundles', 'codeholt-bundles-for-woocommerce' ); ?></h1>
 
 			<nav class="nav-tab-wrapper">
-				<?php foreach ( $tabs as $bpfw_slug => $bpfw_label ) : ?>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=' . $bpfw_slug ) ); ?>" class="nav-tab <?php echo $bpfw_slug === $tab ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $bpfw_label ); ?></a>
+				<?php foreach ( $tabs as $cbfw_slug => $cbfw_label ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=cbfw-bundles&tab=' . $cbfw_slug ) ); ?>" class="nav-tab <?php echo $cbfw_slug === $tab ? 'nav-tab-active' : ''; ?>"><?php echo esc_html( $cbfw_label ); ?></a>
 				<?php endforeach; ?>
 			</nav>
 
 			<?php
 			if ( 'import_export' === $tab ) {
-				BPFW_Import_Export::render_tab();
+				CBFW_Import_Export::render_tab();
 			} elseif ( 'settings' === $tab ) {
-				BPFW_Settings::render_tab();
+				CBFW_Settings::render_tab();
 			} elseif ( 'overview' === $tab ) {
 				$this->render_overview();
 			} else {
@@ -177,7 +177,7 @@ class BPFW_Analytics {
 				 *
 				 * @since 1.0.0
 				 */
-				do_action( 'bpfw_admin_tab_' . $tab );
+				do_action( 'cbfw_admin_tab_' . $tab );
 			}
 			?>
 		</div>
@@ -190,20 +190,19 @@ class BPFW_Analytics {
 	protected function render_overview() {
 		/**
 		 * Filter the Overview reporting period in days.
-		 * The Pro add-on hooks this to make the period selectable.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @param int $days Days to look back (default 30).
 		 */
-		$days  = max( 1, absint( apply_filters( 'bpfw_overview_days', 30 ) ) );
+		$days  = max( 1, absint( apply_filters( 'cbfw_overview_days', 30 ) ) );
 		$stats = self::get_stats( $days );
 		$top   = $stats['rows'] ? $stats['rows'][0] : null;
 
 		$bundle_count = count(
 			wc_get_products(
 				array(
-					'type'   => 'bundle',
+					'type'   => 'cbfw_bundle',
 					'status' => 'publish',
 					'limit'  => -1,
 					'return' => 'ids',
@@ -211,8 +210,8 @@ class BPFW_Analytics {
 			)
 		);
 		?>
-		<div class="bpfw-toolbar">
-			<p class="bpfw-toolbar__text">
+		<div class="cbfw-toolbar">
+			<p class="cbfw-toolbar__text">
 				<span class="dashicons dashicons-chart-bar" aria-hidden="true"></span>
 				<?php
 				printf(
@@ -222,46 +221,46 @@ class BPFW_Analytics {
 				);
 				?>
 			</p>
-			<div class="bpfw-toolbar__actions">
+			<div class="cbfw-toolbar__actions">
 				<?php
 				/**
 				 * Fires in the Overview toolbar — add period selectors or
-				 * export buttons here (used by the Pro add-on).
+				 * export buttons here.
 				 *
 				 * @since 1.0.0
 				 *
 				 * @param int $days Current reporting period in days.
 				 */
-				do_action( 'bpfw_overview_actions', $days );
+				do_action( 'cbfw_overview_actions', $days );
 				?>
 			</div>
 		</div>
 
-		<div class="bpfw-cards">
-			<div class="bpfw-stat-card">
+		<div class="cbfw-cards">
+			<div class="cbfw-stat-card">
 				<h3><?php esc_html_e( 'Active bundles', 'codeholt-bundles-for-woocommerce' ); ?></h3>
-				<div class="bpfw-stat"><?php echo esc_html( number_format_i18n( $bundle_count ) ); ?></div>
+				<div class="cbfw-stat"><?php echo esc_html( number_format_i18n( $bundle_count ) ); ?></div>
 			</div>
-			<div class="bpfw-stat-card">
+			<div class="cbfw-stat-card">
 				<h3><?php esc_html_e( 'Bundles sold', 'codeholt-bundles-for-woocommerce' ); ?></h3>
-				<div class="bpfw-stat"><?php echo esc_html( number_format_i18n( $stats['sold'] ) ); ?></div>
+				<div class="cbfw-stat"><?php echo esc_html( number_format_i18n( $stats['sold'] ) ); ?></div>
 			</div>
-			<div class="bpfw-stat-card">
+			<div class="cbfw-stat-card">
 				<h3><?php esc_html_e( 'Bundle revenue', 'codeholt-bundles-for-woocommerce' ); ?></h3>
-				<div class="bpfw-stat"><?php echo wp_kses_post( wc_price( $stats['revenue'] ) ); ?></div>
+				<div class="cbfw-stat"><?php echo wp_kses_post( wc_price( $stats['revenue'] ) ); ?></div>
 			</div>
-			<div class="bpfw-stat-card">
+			<div class="cbfw-stat-card">
 				<h3><?php esc_html_e( 'Customer savings given', 'codeholt-bundles-for-woocommerce' ); ?></h3>
-				<div class="bpfw-stat"><?php echo wp_kses_post( wc_price( $stats['savings'] ) ); ?></div>
+				<div class="cbfw-stat"><?php echo wp_kses_post( wc_price( $stats['savings'] ) ); ?></div>
 			</div>
-			<div class="bpfw-stat-card">
+			<div class="cbfw-stat-card">
 				<h3><?php esc_html_e( 'Top bundle', 'codeholt-bundles-for-woocommerce' ); ?></h3>
-				<div class="bpfw-stat"><?php echo $top ? esc_html( $top['name'] ) : '—'; ?></div>
+				<div class="cbfw-stat"><?php echo $top ? esc_html( $top['name'] ) : '—'; ?></div>
 			</div>
 		</div>
 
-		<div class="bpfw-overview-grid">
-			<section class="bpfw-panel-card">
+		<div class="cbfw-overview-grid">
+			<section class="cbfw-panel-card">
 				<h2>
 					<?php
 					printf(
@@ -272,7 +271,7 @@ class BPFW_Analytics {
 					?>
 				</h2>
 
-				<table class="widefat striped bpfw-table">
+				<table class="widefat striped cbfw-table">
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Bundle', 'codeholt-bundles-for-woocommerce' ); ?></th>
@@ -284,15 +283,15 @@ class BPFW_Analytics {
 					<tbody>
 						<?php if ( $stats['rows'] ) : ?>
 							<?php foreach ( $stats['rows'] as $row ) : ?>
-								<?php $bpfw_share = $stats['revenue'] > 0 ? round( ( $row['revenue'] / $stats['revenue'] ) * 100 ) : 0; ?>
+								<?php $cbfw_share = $stats['revenue'] > 0 ? round( ( $row['revenue'] / $stats['revenue'] ) * 100 ) : 0; ?>
 								<tr>
 									<td><a href="<?php echo esc_url( get_edit_post_link( $row['bundle_id'] ) ); ?>"><?php echo esc_html( $row['name'] ); ?></a></td>
 									<td><?php echo esc_html( number_format_i18n( $row['sold'] ) ); ?></td>
 									<td><?php echo wp_kses_post( wc_price( $row['revenue'] ) ); ?></td>
 									<td>
-										<span class="bpfw-share">
-											<span class="bpfw-share__bar" aria-hidden="true"><i style="width:<?php echo esc_attr( min( 100, $bpfw_share ) ); ?>%;"></i></span>
-											<?php echo esc_html( $stats['revenue'] > 0 ? $bpfw_share . '%' : '—' ); ?>
+										<span class="cbfw-share">
+											<span class="cbfw-share__bar" aria-hidden="true"><i style="width:<?php echo esc_attr( min( 100, $cbfw_share ) ); ?>%;"></i></span>
+											<?php echo esc_html( $stats['revenue'] > 0 ? $cbfw_share . '%' : '—' ); ?>
 										</span>
 									</td>
 								</tr>
@@ -306,19 +305,19 @@ class BPFW_Analytics {
 				</table>
 			</section>
 
-			<section class="bpfw-panel-card bpfw-help-card">
+			<section class="cbfw-panel-card cbfw-help-card">
 				<h2><?php esc_html_e( 'Quick start', 'codeholt-bundles-for-woocommerce' ); ?></h2>
 				<ol>
 					<li><?php esc_html_e( 'Go to Products → Add New and choose the "Bundle product" type.', 'codeholt-bundles-for-woocommerce' ); ?></li>
-					<li><?php esc_html_e( 'Open the Bundled Products tab, search and add simple products.', 'codeholt-bundles-for-woocommerce' ); ?></li>
+					<li><?php esc_html_e( 'Open the Bundled Products tab, search and add products.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 					<li><?php esc_html_e( 'Pick Auto or Fixed pricing and a product page layout.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 					<li><?php esc_html_e( 'Publish — pricing, savings badge and stock sync are automatic.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ol>
 				<p>
 					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>"><?php esc_html_e( 'Create a bundle', 'codeholt-bundles-for-woocommerce' ); ?></a>
-					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=bpfw-bundles&tab=settings' ) ); ?>"><?php esc_html_e( 'Layout & design settings', 'codeholt-bundles-for-woocommerce' ); ?></a>
+					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=cbfw-bundles&tab=settings' ) ); ?>"><?php esc_html_e( 'Layout & design settings', 'codeholt-bundles-for-woocommerce' ); ?></a>
 				</p>
-				<p class="description"><?php esc_html_e( 'Display bundles anywhere with the [bundle id="123"] shortcode, the Product Bundle block, or the Elementor widget.', 'codeholt-bundles-for-woocommerce' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Display bundles anywhere with the [cbfw_bundle id="123"] shortcode, the Product Bundle block, or the Elementor widget.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 			</section>
 		</div>
 		<?php

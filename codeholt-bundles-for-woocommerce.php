@@ -16,30 +16,30 @@
  * WC requires at least: 8.0
  * WC tested up to:   10.0
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'BPFW_VERSION', '1.0.0' );
-define( 'BPFW_PLUGIN_FILE', __FILE__ );
-define( 'BPFW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'BPFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'BPFW_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'CBFW_VERSION', '1.0.0' );
+define( 'CBFW_PLUGIN_FILE', __FILE__ );
+define( 'CBFW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'CBFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'CBFW_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
- * Autoload BPFW_* classes from the includes directory.
+ * Autoload CBFW_* classes from the includes directory.
  */
 spl_autoload_register(
 	function ( $class ) {
-		if ( 0 !== strpos( $class, 'BPFW_' ) ) {
+		if ( 0 !== strpos( $class, 'CBFW_' ) ) {
 			return;
 		}
 		$file = 'class-' . str_replace( '_', '-', strtolower( $class ) ) . '.php';
 		$paths = array(
-			BPFW_PLUGIN_DIR . 'includes/' . $file,
-			BPFW_PLUGIN_DIR . 'includes/admin/' . $file,
-			BPFW_PLUGIN_DIR . 'includes/compat/' . $file,
+			CBFW_PLUGIN_DIR . 'includes/' . $file,
+			CBFW_PLUGIN_DIR . 'includes/admin/' . $file,
+			CBFW_PLUGIN_DIR . 'includes/compat/' . $file,
 		);
 		foreach ( $paths as $path ) {
 			if ( file_exists( $path ) ) {
@@ -64,7 +64,7 @@ add_action(
 /**
  * Boot the plugin once all plugins are loaded.
  */
-function bpfw_init() {
+function cbfw_init() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
 		add_action(
 			'admin_notices',
@@ -77,23 +77,23 @@ function bpfw_init() {
 		return;
 	}
 
-	require_once BPFW_PLUGIN_DIR . 'includes/bpfw-functions.php';
+	require_once CBFW_PLUGIN_DIR . 'includes/cbfw-functions.php';
 
-	BPFW_Plugin::instance();
+	CBFW_Plugin::instance();
 }
-add_action( 'plugins_loaded', 'bpfw_init', 11 );
+add_action( 'plugins_loaded', 'cbfw_init', 11 );
 
 register_activation_hook(
 	__FILE__,
 	function () {
-		if ( ! get_option( 'bpfw_version' ) ) {
-			add_option( 'bpfw_version', BPFW_VERSION, '', false );
+		if ( ! get_option( 'cbfw_version' ) ) {
+			add_option( 'cbfw_version', CBFW_VERSION, '', false );
 		} else {
-			update_option( 'bpfw_version', BPFW_VERSION, false );
+			update_option( 'cbfw_version', CBFW_VERSION, false );
 		}
-		// Make sure the "bundle" product type term exists.
-		if ( ! term_exists( 'bundle', 'product_type' ) ) {
-			wp_insert_term( 'bundle', 'product_type' );
+		// Make sure the product type term exists.
+		if ( ! term_exists( 'cbfw_bundle', 'product_type' ) ) {
+			wp_insert_term( 'cbfw_bundle', 'product_type' );
 		}
 	}
 );

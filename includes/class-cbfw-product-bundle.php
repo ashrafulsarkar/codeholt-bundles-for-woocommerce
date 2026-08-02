@@ -2,25 +2,25 @@
 /**
  * Bundle product class.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Product_Bundle.
+ * CBFW_Product_Bundle.
  *
  * Extends WC_Product_Simple so pricing, tax, shipping and AJAX
  * add-to-cart behave natively; only bundle-specific logic is added.
  */
-class BPFW_Product_Bundle extends WC_Product_Simple {
+class CBFW_Product_Bundle extends WC_Product_Simple {
 
 	/**
 	 * Cached resolved bundled products for this request.
 	 *
 	 * @var array|null
 	 */
-	protected $bpfw_resolved = null;
+	protected $cbfw_resolved = null;
 
 	/**
 	 * Product type.
@@ -28,7 +28,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 * @return string
 	 */
 	public function get_type() {
-		return 'bundle';
+		return 'cbfw_bundle';
 	}
 
 	/**
@@ -37,7 +37,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 * @return array[] Each: ['id' => int, 'qty' => int, 'hidden' => bool]
 	 */
 	public function get_bundled_items() {
-		$items = $this->get_meta( '_bpfw_bundled_items', true );
+		$items = $this->get_meta( '_cbfw_bundled_items', true );
 		return is_array( $items ) ? $items : array();
 	}
 
@@ -47,8 +47,8 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 * @return string
 	 */
 	public function get_pricing_mode() {
-		$mode = $this->get_meta( '_bpfw_pricing_mode', true );
-		return in_array( $mode, bpfw_get_pricing_modes(), true ) ? $mode : 'auto';
+		$mode = $this->get_meta( '_cbfw_pricing_mode', true );
+		return in_array( $mode, cbfw_get_pricing_modes(), true ) ? $mode : 'auto';
 	}
 
 	/**
@@ -57,7 +57,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 * @return string
 	 */
 	public function get_fixed_price() {
-		return (string) $this->get_meta( '_bpfw_fixed_price', true );
+		return (string) $this->get_meta( '_cbfw_fixed_price', true );
 	}
 
 	/**
@@ -66,17 +66,19 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 	 * @return array[] Each: ['product' => WC_Product, 'qty' => int, 'hidden' => bool]
 	 */
 	public function get_bundled_products() {
-		if ( null !== $this->bpfw_resolved ) {
-			return $this->bpfw_resolved;
+		if ( null !== $this->cbfw_resolved ) {
+			return $this->cbfw_resolved;
 		}
 
 		$resolved = array();
-		$types    = bpfw_get_allowed_child_types();
 
 		foreach ( $this->get_bundled_items() as $item ) {
 			$product = wc_get_product( absint( $item['id'] ) );
 
-			if ( ! $product || 'publish' !== $product->get_status() || ! in_array( $product->get_type(), $types, true ) ) {
+			// Deliberately permissive: a saved child only drops out once it is
+			// gone, unpublished, or would recurse — not because its price was
+			// temporarily cleared.
+			if ( ! $product || 'publish' !== $product->get_status() || cbfw_is_bundle( $product ) ) {
 				continue;
 			}
 
@@ -93,11 +95,11 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 		 * @since 1.0.0
 		 *
 		 * @param array               $resolved Resolved items.
-		 * @param BPFW_Product_Bundle $bundle   Bundle product.
+		 * @param CBFW_Product_Bundle $bundle   Bundle product.
 		 */
-		$this->bpfw_resolved = apply_filters( 'bpfw_bundled_products', $resolved, $this );
+		$this->cbfw_resolved = apply_filters( 'cbfw_bundled_products', $resolved, $this );
 
-		return $this->bpfw_resolved;
+		return $this->cbfw_resolved;
 	}
 
 	/**
@@ -148,7 +150,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 
 			if ( ! $product->is_in_stock() ) {
 				return new WP_Error(
-					'bpfw_out_of_stock',
+					'cbfw_out_of_stock',
 					/* translators: %s: product name. */
 					sprintf( __( '"%s" is out of stock and cannot be bundled right now.', 'codeholt-bundles-for-woocommerce' ), $product->get_name() )
 				);
@@ -156,7 +158,7 @@ class BPFW_Product_Bundle extends WC_Product_Simple {
 
 			if ( ! $product->has_enough_stock( $needed ) ) {
 				return new WP_Error(
-					'bpfw_not_enough_stock',
+					'cbfw_not_enough_stock',
 					sprintf(
 						/* translators: 1: product name, 2: available quantity. */
 						__( 'Not enough stock for "%1$s" — only %2$s available.', 'codeholt-bundles-for-woocommerce' ),

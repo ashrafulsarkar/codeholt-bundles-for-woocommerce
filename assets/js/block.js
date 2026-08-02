@@ -16,11 +16,11 @@
 	var ServerSideRender = wp.serverSideRender;
 
 	var bundleChoices =
-		window.bpfwBlockData && window.bpfwBlockData.bundles
-			? window.bpfwBlockData.bundles
+		window.cbfwBlockData && window.cbfwBlockData.bundles
+			? window.cbfwBlockData.bundles
 			: [ { value: 0, label: __( '— Select a bundle —', 'codeholt-bundles-for-woocommerce' ) } ];
 
-	registerBlockType( 'bpfw/bundle', {
+	registerBlockType( 'cbfw/bundle', {
 		title: __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' ),
 		description: __( 'Display a WooCommerce product bundle.', 'codeholt-bundles-for-woocommerce' ),
 		icon: 'archive',
@@ -89,7 +89,7 @@
 				} );
 			} else {
 				preview = el( ServerSideRender, {
-					block: 'bpfw/bundle',
+					block: 'cbfw/bundle',
 					attributes: attributes,
 				} );
 			}

@@ -1,29 +1,29 @@
 <?php
 /**
- * Plugin settings: layout defaults + limited design options.
+ * Plugin settings: layout and display defaults.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Settings.
+ * CBFW_Settings.
  */
-class BPFW_Settings {
+class CBFW_Settings {
 
 	/**
 	 * Option name holding all settings.
 	 */
-	const OPTION = 'bpfw_settings';
+	const OPTION = 'cbfw_settings';
 
 	/**
 	 * Hook everything up.
 	 */
 	public function __construct() {
-		add_action( 'admin_post_bpfw_save_settings', array( $this, 'save' ) );
+		add_action( 'admin_post_cbfw_save_settings', array( $this, 'save' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
-		add_filter( 'plugin_action_links_' . BPFW_PLUGIN_BASENAME, array( $this, 'action_links' ) );
+		add_filter( 'plugin_action_links_' . CBFW_PLUGIN_BASENAME, array( $this, 'action_links' ) );
 	}
 
 	/**
@@ -46,14 +46,14 @@ class BPFW_Settings {
 	 * @param string $hook Current admin page hook.
 	 */
 	public function enqueue( $hook ) {
-		if ( 'woocommerce_page_bpfw-bundles' !== $hook ) {
+		if ( 'woocommerce_page_cbfw-bundles' !== $hook ) {
 			return;
 		}
 
-		wp_enqueue_style( 'bpfw-admin', BPFW_PLUGIN_URL . 'assets/css/admin.css', array(), BPFW_VERSION );
+		wp_enqueue_style( 'cbfw-admin', CBFW_PLUGIN_URL . 'assets/css/admin.css', array(), CBFW_VERSION );
 
 		if ( isset( $_GET['tab'] ) && 'import_export' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only tab check.
-			wp_enqueue_script( 'bpfw-import-export', BPFW_PLUGIN_URL . 'assets/js/import-export.js', array(), BPFW_VERSION, true );
+			wp_enqueue_script( 'cbfw-import-export', CBFW_PLUGIN_URL . 'assets/js/import-export.js', array(), CBFW_VERSION, true );
 		}
 	}
 
@@ -67,7 +67,7 @@ class BPFW_Settings {
 		return add_query_arg(
 			array_merge(
 				array(
-					'page' => 'bpfw-bundles',
+					'page' => 'cbfw-bundles',
 					'tab'  => 'settings',
 				),
 				$args
@@ -80,29 +80,25 @@ class BPFW_Settings {
 	 * Handle the settings form submit (admin-post.php).
 	 */
 	public function save() {
-		check_admin_referer( 'bpfw-settings' );
+		check_admin_referer( 'cbfw-settings' );
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You are not allowed to manage these settings.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 
-		if ( ! empty( $_POST['bpfw_reset'] ) ) {
+		if ( ! empty( $_POST['cbfw_reset'] ) ) {
 			delete_option( self::OPTION );
 			wp_safe_redirect( self::page_url( array( 'reset' => 1 ) ) );
 			exit;
 		}
 
-		$defaults = bpfw_get_default_settings();
-		$is_pro   = bpfw_is_pro();
+		$defaults = cbfw_get_default_settings();
 
 		$product_layout = isset( $_POST['product_layout'] ) ? sanitize_key( wp_unslash( $_POST['product_layout'] ) ) : '';
 		$card_layout    = isset( $_POST['card_layout'] ) ? sanitize_key( wp_unslash( $_POST['card_layout'] ) ) : '';
 		$included_title = isset( $_POST['included_title'] ) ? sanitize_text_field( wp_unslash( $_POST['included_title'] ) ) : '';
 
-		// A Pro-only layout can't be selected on a free site, no matter what was posted.
-		if ( ! array_key_exists( $product_layout, bpfw_get_product_layouts() )
-			|| ( ! $is_pro && bpfw_layout_requires_pro( $product_layout ) )
-		) {
+		if ( ! array_key_exists( $product_layout, cbfw_get_product_layouts() ) ) {
 			$product_layout = $defaults['product_layout'];
 		}
 
@@ -120,7 +116,7 @@ class BPFW_Settings {
 		 *
 		 * @param array $settings Sanitized settings.
 		 */
-		update_option( self::OPTION, apply_filters( 'bpfw_save_settings', $settings ), false );
+		update_option( self::OPTION, apply_filters( 'cbfw_save_settings', $settings ), false );
 
 		wp_safe_redirect( self::page_url( array( 'updated' => 1 ) ) );
 		exit;
@@ -134,20 +130,20 @@ class BPFW_Settings {
 	 * @param string $value   Option value.
 	 * @param string $current Currently selected value.
 	 * @param string $label   Visible label.
-	 * @param string $icon    Icon style: default|list|grid|compact|card|wide (Pro add-ons register more).
+	 * @param string $icon    Icon style: default|list|grid|compact|card|wide (add-ons may register more).
 	 */
 	public static function layout_choice( $name, $value, $current, $label, $icon = 'default' ) {
 		/**
 		 * Filter the cell count used to draw a layout icon.
 		 * Add-ons registering layouts can map their icon slug here and
-		 * style `.bpfw-choice__icon--{slug}` with their own admin CSS.
+		 * style `.cbfw-choice__icon--{slug}` with their own admin CSS.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @param array $cells icon slug => number of <i> cells.
 		 */
 		$cells = apply_filters(
-			'bpfw_layout_icon_cells',
+			'cbfw_layout_icon_cells',
 			array(
 				'list'    => 3,
 				'grid'    => 4,
@@ -162,16 +158,16 @@ class BPFW_Settings {
 		);
 		$count = isset( $cells[ $icon ] ) ? $cells[ $icon ] : 0;
 		?>
-		<label class="bpfw-choice">
+		<label class="cbfw-choice">
 			<input
 				type="radio"
 				name="<?php echo esc_attr( $name ); ?>"
 				value="<?php echo esc_attr( $value ); ?>"
 				<?php checked( $current, $value ); ?>
 			/>
-			<span class="bpfw-choice__box">
-				<span class="bpfw-choice__icon bpfw-choice__icon--<?php echo esc_attr( $icon ); ?>" aria-hidden="true"><?php echo str_repeat( '<i></i>', $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup. ?></span>
-				<span class="bpfw-choice__label"><?php echo esc_html( $label ); ?></span>
+			<span class="cbfw-choice__box">
+				<span class="cbfw-choice__icon cbfw-choice__icon--<?php echo esc_attr( $icon ); ?>" aria-hidden="true"><?php echo str_repeat( '<i></i>', $count ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static markup. ?></span>
+				<span class="cbfw-choice__label"><?php echo esc_html( $label ); ?></span>
 			</span>
 		</label>
 		<?php
@@ -181,7 +177,7 @@ class BPFW_Settings {
 	 * Render the Settings tab on the Bundles page.
 	 */
 	public static function render_tab() {
-		$settings = bpfw_get_settings();
+		$settings = cbfw_get_settings();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only success notices.
 		if ( isset( $_GET['updated'] ) ) {
@@ -192,30 +188,30 @@ class BPFW_Settings {
 		}
 		// phpcs:enable
 		?>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="bpfw-settings-form">
-			<input type="hidden" name="action" value="bpfw_save_settings" />
-			<?php wp_nonce_field( 'bpfw-settings' ); ?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="cbfw-settings-form">
+			<input type="hidden" name="action" value="cbfw_save_settings" />
+			<?php wp_nonce_field( 'cbfw-settings' ); ?>
 
-			<div class="bpfw-settings-grid">
+			<div class="cbfw-settings-grid">
 
-				<section class="bpfw-panel-card">
+				<section class="cbfw-panel-card">
 					<h2><?php esc_html_e( 'Layout', 'codeholt-bundles-for-woocommerce' ); ?></h2>
 					<p class="description"><?php esc_html_e( 'Default layouts used across the shop. Each bundle can override the product page layout from its own edit screen.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 
-					<div class="bpfw-field">
-						<span class="bpfw-field__label"><?php esc_html_e( 'Product page layout', 'codeholt-bundles-for-woocommerce' ); ?></span>
-						<div class="bpfw-choices">
+					<div class="cbfw-field">
+						<span class="cbfw-field__label"><?php esc_html_e( 'Product page layout', 'codeholt-bundles-for-woocommerce' ); ?></span>
+						<div class="cbfw-choices">
 							<?php
-							foreach ( bpfw_get_product_layouts() as $bpfw_slug => $bpfw_label ) {
-								self::layout_choice( 'product_layout', $bpfw_slug, $settings['product_layout'], $bpfw_label, $bpfw_slug );
+							foreach ( cbfw_get_product_layouts() as $cbfw_slug => $cbfw_label ) {
+								self::layout_choice( 'product_layout', $cbfw_slug, $settings['product_layout'], $cbfw_label, $cbfw_slug );
 							}
 							?>
 						</div>
 					</div>
 
-					<div class="bpfw-field">
-						<span class="bpfw-field__label"><?php esc_html_e( 'Bundle card layout (shortcode / block / widget)', 'codeholt-bundles-for-woocommerce' ); ?></span>
-						<div class="bpfw-choices">
+					<div class="cbfw-field">
+						<span class="cbfw-field__label"><?php esc_html_e( 'Bundle card layout (shortcode / block / widget)', 'codeholt-bundles-for-woocommerce' ); ?></span>
+						<div class="cbfw-choices">
 							<?php
 							self::layout_choice( 'card_layout', 'card', $settings['card_layout'], __( 'Card', 'codeholt-bundles-for-woocommerce' ), 'card' );
 							self::layout_choice( 'card_layout', 'list', $settings['card_layout'], __( 'Wide', 'codeholt-bundles-for-woocommerce' ), 'wide' );
@@ -223,14 +219,14 @@ class BPFW_Settings {
 						</div>
 					</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-field__label" for="bpfw_included_title"><?php esc_html_e( 'Included products heading', 'codeholt-bundles-for-woocommerce' ); ?></label>
-						<input type="text" id="bpfw_included_title" name="included_title" class="regular-text" value="<?php echo esc_attr( $settings['included_title'] ); ?>" />
+					<div class="cbfw-field">
+						<label class="cbfw-field__label" for="cbfw_included_title"><?php esc_html_e( 'Included products heading', 'codeholt-bundles-for-woocommerce' ); ?></label>
+						<input type="text" id="cbfw_included_title" name="included_title" class="regular-text" value="<?php echo esc_attr( $settings['included_title'] ); ?>" />
 						<p class="description"><?php esc_html_e( 'Shown above the bundled products list on the product page.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 					</div>
 
-					<div class="bpfw-field">
-						<label class="bpfw-toggle">
+					<div class="cbfw-field">
+						<label class="cbfw-toggle">
 							<input type="checkbox" name="show_savings_badge" value="yes" <?php checked( 'yes', $settings['show_savings_badge'] ); ?> />
 							<span><?php esc_html_e( 'Show the "Save X (Y%)" badge next to bundle prices', 'codeholt-bundles-for-woocommerce' ); ?></span>
 						</label>
@@ -239,14 +235,14 @@ class BPFW_Settings {
 					<?php
 					/**
 					 * Fires at the bottom of the Layout card so add-ons can append
-					 * closely-related fields (e.g. Pro badge settings) without
+					 * closely-related fields (e.g. badge settings) without
 					 * opening a separate panel card.
 					 *
 					 * @since 1.0.0
 					 *
 					 * @param array $settings Current settings.
 					 */
-					do_action( 'bpfw_layout_card_fields', $settings );
+					do_action( 'cbfw_layout_card_fields', $settings );
 					?>
 				</section>
 
@@ -254,20 +250,20 @@ class BPFW_Settings {
 				/**
 				 * Fires after the core settings sections so add-ons can render
 				 * their own sections. Add-on fields are saved through the
-				 * `bpfw_save_settings` filter.
+				 * `cbfw_save_settings` filter.
 				 *
 				 * @since 1.0.0
 				 *
 				 * @param array $settings Current settings.
 				 */
-				do_action( 'bpfw_settings_sections', $settings );
+				do_action( 'cbfw_settings_sections', $settings );
 				?>
 
 			</div>
 
 			<p class="submit">
 				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save changes', 'codeholt-bundles-for-woocommerce' ); ?></button>
-				<button type="submit" name="bpfw_reset" value="1" class="button" onclick="return confirm( '<?php echo esc_js( __( 'Reset all layout and design settings to defaults?', 'codeholt-bundles-for-woocommerce' ) ); ?>' );"><?php esc_html_e( 'Reset to defaults', 'codeholt-bundles-for-woocommerce' ); ?></button>
+				<button type="submit" name="cbfw_reset" value="1" class="button" onclick="return confirm( '<?php echo esc_js( __( 'Reset all layout and design settings to defaults?', 'codeholt-bundles-for-woocommerce' ) ); ?>' );"><?php esc_html_e( 'Reset to defaults', 'codeholt-bundles-for-woocommerce' ); ?></button>
 			</p>
 		</form>
 		<?php

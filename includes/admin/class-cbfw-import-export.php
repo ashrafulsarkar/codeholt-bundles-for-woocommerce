@@ -2,23 +2,23 @@
 /**
  * Import / Export bundles (JSON + CSV export, JSON import).
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Import_Export.
+ * CBFW_Import_Export.
  */
-class BPFW_Import_Export {
+class CBFW_Import_Export {
 
 	/**
 	 * Hook everything up.
 	 */
 	public function __construct() {
-		add_action( 'admin_post_bpfw_export_json', array( $this, 'export_json' ) );
-		add_action( 'admin_post_bpfw_export_csv', array( $this, 'export_csv' ) );
-		add_action( 'admin_post_bpfw_import_json', array( $this, 'import_json' ) );
+		add_action( 'admin_post_cbfw_export_json', array( $this, 'export_json' ) );
+		add_action( 'admin_post_cbfw_export_csv', array( $this, 'export_csv' ) );
+		add_action( 'admin_post_cbfw_import_json', array( $this, 'import_json' ) );
 	}
 
 	/**
@@ -29,7 +29,7 @@ class BPFW_Import_Export {
 	protected static function collect() {
 		$bundles = wc_get_products(
 			array(
-				'type'   => 'bundle',
+				'type'   => 'cbfw_bundle',
 				'status' => array( 'publish', 'draft' ),
 				'limit'  => -1,
 			)
@@ -52,15 +52,15 @@ class BPFW_Import_Export {
 
 			/**
 			 * Filter a bundle's export row — add-ons can append their own
-			 * fields here and restore them via the `bpfw_import_bundle` action.
+			 * fields here and restore them via the `cbfw_import_bundle` action.
 			 *
 			 * @since 1.0.0
 			 *
 			 * @param array               $row    Export data.
-			 * @param BPFW_Product_Bundle $bundle Bundle product.
+			 * @param CBFW_Product_Bundle $bundle Bundle product.
 			 */
 			$data[] = apply_filters(
-				'bpfw_export_bundle_data',
+				'cbfw_export_bundle_data',
 				array(
 					'name'         => $bundle->get_name(),
 					'slug'         => $bundle->get_slug(),
@@ -95,11 +95,11 @@ class BPFW_Import_Export {
 	 * Export all bundles as JSON.
 	 */
 	public function export_json() {
-		$this->guard( 'bpfw_export' );
+		$this->guard( 'cbfw_export' );
 
 		$payload = array(
 			'plugin'    => 'codeholt-bundles-for-woocommerce',
-			'version'   => BPFW_VERSION,
+			'version'   => CBFW_VERSION,
 			'exported'  => gmdate( 'c' ),
 			'bundles'   => self::collect(),
 		);
@@ -115,7 +115,7 @@ class BPFW_Import_Export {
 	 * Export all bundles as CSV.
 	 */
 	public function export_csv() {
-		$this->guard( 'bpfw_export' );
+		$this->guard( 'cbfw_export' );
 
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=utf-8' );
@@ -175,15 +175,15 @@ class BPFW_Import_Export {
 	 * Import bundles from an uploaded JSON file.
 	 */
 	public function import_json() {
-		$this->guard( 'bpfw_import' );
+		$this->guard( 'cbfw_import' );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in guard() via check_admin_referer() above.
-		if ( empty( $_FILES['bpfw_import_file']['tmp_name'] ) ) {
+		if ( empty( $_FILES['cbfw_import_file']['tmp_name'] ) ) {
 			$this->redirect_with( 'error', __( 'No file uploaded.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- tmp_name is a server-generated upload path, not user input.
-		$raw  = file_get_contents( wp_unslash( $_FILES['bpfw_import_file']['tmp_name'] ) );
+		$raw  = file_get_contents( wp_unslash( $_FILES['cbfw_import_file']['tmp_name'] ) );
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$data = json_decode( $raw, true );
 
@@ -231,7 +231,7 @@ class BPFW_Import_Export {
 			$pricing_mode = is_string( $bundle_data['pricing_mode'] ?? null ) ? $bundle_data['pricing_mode'] : 'auto';
 			$fixed_price  = is_scalar( $bundle_data['fixed_price'] ?? null ) ? $bundle_data['fixed_price'] : '';
 
-			$bundle = new BPFW_Product_Bundle();
+			$bundle = new CBFW_Product_Bundle();
 			$bundle->set_name( sanitize_text_field( $name ) );
 			$bundle->set_status( in_array( $status, array( 'publish', 'draft' ), true ) ? $status : 'draft' );
 			$bundle->set_description( wp_kses_post( $description ) );
@@ -241,12 +241,12 @@ class BPFW_Import_Export {
 				$bundle->set_sku( wc_clean( $sku ) );
 			}
 
-			$bundle->update_meta_data( '_bpfw_bundled_items', $items );
-			$bundle->update_meta_data( '_bpfw_pricing_mode', in_array( $pricing_mode, bpfw_get_pricing_modes(), true ) ? $pricing_mode : 'auto' );
-			$bundle->update_meta_data( '_bpfw_fixed_price', wc_format_decimal( $fixed_price ) );
+			$bundle->update_meta_data( '_cbfw_bundled_items', $items );
+			$bundle->update_meta_data( '_cbfw_pricing_mode', in_array( $pricing_mode, cbfw_get_pricing_modes(), true ) ? $pricing_mode : 'auto' );
+			$bundle->update_meta_data( '_cbfw_fixed_price', wc_format_decimal( $fixed_price ) );
 
 			foreach ( $items as $item ) {
-				$bundle->add_meta_data( '_bpfw_contains', (string) $item['id'] );
+				$bundle->add_meta_data( '_cbfw_contains', (string) $item['id'] );
 			}
 
 			$bundle->save();
@@ -257,14 +257,14 @@ class BPFW_Import_Export {
 			 *
 			 * @since 1.0.0
 			 *
-			 * @param BPFW_Product_Bundle $bundle      Imported bundle.
+			 * @param CBFW_Product_Bundle $bundle      Imported bundle.
 			 * @param array               $bundle_data Raw import row.
 			 */
-			do_action( 'bpfw_import_bundle', $bundle, $bundle_data );
+			do_action( 'cbfw_import_bundle', $bundle, $bundle_data );
 
 			// Assign the bundle product type term + recalc prices.
-			wp_set_object_terms( $bundle->get_id(), 'bundle', 'product_type' );
-			BPFW_Sync::sync_bundle( $bundle->get_id() );
+			wp_set_object_terms( $bundle->get_id(), 'cbfw_bundle', 'product_type' );
+			CBFW_Sync::sync_bundle( $bundle->get_id() );
 
 			$created++;
 		}
@@ -283,10 +283,10 @@ class BPFW_Import_Export {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'page'         => 'bpfw-bundles',
+					'page'         => 'cbfw-bundles',
 					'tab'          => 'import_export',
-					'bpfw_notice'  => rawurlencode( $message ),
-					'bpfw_type'    => $type,
+					'cbfw_notice'  => rawurlencode( $message ),
+					'cbfw_type'    => $type,
 				),
 				admin_url( 'admin.php' )
 			)
@@ -299,16 +299,16 @@ class BPFW_Import_Export {
 	 */
 	public static function render_tab() {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Display-only notice.
-		if ( ! empty( $_GET['bpfw_notice'] ) ) {
-			$type = ( isset( $_GET['bpfw_type'] ) && 'success' === $_GET['bpfw_type'] ) ? 'success' : 'error';
-			echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( rawurldecode( sanitize_text_field( wp_unslash( $_GET['bpfw_notice'] ) ) ) ) . '</p></div>';
+		if ( ! empty( $_GET['cbfw_notice'] ) ) {
+			$type = ( isset( $_GET['cbfw_type'] ) && 'success' === $_GET['cbfw_type'] ) ? 'success' : 'error';
+			echo '<div class="notice notice-' . esc_attr( $type ) . ' is-dismissible"><p>' . esc_html( rawurldecode( sanitize_text_field( wp_unslash( $_GET['cbfw_notice'] ) ) ) ) . '</p></div>';
 		}
 		// phpcs:enable
 
 		$bundle_count = count(
 			wc_get_products(
 				array(
-					'type'   => 'bundle',
+					'type'   => 'cbfw_bundle',
 					'status' => array( 'publish', 'draft' ),
 					'limit'  => -1,
 					'return' => 'ids',
@@ -316,16 +316,16 @@ class BPFW_Import_Export {
 			)
 		);
 		?>
-		<div class="bpfw-ie-grid">
+		<div class="cbfw-ie-grid">
 
-			<section class="bpfw-panel-card bpfw-ie-card">
-				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--export" aria-hidden="true">
+			<section class="cbfw-panel-card cbfw-ie-card">
+				<div class="cbfw-ie-card__icon cbfw-ie-card__icon--export" aria-hidden="true">
 					<span class="dashicons dashicons-download"></span>
 				</div>
 				<h2><?php esc_html_e( 'Export bundles', 'codeholt-bundles-for-woocommerce' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Download every bundle with its products, quantities and pricing settings.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 
-				<ul class="bpfw-ie-list">
+				<ul class="cbfw-ie-list">
 					<li>
 						<?php
 						printf(
@@ -339,42 +339,42 @@ class BPFW_Import_Export {
 					<li><?php esc_html_e( 'CSV is a flat list for spreadsheets — export only.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ul>
 
-				<p class="bpfw-ie-actions">
-					<a class="button button-primary button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_json' ), 'bpfw_export' ) ); ?>">
+				<p class="cbfw-ie-actions">
+					<a class="button button-primary button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=cbfw_export_json' ), 'cbfw_export' ) ); ?>">
 						<span class="dashicons dashicons-media-code" aria-hidden="true"></span>
 						<?php esc_html_e( 'Export JSON', 'codeholt-bundles-for-woocommerce' ); ?>
 					</a>
-					<a class="button button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=bpfw_export_csv' ), 'bpfw_export' ) ); ?>">
+					<a class="button button-hero" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=cbfw_export_csv' ), 'cbfw_export' ) ); ?>">
 						<span class="dashicons dashicons-media-spreadsheet" aria-hidden="true"></span>
 						<?php esc_html_e( 'Export CSV', 'codeholt-bundles-for-woocommerce' ); ?>
 					</a>
 				</p>
 			</section>
 
-			<section class="bpfw-panel-card bpfw-ie-card">
-				<div class="bpfw-ie-card__icon bpfw-ie-card__icon--import" aria-hidden="true">
+			<section class="cbfw-panel-card cbfw-ie-card">
+				<div class="cbfw-ie-card__icon cbfw-ie-card__icon--import" aria-hidden="true">
 					<span class="dashicons dashicons-upload"></span>
 				</div>
 				<h2><?php esc_html_e( 'Import bundles', 'codeholt-bundles-for-woocommerce' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Upload a JSON export from this plugin — new bundles are created, nothing is overwritten.', 'codeholt-bundles-for-woocommerce' ); ?></p>
 
-				<ul class="bpfw-ie-list">
+				<ul class="cbfw-ie-list">
 					<li><?php esc_html_e( 'Bundled products are matched by SKU first, then by product ID.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 					<li><?php esc_html_e( 'Products missing on this site are skipped safely.', 'codeholt-bundles-for-woocommerce' ); ?></li>
 				</ul>
 
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
-					<input type="hidden" name="action" value="bpfw_import_json" />
-					<?php wp_nonce_field( 'bpfw_import' ); ?>
+					<input type="hidden" name="action" value="cbfw_import_json" />
+					<?php wp_nonce_field( 'cbfw_import' ); ?>
 
-					<label class="bpfw-ie-dropzone" for="bpfw_import_file">
+					<label class="cbfw-ie-dropzone" for="cbfw_import_file">
 						<span class="dashicons dashicons-media-archive" aria-hidden="true"></span>
-						<span class="bpfw-ie-dropzone__text"><?php esc_html_e( 'Choose a .json export file', 'codeholt-bundles-for-woocommerce' ); ?></span>
-						<span class="bpfw-ie-dropzone__filename" data-placeholder="<?php esc_attr_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?>"><?php esc_html_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?></span>
-						<input type="file" id="bpfw_import_file" name="bpfw_import_file" accept=".json,application/json" required />
+						<span class="cbfw-ie-dropzone__text"><?php esc_html_e( 'Choose a .json export file', 'codeholt-bundles-for-woocommerce' ); ?></span>
+						<span class="cbfw-ie-dropzone__filename" data-placeholder="<?php esc_attr_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?>"><?php esc_html_e( 'No file chosen', 'codeholt-bundles-for-woocommerce' ); ?></span>
+						<input type="file" id="cbfw_import_file" name="cbfw_import_file" accept=".json,application/json" required />
 					</label>
 
-					<p class="bpfw-ie-actions">
+					<p class="cbfw-ie-actions">
 						<button type="submit" class="button button-primary button-hero">
 							<span class="dashicons dashicons-upload" aria-hidden="true"></span>
 							<?php esc_html_e( 'Import bundles', 'codeholt-bundles-for-woocommerce' ); ?>

@@ -17,13 +17,13 @@ Why bundles: increase Average Order Value, improve cross-sell/upsell, reduce car
 ## Features
 
 ### Bundle builder
-Search, add, remove and drag-and-drop reorder simple products inside the **Bundled Products** tab on the product edit screen. Each item has its own quantity and a "hide on frontend" toggle, with a live totals preview as you build.
+Search, add, remove and drag-and-drop reorder products inside the **Bundled Products** tab on the product edit screen. Each item has its own quantity and a "hide on frontend" toggle, with a live totals preview as you build.
 
 ### Pricing
 - **Auto calculate** — bundle price is the sum of the bundled products' prices.
 - **Fixed bundle price** — set a flat price and the plugin shows a "Save $X (Y%)" badge computed from the difference.
 - Prices are written to WooCommerce's native price fields, so bundles sort, filter and appear in price-range widgets exactly like any other product.
-- **Automatic price sync** — if a bundled product's price changes, the bundle's price/savings recalculate automatically (`BPFW_Sync`).
+- **Automatic price sync** — if a bundled product's price changes, the bundle's price/savings recalculate automatically (`CBFW_Sync`).
 
 ### Stock management
 Validates and reduces bundled product stock on purchase, prevents overselling when a child is out of stock or a quantity exceeds availability, restores stock on order cancellation/refund, and keeps bundle availability live-synced to its children.
@@ -40,7 +40,7 @@ Two built-in layouts — **Table** and **Compact** — selectable as a global de
 - Toggle the savings badge on/off.
 
 ### Analytics overview (WooCommerce → Bundles)
-An HPOS-aware, cached (15-minute transient) dashboard showing: total bundles sold, total revenue, total customer savings, the top-selling bundle, and a per-bundle sales table with revenue-share bars. The date range and available toolbar actions are filterable (`bpfw_overview_days`, `bpfw_overview_actions`), which is what lets the Pro add-on inject a period selector and CSV export into the same screen.
+An HPOS-aware, cached (15-minute transient) dashboard showing: total bundles sold, total revenue, total customer savings, the top-selling bundle, and a per-bundle sales table with revenue-share bars. The date range and available toolbar actions are filterable (`cbfw_overview_days`, `cbfw_overview_actions`), which is what lets the Pro add-on inject a period selector and CSV export into the same screen.
 
 ### Import / Export
 - **Export** every bundle (published + draft) as a re-importable **JSON** file (matches bundled products by SKU) or as a **CSV** report.
@@ -48,12 +48,12 @@ An HPOS-aware, cached (15-minute transient) dashboard showing: total bundles sol
 - Two-card admin UI under the Import/Export tab.
 
 ### Display anywhere
-- Shortcode: `[bundle id="123"]`
+- Shortcode: `[cbfw_bundle id="123"]`
 - **Product Bundle** Gutenberg block (dynamic/server-rendered) — pick the bundle, layout and display toggles (e.g. show image) right in the block editor.
 - **Elementor widget** ("Product Bundle", under WooCommerce Elements) with its own style controls.
 
 ### SEO, accessibility & performance
-- Enriches WooCommerce's structured data (`woocommerce_structured_data_product`) so bundle contents are exposed to search engines (`isRelatedTo` schema), filterable via `bpfw_structured_data`.
+- Enriches WooCommerce's structured data (`woocommerce_structured_data_product`) so bundle contents are exposed to search engines (`isRelatedTo` schema), filterable via `cbfw_structured_data`.
 - ARIA labels on interactive frontend markup.
 - Zero custom frontend JavaScript for display — assets are only enqueued conditionally on pages/blocks that actually use a bundle.
 - Cached analytics queries; full HPOS (High-Performance Order Storage) compatibility.
@@ -76,7 +76,7 @@ An HPOS-aware, cached (15-minute transient) dashboard showing: total bundles sol
 ## Frequently Asked Questions
 
 **Which products can be bundled?**
-Published simple products. Variable product support is on the Pro roadmap.
+Any published, purchasable product — simple products and individual variations of variable products. Pick the specific variation rather than the variable parent, which has no price of its own.
 
 **Does it work with the new WooCommerce cart and checkout blocks?**
 Yes — bundle contents and savings display correctly in both classic and block-based cart/checkout.
@@ -93,12 +93,12 @@ The plugin is built to be extended — the Pro add-on uses only public hooks:
 
 | Area | Hooks |
 |---|---|
-| Pricing | `bpfw_pricing_modes`, `bpfw_pricing_mode_options`, `bpfw_custom_mode_prices` |
-| Children | `bpfw_allowed_child_types`, `bpfw_child_search_help` |
-| Layouts | `bpfw_product_layouts`, `bpfw_layout_icon_cells`, `bpfw_bundle_layout`, `bpfw_inline_css` |
-| Admin page | `bpfw_admin_tabs`, `bpfw_admin_tab_{slug}`, `bpfw_settings_sections`, `bpfw_save_settings`, `bpfw_overview_days`, `bpfw_overview_actions` |
-| Data | `bpfw_export_bundle_data`, `bpfw_import_bundle`, `bpfw_save_bundled_items`, `bpfw_bundle_pricing` |
-| SEO | `bpfw_structured_data` |
+| Pricing | `cbfw_pricing_modes`, `cbfw_pricing_mode_options`, `cbfw_custom_mode_prices` |
+| Children | `cbfw_can_bundle_product`, `cbfw_child_search_help` |
+| Layouts | `cbfw_product_layouts`, `cbfw_layout_icon_cells`, `cbfw_bundle_layout`, `cbfw_inline_css` |
+| Admin page | `cbfw_admin_tabs`, `cbfw_admin_tab_{slug}`, `cbfw_settings_sections`, `cbfw_save_settings`, `cbfw_overview_days`, `cbfw_overview_actions` |
+| Data | `cbfw_export_bundle_data`, `cbfw_import_bundle`, `cbfw_save_bundled_items`, `cbfw_bundle_pricing` |
+| SEO | `cbfw_structured_data` |
 
 Templates can be overridden by copying files from `templates/` to `yourtheme/codeholt-bundles-for-woocommerce/`.
 

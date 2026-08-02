@@ -23,7 +23,7 @@ Create product bundles for WooCommerce with fixed pricing, automatic savings, st
 
 = Bundle builder =
 
-Search, add, remove and drag & drop reorder simple products right on the product edit screen's **Bundled Products** tab. Each item gets its own quantity and an optional "hide on frontend" toggle, with a live totals preview while you build.
+Search, add, remove and drag & drop reorder products right on the product edit screen's **Bundled Products** tab. Each item gets its own quantity and an optional "hide on frontend" toggle, with a live totals preview while you build.
 
 = Flexible pricing =
 
@@ -58,7 +58,7 @@ Export every bundle as a re-importable **JSON** file (matches bundled products b
 
 = Display anywhere =
 
-* **Shortcode** — `[bundle id="123"]`
+* **Shortcode** — `[cbfw_bundle id="123"]`
 * **Gutenberg block** — "Product Bundle", pick the bundle, layout and display options right in the block editor
 * **Elementor widget** — "Product Bundle" widget with its own style controls
 
@@ -92,7 +92,7 @@ Actions and filters throughout (pricing, layouts, admin tabs, import/export, set
 
 = Which products can be bundled? =
 
-Published simple products. Variable product support is on the roadmap.
+Any published, purchasable product — simple products and individual variations of variable products. Pick the specific variation you want to bundle rather than the variable parent, which has no price of its own.
 
 = Does it work with the new WooCommerce cart and checkout blocks? =
 

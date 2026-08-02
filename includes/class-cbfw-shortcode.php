@@ -1,29 +1,28 @@
 <?php
 /**
- * [bundle] shortcode.
+ * [cbfw_bundle] shortcode.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Shortcode.
+ * CBFW_Shortcode.
  */
-class BPFW_Shortcode {
+class CBFW_Shortcode {
 
 	/**
 	 * Hook everything up.
 	 */
 	public function __construct() {
-		add_shortcode( 'bundle', array( $this, 'render' ) );
-		add_shortcode( 'bpfw_bundle', array( $this, 'render' ) ); // Prefixed alias to avoid conflicts.
+		add_shortcode( 'cbfw_bundle', array( $this, 'render' ) );
 	}
 
 	/**
 	 * Render the shortcode.
 	 *
-	 * Usage: [bundle id="123" layout="card" show_image="yes" show_items="yes"]
+	 * Usage: [cbfw_bundle id="123" layout="card" show_image="yes" show_items="yes"]
 	 *
 	 * @param array $atts Shortcode attributes.
 	 * @return string
@@ -37,13 +36,13 @@ class BPFW_Shortcode {
 				'show_items' => 'yes',
 			),
 			$atts,
-			'bundle'
+			'cbfw_bundle'
 		);
 
-		return bpfw_render_bundle_card(
+		return cbfw_render_bundle_card(
 			absint( $atts['id'] ),
 			array(
-				'layout'     => $atts['layout'] ? sanitize_key( $atts['layout'] ) : bpfw_get_setting( 'card_layout', 'card' ),
+				'layout'     => $atts['layout'] ? sanitize_key( $atts['layout'] ) : cbfw_get_setting( 'card_layout', 'card' ),
 				'show_image' => wc_string_to_bool( $atts['show_image'] ),
 				'show_items' => wc_string_to_bool( $atts['show_items'] ),
 			)

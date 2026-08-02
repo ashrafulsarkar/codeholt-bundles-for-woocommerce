@@ -1,16 +1,16 @@
 <?php
 /**
- * Registers the "bundle" product type with WooCommerce.
+ * Registers the "cbfw_bundle" product type with WooCommerce.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Product_Type.
+ * CBFW_Product_Type.
  */
-class BPFW_Product_Type {
+class CBFW_Product_Type {
 
 	/**
 	 * Hook everything up.
@@ -27,7 +27,7 @@ class BPFW_Product_Type {
 	 * @return array
 	 */
 	public function add_type( $types ) {
-		$types['bundle'] = __( 'Bundle product', 'codeholt-bundles-for-woocommerce' );
+		$types['cbfw_bundle'] = __( 'Bundle product', 'codeholt-bundles-for-woocommerce' );
 		return $types;
 	}
 
@@ -39,8 +39,8 @@ class BPFW_Product_Type {
 	 * @return string
 	 */
 	public function product_class( $classname, $product_type ) {
-		if ( 'bundle' === $product_type ) {
-			$classname = 'BPFW_Product_Bundle';
+		if ( 'cbfw_bundle' === $product_type ) {
+			$classname = 'CBFW_Product_Bundle';
 		}
 		return $classname;
 	}

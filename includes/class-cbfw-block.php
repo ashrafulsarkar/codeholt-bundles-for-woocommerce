@@ -2,15 +2,15 @@
 /**
  * Gutenberg "Bundle" block (dynamic, server-rendered).
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Block.
+ * CBFW_Block.
  */
-class BPFW_Block {
+class CBFW_Block {
 
 	/**
 	 * Hook everything up.
@@ -28,24 +28,24 @@ class BPFW_Block {
 		}
 
 		wp_register_script(
-			'bpfw-block',
-			BPFW_PLUGIN_URL . 'assets/js/block.js',
+			'cbfw-block',
+			CBFW_PLUGIN_URL . 'assets/js/block.js',
 			array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-components', 'wp-server-side-render', 'wp-i18n' ),
-			BPFW_VERSION,
+			CBFW_VERSION,
 			true
 		);
 
-		wp_register_style( 'bpfw-frontend', BPFW_PLUGIN_URL . 'assets/css/frontend.css', array(), BPFW_VERSION );
+		wp_register_style( 'cbfw-frontend', CBFW_PLUGIN_URL . 'assets/css/frontend.css', array(), CBFW_VERSION );
 
 		register_block_type(
-			'bpfw/bundle',
+			'cbfw/bundle',
 			array(
 				'api_version'     => 3,
 				'title'           => __( 'Product Bundle', 'codeholt-bundles-for-woocommerce' ),
 				'description'     => __( 'Display a WooCommerce product bundle.', 'codeholt-bundles-for-woocommerce' ),
 				'category'        => 'woocommerce',
-				'editor_script'   => 'bpfw-block',
-				'style'           => 'bpfw-frontend',
+				'editor_script'   => 'cbfw-block',
+				'style'           => 'cbfw-frontend',
 				'attributes'      => array(
 					'bundleId'  => array(
 						'type'    => 'number',
@@ -83,14 +83,14 @@ class BPFW_Block {
 			),
 		);
 
-		foreach ( bpfw_get_bundle_choices() as $id => $name ) {
+		foreach ( cbfw_get_bundle_choices() as $id => $name ) {
 			$choices[] = array(
 				'value' => $id,
 				'label' => $name,
 			);
 		}
 
-		wp_localize_script( 'bpfw-block', 'bpfwBlockData', array( 'bundles' => $choices ) );
+		wp_localize_script( 'cbfw-block', 'cbfwBlockData', array( 'bundles' => $choices ) );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class BPFW_Block {
 			return '';
 		}
 
-		$html = bpfw_render_bundle_card(
+		$html = cbfw_render_bundle_card(
 			$bundle_id,
 			array(
 				'layout'     => isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'card',

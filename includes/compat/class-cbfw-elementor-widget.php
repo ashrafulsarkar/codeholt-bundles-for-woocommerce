@@ -2,15 +2,15 @@
 /**
  * Elementor widget: Product Bundle.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Elementor_Widget.
+ * CBFW_Elementor_Widget.
  */
-class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
+class CBFW_Elementor_Widget extends \Elementor\Widget_Base {
 
 	/**
 	 * Widget slug.
@@ -18,7 +18,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 	 * @return string
 	 */
 	public function get_name() {
-		return 'bpfw_bundle';
+		return 'cbfw_bundle';
 	}
 
 	/**
@@ -63,7 +63,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 	 * @return array
 	 */
 	public function get_style_depends() {
-		return array( 'bpfw-frontend' );
+		return array( 'cbfw-frontend' );
 	}
 
 	/**
@@ -82,7 +82,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 			array(
 				'label'   => __( 'Select bundle', 'codeholt-bundles-for-woocommerce' ),
 				'type'    => \Elementor\Controls_Manager::SELECT2,
-				'options' => bpfw_get_bundle_choices(),
+				'options' => cbfw_get_bundle_choices(),
 			)
 		);
 
@@ -135,7 +135,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 				'label'     => __( 'Accent color', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .bpfw-card' => '--bpfw-accent: {{VALUE}};',
+					'{{WRAPPER}} .cbfw-card' => '--cbfw-accent: {{VALUE}};',
 				),
 			)
 		);
@@ -146,7 +146,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 				'label'     => __( 'Button background', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .bpfw-card__button' => 'background-color: {{VALUE}};',
+					'{{WRAPPER}} .cbfw-card__button' => 'background-color: {{VALUE}};',
 				),
 			)
 		);
@@ -157,7 +157,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 				'label'     => __( 'Button text color', 'codeholt-bundles-for-woocommerce' ),
 				'type'      => \Elementor\Controls_Manager::COLOR,
 				'selectors' => array(
-					'{{WRAPPER}} .bpfw-card__button' => 'color: {{VALUE}};',
+					'{{WRAPPER}} .cbfw-card__button' => 'color: {{VALUE}};',
 				),
 			)
 		);
@@ -179,7 +179,7 @@ class BPFW_Elementor_Widget extends \Elementor\Widget_Base {
 			return;
 		}
 
-		echo bpfw_render_bundle_card( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Template output is escaped at source.
+		echo cbfw_render_bundle_card( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Template output is escaped at source.
 			$bundle_id,
 			array(
 				'layout'     => sanitize_key( $settings['layout'] ),

@@ -2,15 +2,15 @@
 /**
  * Order integration: line item meta, emails/admin display, child stock sync.
  *
- * @package BPFW
+ * @package CBFW
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BPFW_Order.
+ * CBFW_Order.
  */
-class BPFW_Order {
+class CBFW_Order {
 
 	/**
 	 * Hook everything up.
@@ -35,7 +35,7 @@ class BPFW_Order {
 	 */
 	public function add_line_item_meta( $item, $cart_item_key, $values ) {
 		$product = isset( $values['data'] ) ? $values['data'] : null;
-		$bundle  = $product ? bpfw_get_bundle( $product ) : false;
+		$bundle  = $product ? cbfw_get_bundle( $product ) : false;
 
 		if ( ! $bundle ) {
 			return;
@@ -51,11 +51,11 @@ class BPFW_Order {
 			);
 		}
 
-		$pricing = bpfw_get_bundle_pricing( $bundle );
+		$pricing = cbfw_get_bundle_pricing( $bundle );
 
 		// Internal meta (analytics + stock handling).
-		$item->add_meta_data( '_bpfw_bundled_items', $contents, true );
-		$item->add_meta_data( '_bpfw_savings', wc_format_decimal( $pricing['savings'] * $item->get_quantity() ), true );
+		$item->add_meta_data( '_cbfw_bundled_items', $contents, true );
+		$item->add_meta_data( '_cbfw_savings', wc_format_decimal( $pricing['savings'] * $item->get_quantity() ), true );
 
 		// Visible meta — shows automatically in order details, emails and admin.
 		$lines = array();
@@ -71,9 +71,9 @@ class BPFW_Order {
 		 * @since 1.0.0
 		 *
 		 * @param WC_Order_Item_Product $item   Order item.
-		 * @param BPFW_Product_Bundle   $bundle Bundle product.
+		 * @param CBFW_Product_Bundle   $bundle Bundle product.
 		 */
-		do_action( 'bpfw_order_line_item_created', $item, $bundle );
+		do_action( 'cbfw_order_line_item_created', $item, $bundle );
 	}
 
 	/**
@@ -83,9 +83,9 @@ class BPFW_Order {
 	 */
 	public function reduce_children_stock( $order ) {
 		foreach ( $order->get_items() as $item ) {
-			$contents = $item->get_meta( '_bpfw_bundled_items', true );
+			$contents = $item->get_meta( '_cbfw_bundled_items', true );
 
-			if ( ! is_array( $contents ) || ! $contents || 'yes' === $item->get_meta( '_bpfw_stock_reduced', true ) ) {
+			if ( ! is_array( $contents ) || ! $contents || 'yes' === $item->get_meta( '_cbfw_stock_reduced', true ) ) {
 				continue;
 			}
 
@@ -106,7 +106,7 @@ class BPFW_Order {
 				}
 			}
 
-			$item->update_meta_data( '_bpfw_stock_reduced', 'yes' );
+			$item->update_meta_data( '_cbfw_stock_reduced', 'yes' );
 			$item->save();
 
 			if ( $notes ) {
@@ -125,9 +125,9 @@ class BPFW_Order {
 	 */
 	public function restore_children_stock( $order ) {
 		foreach ( $order->get_items() as $item ) {
-			$contents = $item->get_meta( '_bpfw_bundled_items', true );
+			$contents = $item->get_meta( '_cbfw_bundled_items', true );
 
-			if ( ! is_array( $contents ) || ! $contents || 'yes' !== $item->get_meta( '_bpfw_stock_reduced', true ) ) {
+			if ( ! is_array( $contents ) || ! $contents || 'yes' !== $item->get_meta( '_cbfw_stock_reduced', true ) ) {
 				continue;
 			}
 
@@ -148,7 +148,7 @@ class BPFW_Order {
 				}
 			}
 
-			$item->update_meta_data( '_bpfw_stock_reduced', 'no' );
+			$item->update_meta_data( '_cbfw_stock_reduced', 'no' );
 			$item->save();
 
 			if ( $notes ) {
@@ -167,9 +167,9 @@ class BPFW_Order {
 	 * @return array
 	 */
 	public function hidden_meta( $keys ) {
-		$keys[] = '_bpfw_bundled_items';
-		$keys[] = '_bpfw_savings';
-		$keys[] = '_bpfw_stock_reduced';
+		$keys[] = '_cbfw_bundled_items';
+		$keys[] = '_cbfw_savings';
+		$keys[] = '_cbfw_stock_reduced';
 		return $keys;
 	}
 }
