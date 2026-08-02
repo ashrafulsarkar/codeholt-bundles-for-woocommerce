@@ -19,25 +19,32 @@ function cbfw_uninstall_site() {
 	delete_option( 'cbfw_version' );
 	delete_option( 'cbfw_settings' );
 
-	// Analytics transients are keyed by reporting period. Delete them through
-	// the API so a persistent object cache is cleared too.
+	// Analytics transients are keyed by reporting period, so their names can't
+	// be enumerated up front. A direct, uncached query is the only way to find
+	// them; the results are consumed once via delete_transient() below, so no
+	// caching applies.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$periods = $wpdb->get_col(
 		"SELECT option_name FROM {$wpdb->options}
 		 WHERE option_name LIKE '\\_transient\\_cbfw\\_%'
 		    OR option_name LIKE '\\_transient\\_timeout\\_cbfw\\_%'"
-	); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 	foreach ( (array) $periods as $option_name ) {
 		$key = preg_replace( '/^_transient_(timeout_)?/', '', $option_name );
 		delete_transient( $key );
 	}
 
-	// Sweep up anything the object cache did not account for.
+	// Sweep up anything the object cache did not account for. Uninstall runs
+	// once and nothing is cached afterwards, so no caching applies here either.
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	$wpdb->query(
 		"DELETE FROM {$wpdb->options}
 		 WHERE option_name LIKE '\\_transient\\_cbfw\\_%'
 		    OR option_name LIKE '\\_transient\\_timeout\\_cbfw\\_%'"
-	); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	);
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }
 
 if ( is_multisite() ) {

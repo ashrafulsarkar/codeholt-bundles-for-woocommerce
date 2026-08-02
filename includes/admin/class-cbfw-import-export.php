@@ -197,7 +197,7 @@ class CBFW_Import_Export {
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-generated upload path, validated by is_uploaded_file() below.
-		$tmp_name = wp_unslash( $_FILES['cbfw_import_file']['tmp_name'] );
+		$tmp_name = isset( $_FILES['cbfw_import_file']['tmp_name'] ) ? wp_unslash( $_FILES['cbfw_import_file']['tmp_name'] ) : '';
 
 		// Guard against anything that is not a genuine PHP upload.
 		if ( ! is_string( $tmp_name ) || ! is_uploaded_file( $tmp_name ) ) {
