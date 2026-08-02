@@ -1,0 +1,20 @@
+# Files and folders that must never be shipped to the WordPress.org SVN repo.
+.git
+.gitignore
+.gitattributes
+.github
+.distignore
+.editorconfig
+.wordpress-org
+README.md
+composer.json
+composer.lock
+package.json
+package-lock.json
+phpcs.xml
+phpcs.xml.dist
+node_modules
+vendor/bin
+tests
+*.zip
+*.log

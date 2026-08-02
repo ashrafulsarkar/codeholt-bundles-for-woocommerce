@@ -1,7 +1,7 @@
 === Codeholt Bundles for WooCommerce ===
 Contributors: ashrafulsarkar, codeholt
 Tags: woocommerce, product bundle, bundle, upsell, cross-sell
-Requires at least: 6.2
+Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 1.0.0
@@ -71,7 +71,7 @@ Export every bundle as a re-importable **JSON** file (matches bundled products b
 
 = Developer friendly =
 
-Actions and filters throughout (pricing, layouts, admin tabs, import/export, settings) and fully overridable templates — see the "Other Notes" / readme on the plugin's GitHub/support page for the full hook list.
+Actions and filters throughout (pricing, layouts, admin tabs, import/export, settings) and fully overridable templates. See the **Other Notes** tab for the full hook list.
 
 = Compatibility =
 
@@ -118,3 +118,50 @@ No. Every feature listed above is fully usable with no artificial limits, nag sc
 
 = 1.0.0 =
 * Initial release.
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Initial release.
+
+== Other Notes ==
+
+= Template overrides =
+
+Copy any file from the plugin's `templates/` directory into `yourtheme/codeholt-bundles-for-woocommerce/`, keeping the same sub-folder structure, and edit your copy:
+
+* `templates/bundle-card.php` — the card used by the shortcode, block and Elementor widget.
+* `templates/single-product/add-to-cart/bundle.php` — the bundle area on the single product page.
+
+= Filters =
+
+* `cbfw_bundled_products` — ( array $resolved, CBFW_Product_Bundle $bundle ) Resolved bundled items before they are used.
+* `cbfw_can_bundle_product` — ( bool $can, WC_Product $product ) Whether a product may be bundled.
+* `cbfw_pricing_modes` — ( array $modes ) Registered pricing modes. Default `array( 'auto', 'fixed' )`.
+* `cbfw_custom_mode_prices` — ( null|array $prices, CBFW_Product_Bundle $bundle, string $mode, array $totals ) Return `array( 'regular' => …, 'sale' => … )` to supply prices for a custom mode.
+* `cbfw_product_layouts` — ( array $layouts ) Registered single-product layouts.
+* `cbfw_bundle_layout` — ( string $layout, CBFW_Product_Bundle $bundle ) Layout used for one bundle.
+* `cbfw_bundle_card_html` — ( string $html, CBFW_Product_Bundle $bundle, array $args ) Rendered card markup.
+* `cbfw_show_savings_badge` — ( bool $show, WC_Product $product ) Whether the savings badge is shown.
+* `cbfw_savings_badge_text` — ( string $badge, WC_Product $product, array $pricing ) Badge text. Must be escaped.
+* `cbfw_inline_css` — ( string $css, array $settings ) Extra CSS appended to the frontend stylesheet.
+* `cbfw_structured_data` — ( array $markup, CBFW_Product_Bundle $bundle ) Bundle structured data.
+* `cbfw_save_bundled_items` — ( array $items, WC_Product $product ) Sanitized items before they are saved.
+* `cbfw_save_settings` — ( array $settings ) Settings before they are written to the database.
+* `cbfw_bundle_choices_limit` — ( int $limit ) Max bundles listed in pickers. Default `200`.
+* `cbfw_overview_days` — ( int $days ) Reporting period for the analytics overview. Default `30`.
+* `cbfw_child_search_help` — ( string $text ) Help tip under the bundle builder's product search.
+
+= Actions =
+
+* `cbfw_loaded` — Fires once the plugin is fully loaded.
+* `cbfw_bundle_synced` — ( CBFW_Product_Bundle $bundle ) After a bundle's price and stock are resynced.
+* `cbfw_order_line_item_created` — ( WC_Order_Item_Product $item, CBFW_Product_Bundle $bundle ) After bundle meta is written to an order line item.
+* `cbfw_import_bundle` — ( CBFW_Product_Bundle $bundle, array $bundle_data ) After a bundle is created from an import row, before prices are resynced.
+* `cbfw_before_bundled_items` / `cbfw_after_bundled_items` — ( CBFW_Product_Bundle $bundle ) Around the included-products list on the product page.
+* `cbfw_pricing_fields` — ( WP_Post $post ) Extra fields in the product data pricing area.
+* `cbfw_after_builder_panel` — ( WP_Post $post ) After the Bundled Products panel.
+* `cbfw_settings_sections` — ( array $settings ) Extra sections on the Settings tab.
+* `cbfw_layout_card_fields` — ( array $settings ) Extra fields inside the layout settings card.
+* `cbfw_overview_actions` — ( int $days ) Toolbar area of the analytics overview.
+* `cbfw_admin_tab_{$tab}` — Renders the body of a custom admin tab.

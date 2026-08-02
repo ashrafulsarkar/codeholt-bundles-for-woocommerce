@@ -1,16 +1,16 @@
 <?php
 /**
  * Plugin Name:       Codeholt Bundles for WooCommerce
- * Plugin URI:        https://wordpress.org/plugins/codeholt-bundles-for-woocommerce/
+ * Plugin URI:        https://github.com/ashrafulsarkar/codeholt-bundles-for-woocommerce
  * Description:       Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, auto price calculation, stock sync, Gutenberg block, Elementor widget and analytics.
  * Version:           1.0.0
  * Author:            Codeholt
  * Author URI:        https://codeholt.com/
- * License:           GPL-2.0-or-later
+ * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       codeholt-bundles-for-woocommerce
  * Domain Path:       /languages
- * Requires at least: 6.2
+ * Requires at least: 6.5
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.0
@@ -78,6 +78,7 @@ function cbfw_init() {
 	}
 
 	require_once CBFW_PLUGIN_DIR . 'includes/cbfw-functions.php';
+	require_once CBFW_PLUGIN_DIR . 'includes/class-cbfw-plugin.php';
 
 	CBFW_Plugin::instance();
 }

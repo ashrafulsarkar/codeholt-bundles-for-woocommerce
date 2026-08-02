@@ -35,7 +35,7 @@ class CBFW_Block {
 			true
 		);
 
-		wp_register_style( 'cbfw-frontend', CBFW_PLUGIN_URL . 'assets/css/frontend.css', array(), CBFW_VERSION );
+		// The 'cbfw-frontend' handle is registered by CBFW_Frontend on init:15.
 
 		register_block_type(
 			'cbfw/bundle',
@@ -46,6 +46,7 @@ class CBFW_Block {
 				'category'        => 'woocommerce',
 				'editor_script'   => 'cbfw-block',
 				'style'           => 'cbfw-frontend',
+				'editor_style'    => 'cbfw-frontend',
 				'attributes'      => array(
 					'bundleId'  => array(
 						'type'    => 'number',

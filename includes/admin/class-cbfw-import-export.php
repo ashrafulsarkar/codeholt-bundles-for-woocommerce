@@ -178,13 +178,47 @@ class CBFW_Import_Export {
 		$this->guard( 'cbfw_import' );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in guard() via check_admin_referer() above.
-		if ( empty( $_FILES['cbfw_import_file']['tmp_name'] ) ) {
+		if ( empty( $_FILES['cbfw_import_file'] ) || ! isset( $_FILES['cbfw_import_file']['error'] ) ) {
 			$this->redirect_with( 'error', __( 'No file uploaded.', 'codeholt-bundles-for-woocommerce' ) );
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- tmp_name is a server-generated upload path, not user input.
-		$raw  = file_get_contents( wp_unslash( $_FILES['cbfw_import_file']['tmp_name'] ) );
+		$error = (int) $_FILES['cbfw_import_file']['error'];
+
+		if ( UPLOAD_ERR_NO_FILE === $error ) {
+			$this->redirect_with( 'error', __( 'No file uploaded.', 'codeholt-bundles-for-woocommerce' ) );
+		}
+
+		if ( UPLOAD_ERR_INI_SIZE === $error || UPLOAD_ERR_FORM_SIZE === $error ) {
+			$this->redirect_with( 'error', __( 'The file is larger than this server allows. Try importing fewer bundles at a time.', 'codeholt-bundles-for-woocommerce' ) );
+		}
+
+		if ( UPLOAD_ERR_OK !== $error ) {
+			$this->redirect_with( 'error', __( 'The file could not be uploaded. Please try again.', 'codeholt-bundles-for-woocommerce' ) );
+		}
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Server-generated upload path, validated by is_uploaded_file() below.
+		$tmp_name = wp_unslash( $_FILES['cbfw_import_file']['tmp_name'] );
+
+		// Guard against anything that is not a genuine PHP upload.
+		if ( ! is_string( $tmp_name ) || ! is_uploaded_file( $tmp_name ) ) {
+			$this->redirect_with( 'error', __( 'The file could not be read. Please try again.', 'codeholt-bundles-for-woocommerce' ) );
+		}
+
+		$filename = isset( $_FILES['cbfw_import_file']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['cbfw_import_file']['name'] ) ) : '';
+		$filetype = wp_check_filetype( $filename, array( 'json' => 'application/json' ) );
+
+		if ( 'json' !== $filetype['ext'] ) {
+			$this->redirect_with( 'error', __( 'Please upload a .json file exported from this plugin.', 'codeholt-bundles-for-woocommerce' ) );
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a validated temporary upload, not a remote resource.
+		$raw = file_get_contents( $tmp_name );
+
+		if ( false === $raw ) {
+			$this->redirect_with( 'error', __( 'The file could not be read. Please try again.', 'codeholt-bundles-for-woocommerce' ) );
+		}
+
 		$data = json_decode( $raw, true );
 
 		if ( ! is_array( $data ) || empty( $data['bundles'] ) || ! is_array( $data['bundles'] ) ) {

@@ -16,20 +16,29 @@ class CBFW_Frontend {
 	 * Hook everything up.
 	 */
 	public function __construct() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
+		// Registered on init — not wp_enqueue_scripts — so the handle also exists
+		// for the block's `style`/`editor_style` and for ServerSideRender (REST)
+		// and Elementor editor previews, which never fire wp_enqueue_scripts.
+		add_action( 'init', array( $this, 'register_assets' ), 15 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'maybe_enqueue' ) );
 		add_action( 'woocommerce_cbfw_bundle_add_to_cart', array( $this, 'add_to_cart_template' ) );
 		add_filter( 'woocommerce_get_price_html', array( $this, 'savings_badge' ), 10, 2 );
 	}
 
 	/**
-	 * Register (and conditionally enqueue) frontend styles.
+	 * Register the frontend stylesheet.
 	 */
 	public function register_assets() {
 		wp_register_style( 'cbfw-frontend', CBFW_PLUGIN_URL . 'assets/css/frontend.css', array(), CBFW_VERSION );
 
 		// Design settings are applied as CSS variable overrides.
 		wp_add_inline_style( 'cbfw-frontend', cbfw_get_inline_css() );
+	}
 
+	/**
+	 * Conditionally enqueue frontend styles.
+	 */
+	public function maybe_enqueue() {
 		if ( is_product() ) {
 			$product = wc_get_product( get_queried_object_id() );
 			if ( $product && 'cbfw_bundle' === $product->get_type() ) {

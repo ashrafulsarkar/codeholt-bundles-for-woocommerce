@@ -3,8 +3,8 @@
 Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, automatic savings calculation, stock sync, a Gutenberg block, an Elementor widget and built-in analytics.
 
 - **Version:** 1.0.0
-- **Requires:** WordPress 6.2+ (tested up to 7.0), WooCommerce 8.0+ (tested up to 10.0), PHP 7.4+
-- **License:** GPL-2.0-or-later
+- **Requires:** WordPress 6.5+ (tested up to 7.0), WooCommerce 8.0+ (tested up to 10.0), PHP 7.4+
+- **License:** GPLv2 or later
 - **Author:** [Ashraful Sarkar Naiem](https://profiles.wordpress.org/ashrafulsarkar/) · [Codeholt](https://codeholt.com/)
 - **Text domain:** `codeholt-bundles-for-woocommerce`
 
