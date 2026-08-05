@@ -114,9 +114,20 @@ Yes, the plugin declares and is fully tested with HPOS enabled.
 
 No. Every feature listed above is fully usable with no artificial limits, nag screens or disabled UI.
 
+== Screenshots ==
+
+1. A bundle on the product page using the Table layout — included products, the automatic "Save X (Y%)" badge and the total bundle price.
+2. The bundle builder on the product edit screen: pricing mode, fixed bundle price, page layout and the drag & drop product list with a live totals preview.
+3. The same bundle rendered with the Compact layout.
+4. Bundles in the cart — one line item each, with contents and savings listed.
+5. The analytics overview under WooCommerce → Bundles: bundles sold, revenue, customer savings, top bundle and a per-bundle sales table.
+6. The "Product Bundle" Gutenberg block, with bundle, layout and display options in the block sidebar.
+7. WooCommerce → Bundles → Settings: default layouts, the included-products heading and the savings badge toggle.
+8. Import / Export: download every bundle as JSON or CSV, and import bundles back in by dropping in a JSON file.
+
 == Changelog ==
 
-= 1.0.0 =
+= 1.0.0 - 05-08-2026 =
 * Initial release.
 
 == Upgrade Notice ==
