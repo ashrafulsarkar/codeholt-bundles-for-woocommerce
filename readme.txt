@@ -1,5 +1,5 @@
 === Codeholt Bundles for WooCommerce ===
-Contributors: codeholt, ashrafulsarkar
+Contributors: codeholt, ashrafulsarkar, azimjamshed
 Tags: woocommerce, product bundle, bundle, upsell, cross-sell
 Requires at least: 6.5
 Tested up to: 7.0

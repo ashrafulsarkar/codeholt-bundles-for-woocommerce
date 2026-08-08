@@ -92,6 +92,9 @@ register_activation_hook(
 		} else {
 			update_option( 'cbfw_version', CBFW_VERSION, false );
 		}
+		if ( ! get_option( 'cbfw_installed' ) ) {
+			add_option( 'cbfw_installed', time(), '', false );
+		}
 		// Make sure the product type term exists.
 		if ( ! term_exists( 'cbfw_bundle', 'product_type' ) ) {
 			wp_insert_term( 'cbfw_bundle', 'product_type' );

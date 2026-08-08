@@ -52,6 +52,7 @@ final class CBFW_Plugin {
 			new CBFW_Analytics();
 			new CBFW_Import_Export();
 			new CBFW_Settings();
+			new CBFW_Review_Notice();
 		}
 
 		// Elementor widget (only when Elementor is active).

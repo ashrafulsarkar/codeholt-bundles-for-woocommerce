@@ -18,6 +18,9 @@ function cbfw_uninstall_site() {
 
 	delete_option( 'cbfw_version' );
 	delete_option( 'cbfw_settings' );
+	delete_option( 'cbfw_installed' );
+	delete_option( 'cbfw_review_dismissed' );
+	delete_option( 'cbfw_review_later' );
 
 	// Analytics transients are keyed by reporting period, so their names can't
 	// be enumerated up front. A direct, uncached query is the only way to find
