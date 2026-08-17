@@ -4,7 +4,7 @@ Tags: woocommerce, product bundle, bundle, upsell, cross-sell
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,6 +13,8 @@ Create product bundles for WooCommerce with fixed pricing, automatic savings, st
 == Description ==
 
 **Codeholt Bundles for WooCommerce** adds a lightweight, native "Bundle" product type to your store. Combine multiple products into one bundle with a fixed discounted price (or auto-calculated price), show customers exactly how much they save, and sell more per order — one cart line, correct stock handling, and native WooCommerce price fields so sorting and filtering keep working.
+
+Need percentage discounts, quantity limits, extra product page layouts, a custom CSS panel or advanced reports? Check out **[Codeholt Bundles for WooCommerce Pro](https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/)**.
 
 = Why bundles? =
 
@@ -80,6 +82,26 @@ Actions and filters throughout (pricing, layouts, admin tabs, import/export, set
 * Gutenberg and Elementor
 * Any well-coded theme
 
+= 🚀 Pro Features =
+
+Need more than the basics? [Codeholt Bundles for WooCommerce Pro](https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/) adds:
+
+* Percentage discount pricing mode — X% off the bundled products total
+* Discount scheduling — start/end dates using WooCommerce's native sale schedule
+* Min/max quantity rules per order
+* Custom savings badge text template, plus a shop-page badge
+* Three extra product page layouts — List, Grid, Inline — plus a Custom layout builder (columns, item style, image size, toggles)
+* A Custom CSS panel, loaded on top of the free layouts
+* Advanced reports — 7/30/90/365-day date ranges and CSV export, right inside the Overview tab
+* Automatic one-click plugin updates
+* Priority support
+
+Get it at [https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/](https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/)
+
+= 📖 Documentation =
+
+Full documentation, including Pro, is available at [https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/](https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/)
+
 == Installation ==
 
 1. Upload the plugin to `/wp-content/plugins/` or install via the Plugins screen.
@@ -87,6 +109,7 @@ Actions and filters throughout (pricing, layouts, admin tabs, import/export, set
 3. Go to **Products → Add New**, choose the **Bundle product** type.
 4. Open the **Bundled Products** tab, add products, choose a pricing mode and publish.
 5. Optionally visit **WooCommerce → Bundles → Settings** to set default layouts and the savings badge.
+6. See the full [documentation](https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/) for pricing modes, layouts, hooks and the Pro add-on.
 
 == Frequently Asked Questions ==
 
@@ -114,6 +137,14 @@ Yes, the plugin declares and is fully tested with HPOS enabled.
 
 No. Every feature listed above is fully usable with no artificial limits, nag screens or disabled UI.
 
+= Is there a Pro version? =
+
+Yes. [Codeholt Bundles for WooCommerce Pro](https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/) adds percentage discount pricing with scheduling, quantity rules, three extra product page layouts with a custom layout builder, a Custom CSS panel, advanced reports with CSV export, and automatic one-click updates on top of this free plugin. Compare Free vs Pro any time from **WooCommerce → Bundles → Get Pro**.
+
+= Where is the full documentation? =
+
+Full documentation covering both Free and Pro — pricing modes, layouts, hooks/filters, templates and licensing — is available at [https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/](https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/).
+
 == Screenshots ==
 
 1. A bundle on the product page using the Table layout — included products, the automatic "Save X (Y%)" badge and the total bundle price.
@@ -126,6 +157,10 @@ No. Every feature listed above is fully usable with no artificial limits, nag sc
 8. Import / Export: download every bundle as JSON or CSV, and import bundles back in by dropping in a JSON file.
 
 == Changelog ==
+
+= 1.0.1 - 17-08-2026 =
+* Added a "Get Pro" tab (WooCommerce → Bundles → Get Pro) with a Free vs Pro feature comparison and an upgrade link. Only shown while the Pro add-on isn't active — no free feature is hidden or restricted.
+* Added a Pro Features section, upgrade link and a documentation link (https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/) to this readme, plus a full HTML documentation page (`docs/index.html`) covering both Free and Pro.
 
 = 1.0.0 - 05-08-2026 =
 * Initial release.

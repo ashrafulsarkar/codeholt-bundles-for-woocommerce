@@ -663,3 +663,52 @@
 	white-space: nowrap;
 	border: 0;
 }
+
+/* ------------------------------------------------------------------ */
+/* Get Pro tab — Free vs Pro comparison                                */
+/* ------------------------------------------------------------------ */
+
+.nav-tab[href*="tab=get-pro"],
+.nav-tab[href*="tab=license"] {
+	color: #d63638;
+	font-weight: 700;
+}
+
+.cbfw-getpro {
+	max-width: 760px;
+	margin-top: 10px;
+}
+
+.cbfw-compare-table {
+	margin-top: 15px;
+}
+
+.cbfw-compare-table th,
+.cbfw-compare-table td {
+	padding: 12px 15px;
+}
+
+.cbfw-compare-col {
+	text-align: center !important;
+	width: 130px;
+}
+
+.cbfw-compare-table thead th {
+	font-weight: 700;
+}
+
+.cbfw-compare-table thead th.cbfw-compare-pro {
+	color: #00a32a;
+}
+
+.cbfw-compare-yes {
+	color: #00a32a;
+}
+
+.cbfw-compare-no {
+	color: #c3c4c7;
+}
+
+.cbfw-compare-table tfoot td {
+	padding: 16px 15px;
+}

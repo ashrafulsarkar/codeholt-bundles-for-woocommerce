@@ -2,11 +2,12 @@
 
 Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, automatic savings calculation, stock sync, a Gutenberg block, an Elementor widget and built-in analytics.
 
-- **Version:** 1.0.0
+- **Version:** 1.0.1
 - **Requires:** WordPress 6.5+ (tested up to 7.0), WooCommerce 8.0+ (tested up to 10.0), PHP 7.4+
 - **License:** GPLv2 or later
 - **Author:** [Ashraful Sarkar Naiem](https://profiles.wordpress.org/ashrafulsarkar/) · [Codeholt](https://codeholt.com/)
 - **Text domain:** `codeholt-bundles-for-woocommerce`
+- **Documentation:** https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/
 
 ## What it does
 
@@ -107,6 +108,9 @@ Templates can be overridden by copying files from `templates/` to `yourtheme/cod
 Report bugs or request features via the [WordPress.org support forum](https://wordpress.org/support/plugin/codeholt-bundles-for-woocommerce/) or [Codeholt](https://codeholt.com/).
 
 ## Changelog
+
+### 1.0.1
+Added a "Get Pro" tab (WooCommerce → Bundles → Get Pro) with a Free vs Pro feature comparison and an upgrade link, plus a matching plugins-screen row link. Both are hidden once the Pro add-on is active — Pro shows its own License tab/link instead. No free feature is hidden or restricted.
 
 ### 1.0.0
 Initial release.

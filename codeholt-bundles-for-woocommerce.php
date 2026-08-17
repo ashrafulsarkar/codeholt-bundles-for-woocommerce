@@ -3,7 +3,7 @@
  * Plugin Name:       Codeholt Bundles for WooCommerce
  * Plugin URI:        https://github.com/ashrafulsarkar/codeholt-bundles-for-woocommerce
  * Description:       Create product bundles for WooCommerce — increase Average Order Value with fixed-price bundles, auto price calculation, stock sync, Gutenberg block, Elementor widget and analytics.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Codeholt
  * Author URI:        https://codeholt.com/
  * License:           GPLv2 or later
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CBFW_VERSION', '1.0.0' );
+define( 'CBFW_VERSION', '1.0.1' );
 define( 'CBFW_PLUGIN_FILE', __FILE__ );
 define( 'CBFW_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CBFW_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

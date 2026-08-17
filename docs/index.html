@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeholt Bundles for WooCommerce — Documentation</title>
+    <meta name="description" content="Official documentation for the Codeholt Bundles for WooCommerce plugin. Create product bundles with fixed or auto pricing, automatic savings, stock sync and layouts.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #16a34a;
+            --accent-light: #dcfce7;
+            --accent-text:  #166534;
+            --bg:           #ffffff;
+            --bg-subtle:    #f8fafc;
+            --bg-muted:     #f1f5f9;
+            --border:       #e2e8f0;
+            --border-strong:#cbd5e1;
+            --text:         #0f172a;
+            --text-muted:   #475569;
+            --text-faint:   #94a3b8;
+            --code-bg:      #0f172a;
+            --code-header:  #1e293b;
+            --code-border:  #334155;
+            --code-text:    #e2e8f0;
+            --code-muted:   #94a3b8;
+            --radius-sm:    6px;
+            --radius:       8px;
+            --radius-lg:    12px;
+            --font:         'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono:    'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        html { scroll-behavior: smooth; font-size: 15px; overflow-x: hidden; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #ffffff;
+            color: #374151;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ─── Layout ─────────────────────────────────────────── */
+        .cbfw-doc-layout {
+            display: flex;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* ─── Sidebar ─────────────────────────────────────────── */
+        .cbfw-doc-sidebar {
+            width: 270px;
+            min-width: 270px;
+            background: #ffffff;
+            color: #374151;
+            border-right: 1px solid #e8ecf1;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db #ffffff;
+        }
+        .cbfw-doc-sidebar::-webkit-scrollbar { width: 4px; }
+        .cbfw-doc-sidebar::-webkit-scrollbar-track { background: #ffffff; }
+        .cbfw-doc-sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+
+        .cbfw-doc-brand {
+            padding: 28px 22px 22px;
+            border-bottom: 1px solid #e8ecf1;
+        }
+        .cbfw-doc-brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .cbfw-doc-brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            text-decoration: none;
+            min-width: 0;
+        }
+        .cbfw-doc-nav-toggle {
+            display: none;
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            color: #4b5563;
+            border: 1px solid #e5e9ef;
+            border-radius: 7px;
+            cursor: pointer;
+            padding: 0;
+        }
+        .cbfw-doc-nav-toggle svg { width: 18px; height: 18px; fill: currentColor; }
+        .cbfw-doc-nav-toggle:hover { background: #f9fafb; border-color: #9ca3af; }
+        .cbfw-doc-brand-icon {
+            width: 32px;
+            height: 32px;
+            background: #7c3aed;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .cbfw-doc-brand-icon svg { width: 18px; height: 18px; fill: #fff; }
+        .cbfw-doc-brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+            line-height: 1.3;
+        }
+        .cbfw-doc-brand-sub {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            margin-top: 2px;
+            display: block;
+        }
+        .cbfw-doc-brand-version {
+            display: inline-block;
+            background: #f3eefe;
+            color: #6d28d9;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 10px;
+            border: 1px solid #ddd0fb;
+        }
+
+        .cbfw-doc-nav { padding: 12px 0 24px; flex: 1; }
+        .cbfw-doc-nav-group { margin-bottom: 4px; }
+        .cbfw-doc-nav-group-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #9ca3af;
+            padding: 10px 22px 4px;
+            display: block;
+        }
+        .cbfw-doc-nav a {
+            display: block;
+            padding: 7px 22px;
+            color: #4b5563;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.4;
+            border-left: 3px solid transparent;
+            transition: all .15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .cbfw-doc-nav a:hover {
+            color: #111827;
+            background: #f9fafb;
+            border-left-color: #d1d5db;
+        }
+        .cbfw-doc-nav a.is-active {
+            color: #6d28d9;
+            background: #f3eefe;
+            border-left-color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .cbfw-doc-sidebar-footer {
+            padding: 16px 22px;
+            border-top: 1px solid #e8ecf1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .cbfw-doc-sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color .15s;
+        }
+        .cbfw-doc-sidebar-footer a:hover { color: #4b5563; }
+        .cbfw-doc-sidebar-footer svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+        /* ─── Main Content ────────────────────────────────────── */
+        .cbfw-doc-content {
+            flex: 1;
+            min-width: 0;
+            background: #ffffff;
+            padding: 0 0 80px;
+        }
+
+        .cbfw-doc-hero {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e8ecf1;
+            border-left: 4px solid #7c3aed;
+            padding: 48px 52px;
+        }
+        .cbfw-doc-hero h1 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 10px;
+        }
+        .cbfw-doc-hero p {
+            color: #6b7280;
+            font-size: 15px;
+            margin: 0;
+            max-width: 620px;
+            line-height: 1.7;
+        }
+        .cbfw-doc-hero-badge {
+            display: inline-block;
+            background: #7c3aed;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: .4px;
+            margin-bottom: 16px;
+        }
+        .cbfw-doc-hero-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .cbfw-doc-hero-tag {
+            background: #ffffff;
+            border: 1px solid #e5e9ef;
+            color: #6b7280;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .cbfw-doc-sections { padding: 0 52px; }
+
+        .cbfw-doc-section {
+            padding: 52px 0;
+            border-bottom: 1px solid #e8ecf1;
+        }
+        .cbfw-doc-section:last-child { border-bottom: none; }
+
+        .cbfw-doc-section h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 6px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cbfw-section-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #7c3aed;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .cbfw-doc-section h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #374151;
+            margin: 30px 0 10px;
+            padding: 0;
+        }
+        .cbfw-doc-section p,
+        .cbfw-doc-section li {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .cbfw-doc-section ul { margin: 10px 0 0 18px; }
+        .cbfw-doc-section ul li { list-style: disc; margin-bottom: 5px; }
+        .cbfw-doc-section-lead {
+            color: #6b7280;
+            font-size: 15px;
+            margin: 6px 0 28px;
+            line-height: 1.7;
+        }
+
+        /* ─── Steps ───────────────────────────────────────────── */
+        .cbfw-steps { display: flex; flex-direction: column; gap: 14px; margin: 22px 0; }
+        .cbfw-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            background: #f9fafb;
+            border: 1px solid #e8ecf1;
+            border-radius: 10px;
+            padding: 18px 22px;
+        }
+        .cbfw-step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            background: #7c3aed;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 50%;
+        }
+        .cbfw-step-body { flex: 1; }
+        .cbfw-step-body strong { color: #111827; font-size: 14px; display: block; margin-bottom: 4px; }
+        .cbfw-step-body span { color: #6b7280; font-size: 13px; line-height: 1.6; }
+
+        /* ─── Code Blocks ─────────────────────────────────────── */
+        .cbfw-code-block {
+            background: #f6f8fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 22px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        }
+        .cbfw-code-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #eaecef;
+            border-bottom: 1px solid #d1d5db;
+        }
+        .cbfw-code-block-label {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            font-family: "SFMono-Regular", Consolas, monospace;
+        }
+        .cbfw-code-copy-btn {
+            background: #ffffff;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 11px;
+            padding: 3px 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .15s;
+        }
+        .cbfw-code-copy-btn:hover { background: #f3f4f6; color: #111827; border-color: #9ca3af; }
+        .cbfw-code-block pre {
+            margin: 0;
+            padding: 22px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            color: #24292e;
+            background: transparent;
+            white-space: pre;
+            tab-size: 4;
+        }
+
+        /* ─── Notice Boxes ────────────────────────────────────── */
+        .cbfw-notice {
+            display: flex;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin: 22px 0;
+            font-size: 13.5px;
+            line-height: 1.7;
+            align-items: flex-start;
+        }
+        .cbfw-notice-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+        .cbfw-notice.cbfw-notice--tip  { background: #f3eefe; border-left: 4px solid #7c3aed; color: #4c1d95; }
+        .cbfw-notice.cbfw-notice--info { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a5f; }
+        .cbfw-notice.cbfw-notice--warn { background: #fffbeb; border-left: 4px solid #f59e0b; color: #7c4a00; }
+        .cbfw-notice a { color: inherit; text-decoration: underline; }
+
+        /* ─── Tables ──────────────────────────────────────────── */
+        .cbfw-table-scroll {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 16px 0;
+            border-radius: 8px;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 1px 3px rgba(0,0,0,.04);
+        }
+        .cbfw-table-scroll .cbfw-doc-table {
+            margin: 0;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        .cbfw-doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin: 16px 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e8ecf1;
+            box-shadow: 0 1px 3px rgba(0,0,0,.04);
+        }
+        .cbfw-doc-table th {
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .6px;
+            text-transform: uppercase;
+            padding: 11px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e8ecf1;
+        }
+        .cbfw-doc-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+            vertical-align: top;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+        .cbfw-doc-table tr:last-child td { border-bottom: none; }
+        .cbfw-doc-table tr:hover td { background: #f9fafb; }
+        .cbfw-doc-table code {
+            background: #f3f4f6;
+            color: #c0392b;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 11.5px;
+        }
+        .cbfw-plan-badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+        .cbfw-plan-free { background: #dcfce7; color: #166534; }
+        .cbfw-plan-pro  { background: #fee2e2; color: #b91c1c; }
+
+        /* ─── Inline code ─────────────────────────────────────── */
+        .cbfw-doc-section code {
+            background: #f3f4f6;
+            color: #c0392b;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 12.5px;
+        }
+
+        /* ─── Hero action buttons ────────────────────────────────── */
+        .cbfw-hero-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+        .cbfw-hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid transparent;
+            transition: all .15s ease;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        .cbfw-hero-btn svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+        .cbfw-hero-btn-github {
+            background: #24292e;
+            color: #ffffff;
+            border-color: #1a1e22;
+        }
+        .cbfw-hero-btn-github:hover { background: #1a1e22; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+        .cbfw-hero-btn-wc {
+            background: #ffffff;
+            color: #7f54b3;
+            border-color: #d1d5db;
+        }
+        .cbfw-hero-btn-wc:hover { background: #f8f5fb; border-color: #9ca3af; box-shadow: 0 2px 6px rgba(0,0,0,.07); }
+        .cbfw-hero-btn-wc svg { fill: #7f54b3; }
+        .cbfw-hero-btn-pro {
+            background: #d63638;
+            color: #ffffff;
+            border-color: #b32d2f;
+        }
+        .cbfw-hero-btn-pro:hover { background: #b32d2f; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+
+        /* ─── Pro compare table ───────────────────────────────── */
+        .cbfw-pro-table th.cbfw-compare-pro,
+        .cbfw-pro-table td.cbfw-compare-pro { background: #fef2f2; }
+        .cbfw-pro-yes { color: #16a34a; font-weight: 700; }
+        .cbfw-pro-no  { color: #cbd5e1; font-weight: 700; }
+
+        /* ─── Layout preview chips ────────────────────────────── */
+        .cbfw-layout-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .cbfw-layout-chip::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: #7c3aed;
+            display: inline-block;
+        }
+
+        /* ─── Responsive ──────────────────────────────────────── */
+        @media (max-width: 1100px) {
+            .cbfw-doc-sidebar { width: 230px; min-width: 230px; }
+            .cbfw-doc-sections { padding: 0 30px; }
+            .cbfw-doc-hero { padding: 36px 30px; }
+        }
+
+        @media (max-width: 820px) {
+            .cbfw-doc-layout { flex-direction: column; align-items: stretch; }
+            .cbfw-doc-sidebar {
+                width: 100%;
+                min-width: 0;
+                position: sticky;
+                top: 0;
+                height: auto;
+                z-index: 20;
+            }
+            .cbfw-doc-content { width: 100%; }
+            .cbfw-doc-nav-toggle { display: inline-flex; }
+            .cbfw-doc-nav {
+                display: none;
+                max-height: calc(100vh - 100px);
+                overflow-y: auto;
+                border-top: 1px solid #e8ecf1;
+            }
+            .cbfw-doc-sidebar-footer { display: none; }
+            .cbfw-doc-sidebar.is-open .cbfw-doc-nav { display: block; }
+            .cbfw-doc-sidebar.is-open .cbfw-doc-sidebar-footer { display: flex; flex-direction: column; }
+
+            .cbfw-doc-sections { padding: 0 18px; }
+            .cbfw-doc-hero { padding: 28px 18px; }
+            .cbfw-doc-hero h1 { font-size: 24px; }
+            .cbfw-hero-actions { gap: 8px; }
+            .cbfw-hero-btn { padding: 7px 12px; font-size: 12.5px; }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 14px; }
+            .cbfw-doc-hero { padding: 22px 14px; }
+            .cbfw-doc-hero h1 { font-size: 21px; }
+            .cbfw-doc-hero p { font-size: 13.5px; }
+            .cbfw-doc-hero-badge { margin-bottom: 12px; }
+            .cbfw-doc-sections { padding: 0 14px; }
+            .cbfw-doc-section { padding: 34px 0; }
+            .cbfw-doc-section h2 { font-size: 19px; gap: 8px; }
+            .cbfw-section-num { width: 26px; height: 26px; font-size: 12px; }
+            .cbfw-code-block pre { padding: 14px; font-size: 12px; }
+            .cbfw-code-block-header { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
+            .cbfw-doc-table th, .cbfw-doc-table td { padding: 9px 10px; font-size: 12.5px; }
+            .cbfw-step { padding: 14px 16px; }
+            .cbfw-hero-actions { flex-direction: column; align-items: stretch; }
+            .cbfw-hero-btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cbfw-doc-layout">
+
+    <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+    <aside class="cbfw-doc-sidebar" id="cbfw-sidebar">
+        <div class="cbfw-doc-brand">
+            <div class="cbfw-doc-brand-row">
+                <a class="cbfw-doc-brand-logo" href="#">
+                    <div class="cbfw-doc-brand-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10l10 5 10-5V7l-10-5zm0 2.2L19 8l-7 3.5L5 8l7-3.8zM4 9.7l7 3.5v7.1l-7-3.5V9.7zm9 10.6v-7.1l7-3.5v7.1l-7 3.5z"/></svg>
+                    </div>
+                    <p class="cbfw-doc-brand-name">Codeholt Bundles</p>
+                </a>
+                <button class="cbfw-doc-nav-toggle" id="cbfw-nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="cbfw-nav">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+                </button>
+            </div>
+            <span class="cbfw-doc-brand-sub">Documentation</span>
+            <span class="cbfw-doc-brand-version">v1.0.1</span>
+        </div>
+
+        <nav class="cbfw-doc-nav" id="cbfw-nav">
+            <div class="cbfw-doc-nav-group">
+                <span class="cbfw-doc-nav-group-label">Getting Started</span>
+                <a href="#overview"    class="cbfw-nav-link">Overview</a>
+                <a href="#creating"    class="cbfw-nav-link">Creating a Bundle</a>
+                <a href="#pricing"     class="cbfw-nav-link">Pricing Modes</a>
+                <a href="#layouts"     class="cbfw-nav-link">Product Page Layouts</a>
+                <a href="#displaying"  class="cbfw-nav-link">Displaying Bundles</a>
+            </div>
+            <div class="cbfw-doc-nav-group">
+                <span class="cbfw-doc-nav-group-label">Reference</span>
+                <a href="#settings"       class="cbfw-nav-link">Settings</a>
+                <a href="#hooks"          class="cbfw-nav-link">Hooks &amp; Filters</a>
+                <a href="#templates"      class="cbfw-nav-link">Templates</a>
+            </div>
+            <div class="cbfw-doc-nav-group">
+                <span class="cbfw-doc-nav-group-label">Pro Add-on</span>
+                <a href="#pro-overview"   class="cbfw-nav-link">Overview</a>
+                <a href="#pro-compare"    class="cbfw-nav-link">Free vs Pro</a>
+                <a href="#pro-included"   class="cbfw-nav-link">What's Included</a>
+                <a href="#pro-license"    class="cbfw-nav-link">License &amp; Updates</a>
+            </div>
+        </nav>
+
+        <div class="cbfw-doc-sidebar-footer">
+            <a href="https://github.com/ashrafulsarkar/codeholt-bundles-for-woocommerce" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                View on GitHub
+            </a>
+        </div>
+    </aside>
+
+    <!-- ══ CONTENT ══════════════════════════════════════════════ -->
+    <div class="cbfw-doc-content">
+
+        <div class="cbfw-doc-hero">
+            <span class="cbfw-doc-hero-badge">v1.0.1</span>
+            <h1>Codeholt Bundles for WooCommerce</h1>
+            <p>Create product bundles for WooCommerce — fixed or auto-calculated pricing, automatic savings badges, stock sync, and a choice of product page layouts. Follow the guide below to get started with Free and Pro.</p>
+            <div class="cbfw-doc-hero-tags">
+                <span class="cbfw-doc-hero-tag">WooCommerce Plugin</span>
+                <span class="cbfw-doc-hero-tag">Product Bundles</span>
+                <span class="cbfw-doc-hero-tag">Gutenberg Block</span>
+                <span class="cbfw-doc-hero-tag">Elementor Widget</span>
+            </div>
+            <div class="cbfw-hero-actions">
+                <a class="cbfw-hero-btn cbfw-hero-btn-github" href="https://github.com/ashrafulsarkar/codeholt-bundles-for-woocommerce" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    View on GitHub
+                </a>
+                <a class="cbfw-hero-btn cbfw-hero-btn-wc" href="https://woocommerce.com/" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5.5 6.5-2.2 7.7c-.15.5-.55.8-1.05.8-.13 0-.27-.02-.4-.07l-2.35-.9-1.7 2.6c-.18.28-.5.42-.8.35-.3-.07-.53-.32-.58-.63L7.6 9.4c-.08-.5.25-.98.75-1.06.5-.08.98.25 1.06.75l.5 3.1 1.4-2.15c.2-.3.57-.44.9-.33l2.05.78 1.7-6c.14-.5.65-.78 1.14-.64.5.14.78.65.64 1.15z"/></svg>
+                    Requires WooCommerce
+                </a>
+                <a class="cbfw-hero-btn cbfw-hero-btn-pro" href="https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 4l5 2.18V11c0 3.5-2.33 6.79-5 7.93-2.67-1.14-5-4.43-5-7.93V7.18L12 5z"/></svg>
+                    Get Bundles Pro
+                </a>
+            </div>
+        </div>
+
+        <div class="cbfw-doc-sections">
+
+            <!-- ── OVERVIEW ──────────────────────────────────── -->
+            <section class="cbfw-doc-section" id="overview">
+                <h2>Overview</h2>
+                <p class="cbfw-doc-section-lead">Codeholt Bundles for WooCommerce adds a native "Bundle" product type to your store. A bundle combines several products under one price, adds to cart as a single line item, and keeps its price and stock automatically in sync with the products inside it.</p>
+
+                <h3>How It Works</h3>
+                <div class="cbfw-steps">
+                    <div class="cbfw-step">
+                        <span class="cbfw-step-num">1</span>
+                        <div class="cbfw-step-body">
+                            <strong>Install &amp; Activate</strong>
+                            <span>Install the plugin with WooCommerce active — no extra setup required.</span>
+                        </div>
+                    </div>
+                    <div class="cbfw-step">
+                        <span class="cbfw-step-num">2</span>
+                        <div class="cbfw-step-body">
+                            <strong>Create a Bundle</strong>
+                            <span>Add a new product, choose the "Bundle product" type, and pick which products it contains.</span>
+                        </div>
+                    </div>
+                    <div class="cbfw-step">
+                        <span class="cbfw-step-num">3</span>
+                        <div class="cbfw-step-body">
+                            <strong>Display It</strong>
+                            <span>The bundle is a normal product page out of the box — or place it anywhere with the shortcode, block or widget.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cbfw-notice cbfw-notice--info">
+                    <span class="cbfw-notice-icon">ℹ</span>
+                    <div>A bundle is a real WooCommerce product using native price fields, so it sorts, filters and shows up in price-range widgets exactly like any other product — no custom database tables involved.</div>
+                </div>
+            </section>
+
+            <!-- ── CREATING A BUNDLE ─────────────────────────── -->
+            <section class="cbfw-doc-section" id="creating">
+                <h2>
+                    <span class="cbfw-section-num">1</span>
+                    Creating a Bundle
+                </h2>
+                <p class="cbfw-doc-section-lead">Bundles are built right on the standard WooCommerce product edit screen.</p>
+
+                <h3>Steps</h3>
+                <ul>
+                    <li>Go to <strong>Products → Add New</strong> and set the product type to <strong>Bundle product</strong>.</li>
+                    <li>Open the <strong>Bundled Products</strong> tab.</li>
+                    <li>Search and add products — any published, purchasable product qualifies, including individual variations of a variable product.</li>
+                    <li>Set each item's quantity, and optionally hide it from the frontend list while still including it in pricing/stock.</li>
+                    <li>Drag rows to reorder — the totals preview updates live as you build.</li>
+                    <li>Choose a pricing mode (see <a href="#pricing">Pricing Modes</a>) and a product page layout (see <a href="#layouts">Product Page Layouts</a>), or leave both on their defaults.</li>
+                    <li>Publish. Price, savings badge and stock status are calculated automatically.</li>
+                </ul>
+
+                <div class="cbfw-notice cbfw-notice--tip">
+                    <span class="cbfw-notice-icon">💡</span>
+                    <div>For a variable product, search for the specific variation you want to bundle rather than the parent — a variable parent has no price of its own.</div>
+                </div>
+            </section>
+
+            <!-- ── PRICING MODES ─────────────────────────────── -->
+            <section class="cbfw-doc-section" id="pricing">
+                <h2>
+                    <span class="cbfw-section-num">2</span>
+                    Pricing Modes
+                </h2>
+                <p class="cbfw-doc-section-lead">Set the pricing mode per bundle from the Bundled Products tab.</p>
+
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Mode</th><th>Plan</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Auto calculate</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>The bundle price is the sum of its products' prices. Recalculates automatically whenever a bundled product's own price changes.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fixed bundle price</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Set one flat price for the whole bundle — the plugin shows an automatic "Save $X (Y%)" badge next to it.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Percentage discount</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Take X% off the sum of current bundled-product prices — the regular price stays the full sum, so the savings badge reflects the real discount.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Discount scheduling</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Optional start/end dates for Fixed or Percentage pricing, using WooCommerce's own native sale schedule — no custom cron involved.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ── PRODUCT PAGE LAYOUTS ──────────────────────── -->
+            <section class="cbfw-doc-section" id="layouts">
+                <h2>
+                    <span class="cbfw-section-num">3</span>
+                    Product Page Layouts
+                </h2>
+                <p class="cbfw-doc-section-lead">Choose how bundled items are listed on the product page — as a site-wide default from Settings, or overridden per bundle.</p>
+
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Layout</th><th>Plan</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">Table</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Spreadsheet-style rows with image, name, price and quantity columns.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">Compact</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>A condensed list, ideal for bundles with many items.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">List</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Vertical rows in a bordered container with a larger product image.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">Grid</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Responsive card tiles with the image on top and centered text.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">Inline</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Compact rounded chips — good for bundles with many small items.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="cbfw-layout-chip">Custom</span></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Build your own from the Custom layout builder — columns, item style, image size and content toggles.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ── DISPLAYING BUNDLES ────────────────────────── -->
+            <section class="cbfw-doc-section" id="displaying">
+                <h2>
+                    <span class="cbfw-section-num">4</span>
+                    Displaying Bundles
+                </h2>
+                <p class="cbfw-doc-section-lead">A published bundle is already a normal product page. To feature it elsewhere on your site, use any of the three options below.</p>
+
+                <h3>Shortcode</h3>
+                <div class="cbfw-code-block">
+                    <div class="cbfw-code-block-header">
+                        <span class="cbfw-code-block-label">Shortcode</span>
+                        <button class="cbfw-code-copy-btn" data-copy="[cbfw_bundle id=&quot;123&quot;]">Copy</button>
+                    </div>
+                    <pre>[cbfw_bundle id="123"]</pre>
+                </div>
+                <p>Drop this into any post, page or widget area that supports shortcodes. Replace <code>123</code> with the bundle's product ID.</p>
+
+                <h3>Gutenberg Block</h3>
+                <p>Search for the <strong>"Product Bundle"</strong> block in the block editor. Pick the bundle, layout and display options right from the block sidebar — no shortcode needed.</p>
+
+                <h3>Elementor Widget</h3>
+                <p>The <strong>"Product Bundle"</strong> widget appears under the WooCommerce category in Elementor, with its own style controls for use inside any Elementor layout.</p>
+
+                <div class="cbfw-notice cbfw-notice--tip">
+                    <span class="cbfw-notice-icon">💡</span>
+                    <div>All three display methods share the same card layout setting (Card or Wide) from <strong>WooCommerce → Bundles → Settings</strong>.</div>
+                </div>
+            </section>
+
+            <!-- ── SETTINGS ───────────────────────────────────── -->
+            <section class="cbfw-doc-section" id="settings">
+                <h2>Settings</h2>
+                <p class="cbfw-doc-section-lead">Global defaults live under <strong>WooCommerce → Bundles → Settings</strong>.</p>
+
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Field</th><th>Plan</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Product page layout</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Site-wide default layout — any bundle can override it from its own edit screen.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bundle card layout</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Card or Wide — used by the shortcode, block and Elementor widget.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Included products heading</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Custom heading text shown above the bundled products list on the product page.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Savings badge toggle</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-free">FREE</span></td>
+                            <td>Show or hide the "Save X (Y%)" badge next to bundle prices.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Design (accent / savings / border colors, radius)</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Light-touch styling applied via CSS variables, plus a Custom CSS field.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Custom layout builder</strong></td>
+                            <td><span class="cbfw-plan-badge cbfw-plan-pro">PRO</span></td>
+                            <td>Columns, item style, image size and content toggles for the Custom layout.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ── HOOKS & FILTERS ──────────────────────────── -->
+            <section class="cbfw-doc-section" id="hooks">
+                <h2>Hooks &amp; Filters</h2>
+                <p class="cbfw-doc-section-lead">Actions and filters throughout pricing, layouts, admin tabs, import/export and settings — this is exactly what the Pro add-on itself is built on.</p>
+
+                <h3>Filters</h3>
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Filter</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>cbfw_bundled_products</code></td><td>Resolved bundled items before they are used.</td></tr>
+                        <tr><td><code>cbfw_can_bundle_product</code></td><td>Whether a product may be bundled.</td></tr>
+                        <tr><td><code>cbfw_pricing_modes</code></td><td>Registered pricing mode slugs. Default <code>array( 'auto', 'fixed' )</code>.</td></tr>
+                        <tr><td><code>cbfw_custom_mode_prices</code></td><td>Supply <code>regular</code>/<code>sale</code> prices for a custom pricing mode.</td></tr>
+                        <tr><td><code>cbfw_product_layouts</code></td><td>Registered single-product layouts.</td></tr>
+                        <tr><td><code>cbfw_bundle_layout</code></td><td>Layout used for one specific bundle.</td></tr>
+                        <tr><td><code>cbfw_bundle_card_html</code></td><td>Rendered card markup (shortcode/block/widget).</td></tr>
+                        <tr><td><code>cbfw_show_savings_badge</code></td><td>Whether the savings badge is shown.</td></tr>
+                        <tr><td><code>cbfw_savings_badge_text</code></td><td>Badge text — must already be escaped.</td></tr>
+                        <tr><td><code>cbfw_inline_css</code></td><td>Extra CSS appended to the frontend stylesheet.</td></tr>
+                        <tr><td><code>cbfw_structured_data</code></td><td>Bundle structured data markup.</td></tr>
+                        <tr><td><code>cbfw_save_bundled_items</code></td><td>Sanitized items before they are saved.</td></tr>
+                        <tr><td><code>cbfw_save_settings</code></td><td>Settings before they are written to the database.</td></tr>
+                        <tr><td><code>cbfw_bundle_choices_limit</code></td><td>Max bundles listed in editor dropdowns. Default <code>200</code>.</td></tr>
+                        <tr><td><code>cbfw_overview_days</code></td><td>Reporting period for the analytics overview. Default <code>30</code>.</td></tr>
+                        <tr><td><code>cbfw_child_search_help</code></td><td>Help tip under the bundle builder's product search.</td></tr>
+                    </tbody>
+                </table>
+
+                <h3>Actions</h3>
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Action</th><th>Description</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>cbfw_loaded</code></td><td>Fires once the plugin is fully loaded.</td></tr>
+                        <tr><td><code>cbfw_bundle_synced</code></td><td>After a bundle's price and stock are resynced.</td></tr>
+                        <tr><td><code>cbfw_order_line_item_created</code></td><td>After bundle meta is written to an order line item.</td></tr>
+                        <tr><td><code>cbfw_import_bundle</code></td><td>After a bundle is created from an import row, before prices resync.</td></tr>
+                        <tr><td><code>cbfw_before_bundled_items</code> / <code>cbfw_after_bundled_items</code></td><td>Around the included-products list on the product page.</td></tr>
+                        <tr><td><code>cbfw_pricing_fields</code></td><td>Extra fields in the product data pricing area.</td></tr>
+                        <tr><td><code>cbfw_after_builder_panel</code></td><td>After the Bundled Products panel.</td></tr>
+                        <tr><td><code>cbfw_settings_sections</code></td><td>Extra sections on the Settings tab.</td></tr>
+                        <tr><td><code>cbfw_layout_card_fields</code></td><td>Extra fields inside the Layout settings card.</td></tr>
+                        <tr><td><code>cbfw_overview_actions</code></td><td>Toolbar area of the analytics overview.</td></tr>
+                        <tr><td><code>cbfw_admin_tab_{$tab}</code></td><td>Renders the body of a custom admin tab.</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="cbfw-notice cbfw-notice--info">
+                    <span class="cbfw-notice-icon">ℹ</span>
+                    <div>These are exactly the extension points the Pro add-on consumes — nothing is reserved. Build your own extension the same way.</div>
+                </div>
+            </section>
+
+            <!-- ── TEMPLATES ─────────────────────────────────── -->
+            <section class="cbfw-doc-section" id="templates">
+                <h2>Templates</h2>
+                <p class="cbfw-doc-section-lead">Every template file can be overridden from your theme, the standard WooCommerce way.</p>
+
+                <div class="cbfw-code-block">
+                    <div class="cbfw-code-block-header">
+                        <span class="cbfw-code-block-label">Override path</span>
+                        <button class="cbfw-code-copy-btn" data-copy="yourtheme/codeholt-bundles-for-woocommerce/">Copy</button>
+                    </div>
+                    <pre>yourtheme/codeholt-bundles-for-woocommerce/</pre>
+                </div>
+
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Template</th><th>Used for</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>templates/bundle-card.php</code></td><td>The card used by the shortcode, block and Elementor widget.</td></tr>
+                        <tr><td><code>templates/single-product/add-to-cart/bundle.php</code></td><td>The bundle area on the single product page.</td></tr>
+                    </tbody>
+                </table>
+
+                <p>Copy the file into your theme keeping the same sub-folder structure, then edit your copy — the plugin's original stays untouched.</p>
+            </section>
+
+            <!-- ── PRO OVERVIEW ──────────────────────────────── -->
+            <section class="cbfw-doc-section" id="pro-overview">
+                <h2>Codeholt Bundles for WooCommerce Pro</h2>
+                <p class="cbfw-doc-section-lead">A paid add-on that installs alongside this free plugin and unlocks percentage discounts with scheduling, quantity rules, three extra product page layouts with a custom layout builder, a Custom CSS panel, advanced reports and automatic updates — all through the same license server.</p>
+
+                <div class="cbfw-notice cbfw-notice--tip">
+                    <span class="cbfw-notice-icon">🚀</span>
+                    <div>Get it at <a href="https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/" target="_blank" rel="noopener noreferrer"><strong>https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/</strong></a>. Install it next to Codeholt Bundles for WooCommerce, activate your license under <strong>WooCommerce → Bundles → License</strong>, and every Pro feature below appears automatically.</div>
+                </div>
+            </section>
+
+            <!-- ── FREE VS PRO ──────────────────────────────── -->
+            <section class="cbfw-doc-section" id="pro-compare">
+                <h2>Free vs Pro</h2>
+                <p class="cbfw-doc-section-lead">Everything in Free is included in Pro, plus the rows below.</p>
+
+                <table class="cbfw-doc-table cbfw-pro-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Free</th>
+                            <th class="cbfw-compare-pro">Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Unlimited bundles — Table &amp; Compact layouts</td><td class="cbfw-pro-yes">✓</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Auto or fixed bundle pricing</td><td class="cbfw-pro-yes">✓</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Shortcode, Gutenberg block &amp; Elementor widget</td><td class="cbfw-pro-yes">✓</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Savings badge, JSON import/export, sales overview</td><td class="cbfw-pro-yes">✓</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Bundle simple products and product variations</td><td class="cbfw-pro-yes">✓</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Percentage discount pricing + discount scheduling</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Min / max quantity rules per order</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Custom savings badge text + shop page badge</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>List, Grid, Inline &amp; Custom layout builder</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Custom CSS panel</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Advanced reports with date ranges + CSV export</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Automatic one-click plugin updates</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                        <tr><td>Priority support</td><td class="cbfw-pro-no">—</td><td class="cbfw-compare-pro cbfw-pro-yes">✓</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ── WHAT'S INCLUDED ────────────────────────────── -->
+            <section class="cbfw-doc-section" id="pro-included">
+                <h2>What's Included</h2>
+                <p class="cbfw-doc-section-lead">Once Pro is active and licensed, these additions appear directly inside the existing free-plugin admin pages — no separate menu.</p>
+
+                <table class="cbfw-doc-table">
+                    <thead>
+                        <tr><th>Addition</th><th>Where</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><strong>Discount (%) + schedule fields</strong></td><td>Product edit screen → Bundled Products tab, next to the pricing mode.</td></tr>
+                        <tr><td><strong>Min / max quantity fields</strong></td><td>Product edit screen → Bundled Products tab, own field group.</td></tr>
+                        <tr><td><strong>List, Grid, Inline layouts</strong></td><td>Settings → Product page layout, and each bundle's own layout picker.</td></tr>
+                        <tr><td><strong>Custom layout builder</strong></td><td>Settings → its own "Custom layout (Pro)" card.</td></tr>
+                        <tr><td><strong>Design card</strong> (accent / savings / border colors, radius)</td><td>Settings → "Design" card.</td></tr>
+                        <tr><td><strong>Custom CSS panel</strong></td><td>Settings → bottom of the Design card.</td></tr>
+                        <tr><td><strong>Savings badge text template</strong></td><td>Settings → bottom of the Layout card.</td></tr>
+                        <tr><td><strong>Period selector + CSV export</strong></td><td>Overview tab toolbar (7/30/90/365 days).</td></tr>
+                        <tr><td><strong>Discount %, quantity rules, sale dates</strong></td><td>Round-trip automatically in JSON/CSV import/export.</td></tr>
+                        <tr><td><strong>License tab</strong></td><td>New tab, always last on the Bundles admin page.</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ── LICENSE & UPDATES ──────────────────────────── -->
+            <section class="cbfw-doc-section" id="pro-license">
+                <h2>License &amp; Updates</h2>
+                <p class="cbfw-doc-section-lead">Pro activates against Codeholt's license server and then updates itself — no manual re-download needed.</p>
+
+                <h3>Activating Your License</h3>
+                <ul>
+                    <li>Install and activate the Pro plugin alongside the free plugin.</li>
+                    <li>Go to <strong>WooCommerce → Bundles → License</strong>.</li>
+                    <li>Paste the license key you received with your purchase and click <strong>Activate license</strong>.</li>
+                    <li>Every Pro feature above appears immediately — no page reload of the rest of the site is required.</li>
+                </ul>
+
+                <div class="cbfw-notice cbfw-notice--warn">
+                    <span class="cbfw-notice-icon">⚠</span>
+                    <div>Deactivate your license from the same License tab before moving Pro to a different domain, or before uninstalling — this frees up the activation slot on the license server.</div>
+                </div>
+
+                <h3>Automatic Updates</h3>
+                <p>Once licensed, the Pro plugin checks Codeholt's license server for new versions and delivers one-click updates straight from the regular WordPress Plugins screen — the same update experience as any WordPress.org plugin, with no separate download step.</p>
+
+                <div class="cbfw-notice cbfw-notice--info">
+                    <span class="cbfw-notice-icon">ℹ</span>
+                    <div>If your license expires or is deactivated, Pro features and update checks stop — your bundles and their data are untouched, and everything keeps working on the free plugin's own feature set.</div>
+                </div>
+            </section>
+
+        </div><!-- /.cbfw-doc-sections -->
+    </div><!-- /.cbfw-doc-content -->
+
+</div><!-- /.cbfw-doc-layout -->
+
+<script>
+(function () {
+    'use strict';
+
+    /* ── Wrap wide tables so they scroll instead of overflowing the page ── */
+    document.querySelectorAll('.cbfw-doc-table').forEach(function (table) {
+        if (table.parentNode.classList.contains('cbfw-table-scroll')) return;
+        var wrap = document.createElement('div');
+        wrap.className = 'cbfw-table-scroll';
+        table.parentNode.insertBefore(wrap, table);
+        wrap.appendChild(table);
+    });
+
+    /* ── Mobile nav toggle ── */
+    var sidebar    = document.getElementById('cbfw-sidebar');
+    var navToggle  = document.getElementById('cbfw-nav-toggle');
+    if (sidebar && navToggle) {
+        navToggle.addEventListener('click', function () {
+            var isOpen = sidebar.classList.toggle('is-open');
+            navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+    }
+
+    /* ── Active nav highlight via IntersectionObserver ── */
+    var sections = document.querySelectorAll('.cbfw-doc-section[id]');
+    var navLinks  = document.querySelectorAll('#cbfw-nav .cbfw-nav-link');
+
+    function setActive(id) {
+        navLinks.forEach(function (link) {
+            if (link.getAttribute('href') === '#' + id) {
+                link.classList.add('is-active');
+            } else {
+                link.classList.remove('is-active');
+            }
+        });
+    }
+
+    if ('IntersectionObserver' in window && sections.length) {
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    setActive(entry.target.id);
+                }
+            });
+        }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+        sections.forEach(function (s) { observer.observe(s); });
+    }
+
+    /* ── Smooth scroll for nav links ── */
+    navLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            var target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            if (sidebar && sidebar.classList.contains('is-open')) {
+                sidebar.classList.remove('is-open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    /* ── Copy buttons ── */
+    document.querySelectorAll('.cbfw-code-copy-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var text = '';
+            var targetId = btn.getAttribute('data-copy-target');
+            if (targetId) {
+                var el = document.getElementById(targetId);
+                if (el) text = el.textContent || '';
+            } else {
+                text = btn.getAttribute('data-copy') || '';
+            }
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function () {
+                    btn.textContent = '✓ Copied';
+                    setTimeout(function () { btn.textContent = 'Copy'; }, 2000);
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (err) {}
+                document.body.removeChild(ta);
+                btn.textContent = '✓ Copied';
+                setTimeout(function () { btn.textContent = 'Copy'; }, 2000);
+            }
+        });
+    });
+
+}());
+</script>
+
+</body>
+</html>

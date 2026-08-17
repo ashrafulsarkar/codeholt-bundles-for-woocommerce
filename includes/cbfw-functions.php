@@ -306,6 +306,36 @@ function cbfw_get_bundle_pricing( $bundle ) {
 }
 
 /**
+ * Whether the Pro add-on plugin is active on this site.
+ * Used only to decide whether to show the free plugin's "Get Pro" marketing
+ * tab/link, never to gate any free-plugin functionality.
+ *
+ * @return bool
+ */
+function cbfw_is_pro_active() {
+	return function_exists( 'cbfwp_is_licensed' );
+}
+
+/**
+ * Whether the Pro add-on is active AND its license is activated on this site.
+ *
+ * @return bool
+ */
+function cbfw_is_pro_licensed() {
+	return cbfw_is_pro_active() && cbfwp_is_licensed();
+}
+
+/**
+ * URL of the Pro purchase / upgrade page shown on the Get Pro tab.
+ * Override with the `cbfw_upgrade_url` filter.
+ *
+ * @return string
+ */
+function cbfw_get_upgrade_url() {
+	return apply_filters( 'cbfw_upgrade_url', 'https://codeholt.com/products/codeholt-bundles-for-woocommerce-pro/' );
+}
+
+/**
  * Load a plugin template, allowing theme overrides in
  * yourtheme/codeholt-bundles-for-woocommerce/{template}.
  *
