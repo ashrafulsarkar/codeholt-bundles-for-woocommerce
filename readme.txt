@@ -2,9 +2,9 @@
 Contributors: codeholt, ashrafulsarkar, azimjamshed
 Tags: woocommerce, product bundle, bundle, upsell, cross-sell
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,6 +158,9 @@ Full documentation covering both Free and Pro — pricing modes, layouts, hooks/
 
 == Changelog ==
 
+= 1.0.2 - 11-10-2026 =
+* Updated tested compatibility to WordPress 7.1.
+
 = 1.0.1 - 17-08-2026 =
 * Added a "Get Pro" tab (WooCommerce → Bundles → Get Pro) with a Free vs Pro feature comparison and an upgrade link. Only shown while the Pro add-on isn't active — no free feature is hidden or restricted.
 * Added a Pro Features section, upgrade link and a documentation link (https://ashrafulsarkar.github.io/codeholt-bundles-for-woocommerce/) to this readme, plus a full HTML documentation page (`docs/index.html`) covering both Free and Pro.
@@ -166,6 +169,9 @@ Full documentation covering both Free and Pro — pricing modes, layouts, hooks/
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Updated tested compatibility to WordPress 7.1.
 
 = 1.0.0 =
 Initial release.
